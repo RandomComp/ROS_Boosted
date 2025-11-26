@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "types.h": "c",
+        "mem.h": "c",
+        "error.h": "c",
+        "ugsm.h": "c",
+        "fatal_error.h": "c",
+        "async.h": "c",
+        "glyph.h": "c",
+        "std.h": "c",
+        "io.h": "c"
+    }
+}
