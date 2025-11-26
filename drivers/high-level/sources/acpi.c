@@ -2,9 +2,13 @@
 
 #include "../headers/types.h"
 
+#include "../headers/std.h"
+
 #include "../headers/io.h"
 
 #include "../headers/mem.h"
+
+#include "../headers/pit.h"
 
 #include "../headers/error.h"
 

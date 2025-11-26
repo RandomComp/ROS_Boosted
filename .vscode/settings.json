@@ -8,6 +8,7 @@
         "async.h": "c",
         "glyph.h": "c",
         "std.h": "c",
-        "io.h": "c"
+        "io.h": "c",
+        "pit.h": "c"
     }
 }
