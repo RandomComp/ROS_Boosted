@@ -5,9 +5,9 @@
 
 #define false 0
 
-#define __far
+#define far
 
-#define PACKED __attribute__((__packed__))
+#define PACKED __attribute__((packed))
 
 typedef unsigned char uint8;
 

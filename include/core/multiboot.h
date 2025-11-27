@@ -1,7 +1,23 @@
 #ifndef _MULTIBOOT_H
 #define _MULTIBOOT_H
 
-#include "types.h"
+#include "core/types.h"
+
+#define FRAMEBUFFER_TYPE_INDEXED 0
+
+#define FRAMEBUFFER_TYPE_RGB 1
+
+#define FRAMEBUFFER_TYPE_EGA_TEXT 2
+	
+#define MULTIBOOT_MEMORY_AVAILABLE 1
+
+#define MULTIBOOT_MEMORY_RESERVED 2
+
+#define MULTIBOOT_MEMORY_ACPI_RECLAIMABLE 3
+
+#define MULTIBOOT_MEMORY_NVS 4
+
+#define MULTIBOOT_MEMORY_BADRAM 5
 
 struct multibootAOutSymbolTable {
 	uint32 tabsize;
@@ -80,12 +96,6 @@ struct multibootInfo {
 
 	uint8 framebuffer_bpp;
 
-	#define FRAMEBUFFER_TYPE_INDEXED 0
-
-	#define FRAMEBUFFER_TYPE_RGB 1
-
-	#define FRAMEBUFFER_TYPE_EGA_TEXT 2
-
 	uint8 framebuffer_type;
 
 	union {
@@ -121,16 +131,6 @@ struct multibootMMapEntry {
 	uint32 len_low;
 
 	uint32 len_high;
-	
-	#define MULTIBOOT_MEMORY_AVAILABLE 1
-
-	#define MULTIBOOT_MEMORY_RESERVED 2
-
-	#define MULTIBOOT_MEMORY_ACPI_RECLAIMABLE 3
-
-	#define MULTIBOOT_MEMORY_NVS 4
-
-	#define MULTIBOOT_MEMORY_BADRAM 5
 
 	uint32 type;
 

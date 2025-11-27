@@ -1,7 +1,7 @@
 #ifndef _ERROR_H
 #define _ERROR_H
 
-#include "../headers/types.h"
+#include "core/types.h"
 
 enum FatalErrorsType {
 	DebugError,

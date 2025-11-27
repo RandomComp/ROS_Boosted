@@ -9,6 +9,7 @@
         "glyph.h": "c",
         "std.h": "c",
         "io.h": "c",
-        "pit.h": "c"
+        "pit.h": "c",
+        "ascii.h": "c"
     }
 }

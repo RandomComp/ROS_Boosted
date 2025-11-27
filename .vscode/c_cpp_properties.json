@@ -1,0 +1,27 @@
+{
+    "configurations": [
+        {
+            "name": "Random OS",
+            "includePath": [
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/include/**"        // ← вот это магия: рекурсивно все подпапки
+            ],
+            "defines": [
+                "__i386__",
+                "RANDOM_OS"
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-x86",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/include",
+                    "${workspaceFolder}/include/**"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": "${workspaceFolder}/.vscode/browse.vscode-db"
+            }
+        }
+    ],
+    "version": 4
+}

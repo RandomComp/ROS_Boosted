@@ -1,11 +1,11 @@
 #ifndef _STD_H
 #define _STD_H
 
-#include "types.h"
+#include "core/types.h"
 
-#include "glyph.h"
+#include "charset/glyph.h"
 
-#include "ugsm.h"
+#include "charset/ugsm.h"
 
 #define width 800
 

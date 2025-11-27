@@ -1,7 +1,7 @@
 #ifndef _CONTROLLER_H
 #define _CONTROLLER_H
 
-#include "types.h"
+#include "core/types.h"
 
 typedef struct UsbController {
     struct UsbController* next;

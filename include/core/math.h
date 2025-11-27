@@ -1,7 +1,7 @@
 #ifndef _MATH_H
 #define _MATH_H
 
-#include "../headers/types.h"
+#include "core/types.h"
 
 #define PI 3.1415926535
 
