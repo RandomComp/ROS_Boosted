@@ -10,6 +10,30 @@
         "std.h": "c",
         "io.h": "c",
         "pit.h": "c",
-        "ascii.h": "c"
+        "ascii.h": "c",
+        "abc.h": "c",
+        "vbe.h": "c",
+        "rus.h": "c",
+        "bios.h": "c",
+        "x86emu.h": "c",
+        "time.h": "c",
+        "idt.h": "c",
+        "colors.h": "c",
+        "setjmp.h": "c",
+        "winsock.h": "c"
+    },
+
+    "search.exclude": {
+        "**/Windows Kits/**": true,
+        "**/Microsoft Visual Studio/**": true,
+        "**/MinGW/include/**": true,
+        "**/msvc/**": true
+    },
+    
+    "files.exclude": {
+        "**/Windows Kits/**": true,
+        "**/Microsoft Visual Studio/**": true,
+        "**/MinGW/include/**": true,
+        "**/msvc/**": true
     }
 }

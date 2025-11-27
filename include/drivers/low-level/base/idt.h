@@ -1,7 +1,7 @@
 #ifndef _IDT_H
 #define _IDT_H
 
-#include "types.h"
+#include "core/types.h"
 
 struct IDTEntryStruct {
 	uint16 base_low;

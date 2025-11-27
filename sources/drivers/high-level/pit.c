@@ -1,16 +1,16 @@
-#include "../headers/pit.h"
+#include "drivers/high-level/pit.h"
 
-#include "../headers/idt.h"
+#include "core/types.h"
 
-#include "../headers/types.h"
+#include "core/time.h"
 
-#include "../headers/time.h"
+#include "core/std.h"
 
-#include "../headers/io.h"
+#include "charset/colors.h"
 
-#include "../headers/colors.h"
+#include "drivers/low-level/io.h"
 
-#include "../headers/std.h"
+#include "drivers/low-level/idt.h"
 
 extern struct Time now;
 

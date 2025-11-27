@@ -1,7 +1,7 @@
 #ifndef _PCI_H
 #define _PCI_H
 
-#include "types.h"
+#include "core/types.h"
 
 #define PCI_CONFIG_PORT 0x0CF8
 
@@ -305,10 +305,10 @@ typedef union {
 
 		uint8 BIST;
 
-	} __attribute__((packed)) option;
+	} PACKED option;
 
 	uint32 header[4];
-} __attribute__((packed)) PCIDevHeader;
+} PACKED PCIDevHeader;
 
 void PCIInit(void);
 

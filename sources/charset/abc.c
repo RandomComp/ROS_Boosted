@@ -1,22 +1,25 @@
-#include "../headers/types.h"
+#include "charset/abc.h"
 
-#include "../headers/ugsm.h"
+#include "core/types.h"
 
-#include "../headers/ascii.h"
+#include "charset/ugsm.h"
 
-#include "../headers/rus.h"
+#include "charset/ascii.h"
+
+#include "charset/rus.h"
 
 extern UGSMGlyphSetCode ASCIIOffset;
 
 extern UGSMGlyphSetCode RUSOffset;
 
 bool UGSMGlyphIsControlCharacter(UGSMGlyphCode glyphCode) {
-	return glyphCode >= 1 && glyphCode <= 4;
+	return glyphCode >= UGSM_CHAR_SPACE && glyphCode <= UGSM_CHAR_TAB;
 }
 
-bool UGSMGlyphIsLetter(UGSMGlyphCode glyphCode) {
-	return  ((glyphCode >= (ASCIIOffset + 36)) && (glyphCode <= (ASCIIOffset + 61))) ||
-			((glyphCode >= (ASCIIOffset + 68)) && (glyphCode <= (ASCIIOffset + 93)));
+bool UGSMGlyphIsLetter(UGSMGlyphCode _glyphCode) {
+	UGSMGlyphCode glyphCode = UGSMGlyphToLowerCase(_glyphCode);
+
+	return  (glyphCode >= UGSM_CHAR_A) && (glyphCode <= UGSM_CHAR_Z);
 }
 
 bool UGSMGlyphIsDigit(UGSMGlyphCode glyphCode) {
@@ -28,9 +31,13 @@ bool UGSMGlyphIsLetterOrDigit(UGSMGlyphCode glyphCode) {
 }
 
 UGSMGlyphCode UGSMGlyphToUpperCase(UGSMGlyphCode glyphCode) {
-	return (((glyphCode >= (ASCIIOffset + 68)) && (glyphCode <= (ASCIIOffset + 93))) ? (glyphCode - 32) : glyphCode);
+	return ((glyphCode >= (ASCIIOffset + UGSM_CHAR_A)) && (glyphCode <= (ASCIIOffset + UGSM_CHAR_Z))) ?
+			(glyphCode - ENGLISH_LETTERS_NUMBER) :
+			glyphCode;
 }
 
 UGSMGlyphCode UGSMGlyphToLowerCase(UGSMGlyphCode glyphCode) {
-	return (((glyphCode >= (ASCIIOffset + 36)) && (glyphCode <= (ASCIIOffset + 61))) ? (glyphCode + 32) : glyphCode);
+	return ((glyphCode >= (ASCIIOffset + UGSM_CHAR_BIG_A)) && (glyphCode <= (ASCIIOffset + UGSM_CHAR_BIG_Z))) ?
+			(glyphCode + ENGLISH_LETTERS_NUMBER) :
+			glyphCode;
 }

@@ -1,9 +1,9 @@
 #ifndef _PIT_H
 #define _PIT_H
 
-#include "idt.h"
+#include "drivers/low-level/base/idt.h"
 
-#include "time.h"
+#include "core/time.h"
 
 #define standardFreq 500 // one millisecond
 

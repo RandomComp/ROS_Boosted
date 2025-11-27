@@ -4,11 +4,7 @@
             "name": "Random OS",
             "includePath": [
                 "${workspaceFolder}/include",
-                "${workspaceFolder}/include/**"        // ← вот это магия: рекурсивно все подпапки
-            ],
-            "defines": [
-                "__i386__",
-                "RANDOM_OS"
+                "${workspaceFolder}/include/**"
             ],
             "cStandard": "c11",
             "cppStandard": "c++17",

@@ -1,9 +1,9 @@
 #ifndef _KEYBOARDPS2_H
 #define _KEYBOARDPS2_H
 
-#include "idt.h"
+#include "drivers/low-level/idt.h"
 
-#include "ugsm.h"
+#include "charset/ugsm.h"
 
 enum KeyState {
 	KEY_FREE,
@@ -194,8 +194,6 @@ enum Scancode {
 
 	SCANCODE_F12
 };
-
-
 
 void KeyboardPS2Init(void);
 

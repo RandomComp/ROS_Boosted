@@ -1,9 +1,11 @@
 #ifndef _ABC_H
 #define _ABC_H
 
-#include "types.h"
+#include "core/types.h"
 
-#include "ugsm.h"
+#include "charset/ugsm.h"
+
+#define ENGLISH_LETTERS_NUMBER 26
 
 bool UGSMGlyphIsControlCharacter(UGSMGlyphCode glyphCode);
 

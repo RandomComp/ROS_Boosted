@@ -1,7 +1,7 @@
 #ifndef _COLORS_H
 #define _COLORS_H
 
-#include "types.h"
+#include "core/types.h"
 
 #define TEXTBLACK 0
 

@@ -1,7 +1,7 @@
 #ifndef _SPEAKER_H
 #define _SPEAKER_H
 
-#include "../headers/types.h"
+#include "core/types.h"
 
 void makeSound(uint32 freq);
 

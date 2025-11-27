@@ -1,7 +1,7 @@
 #ifndef _IO_H
 #define _IO_H
 
-#include "types.h"
+#include "core/types.h"
 
 void in8(uint16 port, uint8* data);
 

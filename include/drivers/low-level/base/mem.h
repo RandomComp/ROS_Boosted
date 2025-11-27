@@ -1,7 +1,7 @@
 #ifndef _MEM_H
 #define _MEM_H
 
-#include "types.h"
+#include "core/types.h"
 
 #define USE_BUILTIN_STRING
 

@@ -1,10 +1,10 @@
-#include "../headers/types.h"
+#include "core/types.h"
 
-#include "../headers/bios.h"
+#include "drivers/low-level/x86emu/bios.h"
 
-#include "../headers/x86emu.h"
+#include "drivers/low-level/x86emu/x86emu.h"
 
-#include "../headers/mem.h"
+#include "drivers/low-level/base/mem.h"
 
 struct x86emu emulator;
 

@@ -1,4 +1,4 @@
-#include "../headers/types.h"
+#include "core/types.h"
 
 uint32 pow(uint8 a, uint8 b) {
     uint32 result = 1;

@@ -1,7 +1,7 @@
 #ifndef _PCI_DRIVER_H
 #define _PCI_DRIVER_H
 
-#include "types.h"
+#include "core/types.h"
 
 
 #define PCI_MAKE_ID(bus, dev, func) (((bus) << 16) | ((dev) << 11) | ((func) << 8))

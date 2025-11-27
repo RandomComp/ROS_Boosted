@@ -1,11 +1,11 @@
 #ifndef _VBE_H
 #define _VBE_H
 
-#include "types.h"
+#include "core/types.h"
 
 typedef union vbe_ptr {
 	 uint32    Ptr32;
-	 void __far*  Ptr;
+	 void far*  Ptr;
 	 union {
 		  uint16    Off;
 		  uint16    Seg;

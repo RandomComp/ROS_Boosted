@@ -1,10 +1,10 @@
-#include "../headers/std.h"
+#include "core/std.h"
 
-#include "../headers/vbe.h"
+#include "drivers/high-level/vbe.h"
 
-#include "../headers/ugsm.h"
+#include "charset/ugsm.h"
 
-#include "../headers/abc.h"
+#include "charset/abc.h"
 
 // VBE variables
 

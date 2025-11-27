@@ -1,7 +1,7 @@
 #ifndef _BIOS_H
 #define _BIOS_H
 
-#include "types.h"
+#include "core/types.h"
 
 #define BIOS_SIZE 0x100000
 

@@ -1,8 +1,12 @@
-CFLAGS  = -m32 -fpermissive -fno-builtin -nostdinc -nostdlib
+CFLAGS  = -m32 -fno-builtin -nostdinc -nostdlib
 
 GASFLAGS = --32
 
-all: clean gassources nasmsources $(OBJFILES) kernel.bin image vmwareDisk
+INCLUDE_DIRS = ${shell find include -type d -printf "-I./%p\n"}
+
+OBJECT_FILES = ${shell find sources -type f -name "*.o" -printf "%p "}
+
+all: clean gassources nasmsources $(OBJECT_FILES) kernel.bin image vmwareDisk
 
 image:
 	@echo "Creating hdd.img..."
@@ -36,20 +40,12 @@ gassources:
 
 	@as $(GASFLAGS) -o objectFiles/setjmp.o sources/setjmp.s
 
-csources: $(OBJFILES)
-#	@rm -f objectFiles/*.o
+csources: $(OBJECT_FILES)
+	@gcc ${INCLUDE_DIRS} $(CFLAGS) -o $@ -c $<
 
-#	@mv -f sources/*.o objectFiles/
-	
-	@for file in *.img; do \
-		echo "$${file%.img}"; \
-	done
-
-#	@gcc -Iinclude $(CFLAGS) -o $@ -c $<
-
-kernel.bin: $(OBJFILES)
+kernel.bin: csources
 	@ld -m elf_i386 -T linker.ld -o $@ $^
 vmwareDisk:
 	@qemu-img convert -f raw hdd.img -O vmdk ./RandomOS.vmdk
 clean:
-	@rm -rf objectFiles
+	@rm -rf ${OBJECT_FILES}

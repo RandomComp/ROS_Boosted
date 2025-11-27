@@ -1,9 +1,9 @@
 #ifndef _UGSM_H
 #define _UGSM_H
 
-#include "../headers/types.h"
+#include "core/types.h"
 
-#include "../headers/glyph.h"
+#include "charset/glyph.h"
 
 #define UGSMMaxSize 1024
 

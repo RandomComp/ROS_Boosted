@@ -1,9 +1,9 @@
 #ifndef _X86EMU_H
 #define _X86EMU_H
 
-#include "types.h"
+#include "core/types.h"
 
-#include "setjmp.h"
+#include "drivers/low-level/x86emu/setjmp.h"
 
 #define __BEGIN_DECLS
 

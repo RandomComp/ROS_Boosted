@@ -24,10 +24,6 @@ enum FatalErrorsType {
 
 	CoprocessorSegmentOverflowError,
 
-	BadTSError,
-
-	SegmentTSNotFoundError,
-
 	StackError,
 
 	ProtectionError,

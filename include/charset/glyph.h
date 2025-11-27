@@ -1,7 +1,7 @@
 #ifndef _GLYPH_H
 #define _GLYPH_H
 
-#include "../headers/types.h"
+#include "core/types.h"
 
 typedef uint16 UGSMGlyphCode;
 

@@ -1,6 +1,6 @@
-#include "../headers/pci_driver.h"
+#include "drivers/low-level/io/pci_driver.h"
 
-#include "../headers/io.h"
+#include "drivers/low-level/io/io.h"
 
 const PCIDriver g_PCIDriverTable[] = {
 	{ 0 },
