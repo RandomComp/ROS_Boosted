@@ -1,8 +1,8 @@
-#include "../headers/x86emu.h"
+#include "drivers/low-level/x86emu/x86emu.h"
 
-#include "../headers/x86emu_regs.h"
+#include "drivers/low-level/x86emu/x86emu_regs.h"
 
-#include "../headers/io.h"
+#include "drivers/low-level/io/io.h"
 
 #define htole16(x) ((uint16)(x))
 

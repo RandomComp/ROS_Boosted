@@ -1,28 +1,20 @@
-#include "../headers/types.h"
+#include "core/types.h"
 
-#include "../headers/time.h"
+#include "core/time.h"
 
 extern RegisterB registerB;
 
-int8 toBCDX8(int8 num) {
-	int8 result = 0;
+uint32 toBCD(uint32 num) {
+	if (num == 0) return 0x00;
 
-	for (uint16 i = 0; num != 0; num /= 10) {
+	uint32 i = 0, result = 0;
+
+	while (num != 0) {
 		result += (num % 10) << (i * 4);
 
 		i++;
-	}
 
-	return result;
-}
-
-int16 toBCDX16(int16 num) {
-	int16 result = 0;
-
-	for (int16 i = 0; num != 0; num /= 10) {
-		result += (num % 10) << (i * 4);
-
-		i++;
+		num /= 10;
 	}
 
 	return result;
@@ -40,11 +32,7 @@ Hour hourToBCD(Hour hour) {
 	return (result % 10) | ((result / 10) << 4);
 }
 
-int8 fromBCDX8(int8 num) {
-	return (num & 0x0F) + ((num / 16) * 10);
-}
-
-int16 fromBCDX16(int16 num) {
+uint32 fromBCD(uint32 num) {
 	return (num & 0x0F) + ((num / 16) * 10);
 }
 

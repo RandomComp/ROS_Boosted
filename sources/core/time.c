@@ -1,16 +1,16 @@
-#include "../headers/time.h"
+#include "core/time.h"
 
-#include "../headers/std.h"
+#include "core/std.h"
 
-#include "../headers/format.h"
+#include "charset/format.h"
 
-#include "../headers/pit.h"
+#include "drivers/high-level/pit.h"
 
-#include "../headers/mem.h"
+#include "drivers/low-level/base/mem.h"
 
-#include "../headers/io.h"
+#include "drivers/low-level/io/io.h"
 
-struct Time now;
+Time now;
 
 bool bTimeInitialized = false;
 
@@ -28,14 +28,19 @@ const Day numberDaysOfMonthes[12] = {
 	31, 30, 31 // October, November, December
 };
 
-const Season seasonsOfMonthes[12] = {
-	0, 0, 1, // January, February, March
-
-	1, 1, 2, // April, May, June
-
-	2, 2, 3, // Jule, August, September
-
-	3, 3, 0 // October, November, December
+const Season seasonFromMonth[] = {
+	[MONTH_JANUARY] = 	SEASON_WINTER,
+	[MONTH_FEBRUARY] = 	SEASON_WINTER,
+	[MONTH_MARCH] = 	SEASON_SPRING,
+	[MONTH_APRIL] = 	SEASON_SPRING,
+	[MONTH_MAY] = 		SEASON_SPRING,
+	[MONTH_JUNE] = 		SEASON_SUMMER,
+	[MONTH_JULY] = 		SEASON_SUMMER,
+	[MONTH_AUGUST] = 	SEASON_SUMMER,
+	[MONTH_SEPTEMBER] = SEASON_AUTUMN,
+	[MONTH_NOVEMBER] = 	SEASON_AUTUMN,
+	[MONTH_OCTOBER] = 	SEASON_AUTUMN,
+	[MONTH_DECEMBER] = 	SEASON_WINTER
 };
 
 void TimeInit(void) {
@@ -48,19 +53,16 @@ void TimeInit(void) {
 	bTimeInitialized = true;
 }
 
-Day calculateFebruaryNumberDays(struct Time time) {
-	return time.year4Digits % 4 ? 28 : 29;
+Day calculateFebruaryNumberDays(Time time) {
+	return time.Year % 4 ? 28 : 29;
 }
 
-AbsoluteTimeToday calculateAbsoluteTimeToday(struct Time time) {
-	return  (time.hour * 60 * 60 * 1000) +
-			(time.minute * 60 * 1000) +
-			(time.second * 1000) +
-			time.millisecond;
+Time calculateAbsoluteTimeToday(Time time) {
+	return time % MS_PER_DAY;
 }
 
-DayWeek calculateDayWeek(struct Time time) {
-	DayWeek result = ((time.year4Digits - 1) * 365) + (time.year4Digits / 4); // Year * 365.25 = January first
+DayWeek calculateDayWeek(Time time) {
+	DayWeek result = ((time.Year - 1) * 365) + (time.Year / 4); // Year * 365.25 = January first
 
 	result--;
 
@@ -72,298 +74,13 @@ DayWeek calculateDayWeek(struct Time time) {
 	return result % 7;
 }
 
-YearDay calculateYearDay(struct Time time) {
-	YearDay result = 0;
+Day calculateYearDay(Time time) {
+	Day result = 0;
 
 	for (Month m = 0; m < time.month; m++)
 		result += numberDaysOfMonthes[m];
 
 	result += time.day;
-
-	return result;
-}
-
-Decade calculateDecade(struct Time time) {
-	return time.day / 10;
-}
-
-Season calculateSeason(struct Time time) {
-	return seasonsOfMonthes[time.month];
-}
-
-Year4Digits calculateYear4Digits(struct Time time) {
-	return (((Year4Digits)time.century) * 100) + ((Year4Digits)time.year);
-}
-
-struct Time calculateAll(struct Time time) {
-	struct Time result = copyTime(time);
-
-	result.absoluteTimeToday =  (result.hour * 60 * 60 * 1000) +
-								(result.minute * 60 * 1000) +
-								(result.second * 1000) +
-								result.millisecond;
-
-	result.yearDay = 0;
-
-	for (Month m = 0; m < result.month; m++)
-		result.yearDay += numberDaysOfMonthes[m];
-
-	result.yearDay += result.day;
-
-	result.decade = result.day / 10;
-
-	result.season = seasonsOfMonthes[result.month];
-
-	result.year4Digits = (((Year4Digits)result.century) * 100) + ((Year4Digits)result.year);
-
-	result.dayWeek = ((result.year4Digits - 1) * 365) + (result.year4Digits / 4); // Year * 365.25 = January first
-
-	result.dayWeek--;
-
-	result.dayWeek += result.yearDay;
-
-	result.dayWeek %= 7;
-
-	while (result.dayWeek < 0)
-		result.dayWeek += 7;
-
-	return result;
-}
-
-struct Time calculateVAll(struct Time time) {
-	struct Time result = copyTime(time);
-
-	while (result.millisecond >= 1000) {
-		result.millisecond -= 1000;
-
-		result.second++;
-	}
-
-	while (result.second >= 60) {
-		result.second -= 60;
-
-		result.minute++;
-	}
-
-	while (result.minute >= 60) {
-		result.minute -= 60;
-
-		result.hour++;
-	}
-
-	while (now.hour >= 24) {
-		now.hour -= 24;
-
-		now.day++;
-	}
-
-	while (result.day > numberDaysOfMonthes[result.month >= 12 ? 0 : result.month]) {
-		result.day -= numberDaysOfMonthes[result.month >= 12 ? 0 : result.month];
-
-		if (result.day == 0)
-			result.day = 1;
-
-		result.month++;
-	}
-
-	while (result.month >= 12) {
-		result.month = 0;
-
-		result.yearDay = 0;
-
-		result.year++;
-	}
-
-	while (result.year >= 100) {
-		result.year -= 100;
-
-		result.century++;
-	}
-
-	while (result.millisecond < 0) {
-		result.millisecond += 1000;
-
-		result.second--;
-	}
-
-	while (result.second < 0) {
-		result.second += 60;
-
-		result.minute--;
-	}
-
-	while (result.minute < 0) {
-		result.minute += 60;
-
-		result.hour--;
-	}
-
-	while (result.hour < 0) {
-		result.hour += 24;
-
-		result.day--;
-	}
-
-	while (result.day < 1) {
-		result.day += numberDaysOfMonthes[result.month] - 1;
-
-		result.month--;
-	}
-
-	while (result.month < 0) {
-		result.month += 12;
-
-		result.year--;
-	}
-
-	while (result.year < 0) {
-		result.year += 100;
-
-		result.century--;
-	}
-
-	result.absoluteTimeToday =  (result.hour * 60 * 60 * 1000) +
-								(result.minute * 60 * 1000) +
-								(result.second * 1000) +
-								result.millisecond;
-
-	result.yearDay = 0;
-
-	for (Month m = 0; m < result.month; m++)
-		result.yearDay += numberDaysOfMonthes[m];
-
-	result.yearDay += result.day;
-
-	result.decade = result.day / 10;
-
-	result.season = seasonsOfMonthes[result.month >= 12 ? 0 : result.month];
-
-	result.year4Digits = (((Year4Digits)result.century) * 100) + ((Year4Digits)result.year);
-
-	result.dayWeek = ((result.year4Digits - 1) * 365) + (result.year4Digits / 4); // Year * 365.25 = January first
-
-	result.dayWeek--;
-
-	result.dayWeek += result.yearDay;
-
-	result.dayWeek %= 7;
-
-	while (result.dayWeek < 0)
-		result.dayWeek += 7;
-
-	return result;
-}
-
-struct Time calculateVADAll(struct Time time) {
-	struct Time result = copyTime(time);
-
-	while (result.millisecond >= 1000) {
-		result.millisecond -= 1000;
-
-		result.second++;
-	}
-
-	while (result.second >= 60) {
-		result.second -= 60;
-
-		result.minute++;
-	}
-
-	while (result.minute >= 60) {
-		result.minute -= 60;
-
-		result.hour++;
-	}
-
-	while (now.hour >= 24) {
-		now.hour -= 24;
-
-		now.day++;
-
-		now.yearDay++;
-
-		now.dayWeek = ((now.year4Digits - 1) * 365) + (now.year4Digits / 4); // Year * 365.25 = January first
-
-		now.dayWeek--;
-
-		now.dayWeek += now.yearDay;
-
-		now.dayWeek %= 7;
-
-		while (now.dayWeek < 0)
-			now.dayWeek += 7;
-
-		now.absoluteTimeToday = 0;
-	}
-
-	while (result.day > numberDaysOfMonthes[result.month >= 12 ? 0 : result.month]) {
-		result.day -= numberDaysOfMonthes[result.month >= 12 ? 0 : result.month];
-
-		if (result.day == 0)
-			result.day = 1;
-
-		result.month++;
-
-		result.season = seasonsOfMonthes[result.month >= 12 ? 0 : result.month];
-	}
-
-	while (result.month >= 12) {
-		result.month = 0;
-
-		result.yearDay = 0;
-
-		result.year++;
-
-		result.year4Digits++;
-	}
-
-	while (result.year >= 100) {
-		result.year -= 100;
-
-		result.century++;
-	}
-
-	while (result.millisecond < 0) {
-		result.millisecond += 1000;
-
-		result.second--;
-	}
-
-	while (result.second < 0) {
-		result.second += 60;
-
-		result.minute--;
-	}
-
-	while (result.minute < 0) {
-		result.minute += 60;
-
-		result.hour--;
-	}
-
-	while (result.hour < 0) {
-		result.hour += 24;
-
-		result.day--;
-	}
-
-	while (result.day < 1) {
-		result.day += numberDaysOfMonthes[result.month] - 1;
-
-		result.month--;
-	}
-
-	while (result.month < 0) {
-		result.month += 12;
-
-		result.year--;
-	}
-
-	while (result.year < 0) {
-		result.year += 100;
-
-		result.century--;
-	}
 
 	return result;
 }
@@ -403,9 +120,9 @@ Year binaryYearToRTCFormatedIfNecessary(Year year) {
 	return year;
 }
 
-struct Time binaryTimeToRTCFormatedIfNecessary(struct Time time) {
+Time binaryTimeToRTCFormatedIfNecessary(Time time) {
 	if (!(registerB & 0x04)) {
-		struct Time result = newTime();
+		Time result = newTime();
 
 		result.second = toBCDX8(time.second);
 
@@ -446,9 +163,9 @@ Year binaryYearFromRTCFormatedIfNecessary(Year year) {
 	return year;
 }
 
-struct Time binaryTimeFromRTCFormatedIfNecessary(struct Time time) {
+Time binaryTimeFromRTCFormatedIfNecessary(Time time) {
 	if (!(registerB & 0x04)) {
-		struct Time result = newTime();
+		Time result = 0;
 
 		result.second = fromBCDX8(time.second);
 
@@ -468,8 +185,8 @@ struct Time binaryTimeFromRTCFormatedIfNecessary(struct Time time) {
 	return time;
 }
 
-struct Time newTime(void) {
-	struct Time result;
+Time newTime(void) {
+	Time result;
 
 	result.millisecond = 0;
 
@@ -485,7 +202,7 @@ struct Time newTime(void) {
 
 	result.dayWeek = 0;
 
-	result.yearDay = 1;
+	result.Day = 1;
 
 	result.decade = 0;
 
@@ -497,61 +214,61 @@ struct Time newTime(void) {
 
 	result.century = 0;
 
-	result.year4Digits = 0;
+	result.Year = 0;
 
 	return result;
 }
 
-struct Time copyTime(struct Time time) {
+Time copyTime(Time time) {
 	return time;
 }
 
-bool timeEquals(struct Time time, struct Time time2) {
+bool timeEquals(Time time, Time time2) {
 	return  time.absoluteTimeToday == time2.absoluteTimeToday &&
-			time.yearDay == time2.yearDay &&
-			time.year4Digits == time2.year4Digits;
+			time.Day == time2.Day &&
+			time.Year == time2.year4Digits;
 }
 
-bool timeNotEquals(struct Time time, struct Time time2) {
+bool timeNotEquals(Time time, Time time2) {
 	return  time.absoluteTimeToday != time2.absoluteTimeToday ||
-			time.yearDay != time2.yearDay ||
-			time.year4Digits != time2.year4Digits;
+			time.Day != time2.Day ||
+			time.Year != time2.year4Digits;
 }
 
-bool timeBigThan(struct Time time, struct Time time2) {
-	if ((time.year4Digits - time2.year4Digits) > 0) return true;
+bool timeBigThan(Time time, Time time2) {
+	if ((time.Year - time2.year4Digits) > 0) return true;
 
-	if ((time.yearDay - time2.yearDay) > 0) return true;
+	if ((time.Day - time2.yearDay) > 0) return true;
 
 	return (time.absoluteTimeToday - time2.absoluteTimeToday) > 0;
 }
 
-bool timeLessThan(struct Time time, struct Time time2) {
-	if ((time.year4Digits - time2.year4Digits) < 0) return true;
+bool timeLessThan(Time time, Time time2) {
+	if ((time.Year - time2.year4Digits) < 0) return true;
 
-	if ((time.yearDay - time2.yearDay) < 0) return true;
+	if ((time.Day - time2.yearDay) < 0) return true;
 
 	return (time.absoluteTimeToday - time2.absoluteTimeToday) < 0;
 }
 
-bool timeBigOrEqualThan(struct Time time, struct Time time2) {
-	if ((time.year4Digits - time2.year4Digits) >= 0) return true;
+bool timeBigOrEqualThan(Time time, Time time2) {
+	if ((time.Year - time2.year4Digits) >= 0) return true;
 
-	if ((time.yearDay - time2.yearDay) >= 0) return true;
+	if ((time.Day - time2.yearDay) >= 0) return true;
 
 	return (time.absoluteTimeToday - time2.absoluteTimeToday) >= 0;
 }
 
-bool timeLessOrEqualThan(struct Time time, struct Time time2) {
-	if ((time.year4Digits - time2.year4Digits) <= 0) return true;
+bool timeLessOrEqualThan(Time time, Time time2) {
+	if ((time.Year - time2.year4Digits) <= 0) return true;
 
-	if ((time.yearDay - time2.yearDay) <= 0) return true;
+	if ((time.Day - time2.yearDay) <= 0) return true;
 
 	return (time.absoluteTimeToday - time2.absoluteTimeToday) <= 0;
 }
 
-struct Time add(struct Time time, struct Time time2) {
-	struct Time result = copyTime(time);
+Time add(Time time, Time time2) {
+	Time result = copyTime(time);
 
 	result.millisecond += time2.millisecond;
 
@@ -566,13 +283,13 @@ struct Time add(struct Time time, struct Time time2) {
 
 	result.month += time2.month;
 
-	result.year4Digits += time2.year4Digits;
+	result.Year += time2.year4Digits;
 
 	return calculateVAll(result);
 }
 
-struct Time subtract(struct Time time, struct Time time2) {
-	struct Time result = copyTime(time);
+Time subtract(Time time, Time time2) {
+	Time result = copyTime(time);
 
 	result.millisecond -= time2.millisecond;
 
@@ -590,12 +307,12 @@ struct Time subtract(struct Time time, struct Time time2) {
 
 	result.month -= time2.month;
 
-	result.year4Digits -= time2.year4Digits;
+	result.Year -= time2.year4Digits;
 
 	return calculateVAll(result);
 }
 
-void setRTCTime(struct Time time) {
+void setRTCTime(Time time) {
 	if (startOnVirtualMachine) time.hour -= 3;
 
 	time.month++;
@@ -634,8 +351,8 @@ void setRTCTime(struct Time time) {
 	out8(0x71, time.year);
 }
 
-struct Time loadRTCTime(void) {
-	struct Time result = newTime();
+Time loadRTCTime(void) {
+	Time result = newTime();
 
 	while (progressFlag) updateProgressFlag();
 

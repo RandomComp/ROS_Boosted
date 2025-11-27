@@ -1,7 +1,7 @@
 #ifndef _BCD_H
 #define _BCD_H
 
-#include "../headers/types.h"
+#include "core/types.h"
 
 int8 toBCDX8(int8 num);
 

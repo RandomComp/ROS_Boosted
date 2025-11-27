@@ -20,20 +20,13 @@
         "idt.h": "c",
         "colors.h": "c",
         "setjmp.h": "c",
-        "winsock.h": "c"
-    },
-
-    "search.exclude": {
-        "**/Windows Kits/**": true,
-        "**/Microsoft Visual Studio/**": true,
-        "**/MinGW/include/**": true,
-        "**/msvc/**": true
+        "winsock.h": "c",
+        "x86emu_regs.h": "c",
+        "format.h": "c"
     },
     
-    "files.exclude": {
-        "**/Windows Kits/**": true,
-        "**/Microsoft Visual Studio/**": true,
-        "**/MinGW/include/**": true,
-        "**/msvc/**": true
-    }
+    "C_Cpp.default.includePath": [],
+    "C_Cpp.default.defines": [],
+    "C_Cpp.default.systemIncludePath": [],
+    "C_Cpp.default.browse.path": []
 }

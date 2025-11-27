@@ -1,11 +1,17 @@
 #ifndef _TIME_H
 #define _TIME_H
 
-#include "types.h"
+#include "core/types.h"
 
 #define startOnVirtualMachine true
 
-typedef int16 Millisecond;
+#define MS_PER_DAY (uint64)(24 * 60 * 60 * 1000)
+
+#define MS_PER_YEAR (uint64)(365.2425 * MS_PER_DAY)
+
+typedef uint64 Time;
+
+typedef int8 Millisecond;
 
 typedef int8 Second;
 
@@ -13,85 +19,61 @@ typedef int8 Minute;
 
 typedef int8 Hour;
 
-typedef int32 AbsoluteTimeToday;
+typedef int16 Day;
 
-typedef int32 DayWeek;
-
-typedef int8 Day;
-
-typedef int16 YearDay;
-
-typedef int8 Decade;
-
-typedef int8 Month;
-
-typedef uint8 Season;
-
-typedef int8 Year;
-
-typedef int32 Century;
-
-typedef int32 Year4Digits;
+typedef int32 Year;
 
 typedef bool ProgressFlag;
 
 typedef uint8 RegisterB;
 
-struct Time {
-	Millisecond millisecond;
+typedef enum Month {
+	MONTH_JANUARY, 		// Январь
+	MONTH_FEBRUARY, 	// Февраль
+	MONTH_MARCH, 		// Март
+	MONTH_APRIL, 		// Апрель
+	MONTH_MAY, 			// Май
+	MONTH_JUNE, 		// Июнь
+	MONTH_JULY, 		// Июль
+	MONTH_AUGUST, 		// Август
+	MONTH_SEPTEMBER, 	// Сентябрь
+	MONTH_NOVEMBER, 	// Ноябрь
+	MONTH_OCTOBER, 		// Октябрь
+	MONTH_DECEMBER 		// Декабрь
+} Month;
 
-	Second second;
+typedef enum DayWeek {
+	DAYWEEK_MONDAY, 	// Понедельник
+	DAYWEEK_TUESDAY,	// Вторник
+	DAYWEEK_WEDNESDAY, 	// Среда
+	DAYWEEK_THURSDAY, 	// Четверг
+	DAYWEEK_FRIDAY, 	// Пятница
+	DAYWEEK_SATURDAY, 	// Суббота
+	DAYWEEK_SUNDAY		// Воскресенье
+} DayWeek;
 
-	Minute minute;
+typedef enum Season {
+	SEASON_WINTER, 	// Зима
+	SEASON_SPRING, 	// Весна
+	SEASON_SUMMER, 	// Лето
+	SEASON_AUTUMN 	// Осень
+} Season;
 
-	Hour hour;
+void TimeInit();
 
-	Day day;
+Day calculateFebruaryNumberDays(Time time);
 
-	AbsoluteTimeToday absoluteTimeToday;
+uint32 calculateAbsoluteTimeToday(Time time);
 
-	DayWeek dayWeek;
+DayWeek calculateDayWeek(Time time);
 
-	YearDay yearDay;
+Day calculateYearDay(Time time);
 
-	Decade decade;
+Season calculateSeason(Time time);
 
-	Month month;
+void updateProgressFlag();
 
-	Season season;
-
-	Year year;
-
-	Century century;
-
-	Year4Digits year4Digits;
-};
-
-void TimeInit(void);
-
-Day calculateFebruaryNumberDays(struct Time time);
-
-AbsoluteTimeToday calculateAbsoluteTimeToday(struct Time time);
-
-DayWeek calculateDayWeek(struct Time time);
-
-YearDay calculateYearDay(struct Time time);
-
-Decade calculateDecade(struct Time time);
-
-Season calculateSeason(struct Time time);
-
-Year4Digits calculateYear4Digits(struct Time time);
-
-struct Time calculateAll(struct Time time);
-
-struct Time calculateVAll(struct Time time);
-
-struct Time calculateVADAll(struct Time time);
-
-void updateProgressFlag(void);
-
-void updateRegisterB(void);
+void updateRegisterB();
 
 int8 binaryX8ValueToRTCFormatedIfNecessary(int8 value);
 
@@ -99,7 +81,7 @@ Hour binaryHourToRTCFormatedIfNecessary(Hour hour);
 
 Year binaryYearToRTCFormatedIfNecessary(Year year);
 
-struct Time binaryTimeToRTCFormatedIfNecessary(struct Time time);
+Time binaryTimeToRTCFormatedIfNecessary(Time time);
 
 int8 binaryX8ValueFromRTCFormatedIfNecessary(int8 value);
 
@@ -107,30 +89,26 @@ Hour binaryHourFromRTCFormatedIfNecessary(Hour hour);
 
 Year binaryYearFromRTCFormatedIfNecessary(Year year);
 
-struct Time binaryTimeFromRTCFormatedIfNecessary(struct Time time);
+Time binaryTimeFromRTCFormatedIfNecessary(Time time);
 
-struct Time newTime(void);
+bool timeEquals(Time time, Time time2);
 
-struct Time copyTime(struct Time time);
+bool timeNotEquals(Time time, Time time2);
 
-bool timeEquals(struct Time time, struct Time time2);
+bool timeBigThan(Time time, Time time2);
 
-bool timeNotEquals(struct Time time, struct Time time2);
+bool timeLessThan(Time time, Time time2);
 
-bool timeBigThan(struct Time time, struct Time time2);
+bool timeBigOrEqualThan(Time time, Time time2);
 
-bool timeLessThan(struct Time time, struct Time time2);
+bool timeLessOrEqualThan(Time time, Time time2);
 
-bool timeBigOrEqualThan(struct Time time, struct Time time2);
+Time add(Time time, Time time2);
 
-bool timeLessOrEqualThan(struct Time time, struct Time time2);
+Time subtract(Time time, Time time2);
 
-struct Time add(struct Time time, struct Time time2);
+void setRTCTime(Time time);
 
-struct Time subtract(struct Time time, struct Time time2);
-
-void setRTCTime(struct Time time);
-
-struct Time loadRTCTime(void);
+Time loadRTCTime(void);
 
 #endif
