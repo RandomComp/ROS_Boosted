@@ -28,9 +28,9 @@ bool bSTDInitialized = false; // flag for check we initialized the STD
 
 // current position of cursor
 
-int16 x = 0;
+int16 x = 0, y = 0;
 
-int16 y = 0;
+bool showCursor = true;
 
 // foreground and background Color
 
@@ -61,10 +61,6 @@ void STDInit(void) {
 	bSTDInitialized = true;
 }
 
-bool isLineManipulationSymbol(UGSMGlyphCode glyphCode) {
-	return glyphCode >= 1 && glyphCode <= 3;
-}
-
 /*uint8* numberToString(uint32 num) {
 	uint16 digitsCount = 0;
 
@@ -92,6 +88,14 @@ uint32 getStringLength(UGSMGlyphCode str[6]) {
 	for (; str[result]; result++);
 
 	return result;
+}
+
+void setConsoleCursorPosition(int16 _x, int16 _y) {
+	x = _x; y = _y;
+}
+
+void showConsoleCursor() {
+	showCursor = false;
 }
 
 void setString(uint16 x, uint16 y, UGSMGlyphCode str[6]) {

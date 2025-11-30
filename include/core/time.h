@@ -5,29 +5,46 @@
 
 #define startOnVirtualMachine true
 
-#define MS_PER_DAY (uint64)(24 * 60 * 60 * 1000)
+#define MS_PER_SECOND 1000
 
-#define MS_PER_YEAR (uint64)(365.2425 * MS_PER_DAY)
+#define SECONDS_PER_MINUTE 60
 
-typedef uint64 Time;
+#define MINUTES_PER_HOUR 60
 
-typedef int8 Millisecond;
+#define HOURS_PER_DAY 24
 
-typedef int8 Second;
+#define MONTHS_PER_YEAR 12
 
-typedef int8 Minute;
+#define DAYS_PER_YEAR 365.2425
 
-typedef int8 Hour;
+#define MS_PER_MINUTE (SECONDS_PER_MINUTE * MS_PER_SECOND)
 
-typedef int16 Day;
+#define MS_PER_HOUR (MINUTES_PER_HOUR * MS_PER_MINUTE)
 
-typedef int32 Year;
+#define MS_PER_DAY (HOURS_PER_DAY * MS_PER_HOUR)
+
+#define MS_PER_YEAR ((int64)DAYS_PER_YEAR * (int64)MS_PER_DAY)
+
+typedef int64 Time;
+
+typedef int16 Millisecond;
+
+typedef int16 Second;
+
+typedef int16 Minute;
+
+typedef int16 Hour;
+
+typedef int32 Day;
+
+typedef int64 Year;
 
 typedef bool ProgressFlag;
 
 typedef uint8 RegisterB;
 
 typedef enum Month {
+	MONTH_UNKNOWN = -1, // Неопределенный месяц
 	MONTH_JANUARY, 		// Январь
 	MONTH_FEBRUARY, 	// Февраль
 	MONTH_MARCH, 		// Март
@@ -37,8 +54,8 @@ typedef enum Month {
 	MONTH_JULY, 		// Июль
 	MONTH_AUGUST, 		// Август
 	MONTH_SEPTEMBER, 	// Сентябрь
-	MONTH_NOVEMBER, 	// Ноябрь
 	MONTH_OCTOBER, 		// Октябрь
+	MONTH_NOVEMBER, 	// Ноябрь
 	MONTH_DECEMBER 		// Декабрь
 } Month;
 
@@ -61,15 +78,33 @@ typedef enum Season {
 
 void TimeInit();
 
-Day calculateFebruaryNumberDays(Time time);
+int64 convert(int64 value, int64 maxValue, int64 divisor);
 
-uint32 calculateAbsoluteTimeToday(Time time);
+Millisecond getMillisecond(Time time);
 
-DayWeek calculateDayWeek(Time time);
+Second getSecond(Time time);
 
-Day calculateYearDay(Time time);
+Minute getMinute(Time time);
 
-Season calculateSeason(Time time);
+Hour getHour(Time time);
+
+Day getDaysPerMonth(Year year, Month month);
+
+Day getDay(Time time);
+
+Day getYearDay(Time time);
+
+DayWeek getDayWeek(Time time);
+
+Month getMonth(Time time);
+
+Season getSeason(Time time);
+
+Year getYear(Time time);
+
+Time getAbsoluteTimeToday(Time time);
+
+bool isLeapYear(Year year);
 
 void updateProgressFlag();
 
@@ -90,22 +125,6 @@ Hour binaryHourFromRTCFormatedIfNecessary(Hour hour);
 Year binaryYearFromRTCFormatedIfNecessary(Year year);
 
 Time binaryTimeFromRTCFormatedIfNecessary(Time time);
-
-bool timeEquals(Time time, Time time2);
-
-bool timeNotEquals(Time time, Time time2);
-
-bool timeBigThan(Time time, Time time2);
-
-bool timeLessThan(Time time, Time time2);
-
-bool timeBigOrEqualThan(Time time, Time time2);
-
-bool timeLessOrEqualThan(Time time, Time time2);
-
-Time add(Time time, Time time2);
-
-Time subtract(Time time, Time time2);
 
 void setRTCTime(Time time);
 

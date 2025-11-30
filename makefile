@@ -11,9 +11,9 @@ image:
 
 	@echo "Copy kernel and grub files on partition..."
 
-	@cp kernel.bin img/boot/
-
 	@rm -f hdd.img
+
+	@cp kernel.bin img/boot/
 	
 	@grub-mkrescue img/ -o hdd.img
 	

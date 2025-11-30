@@ -1,18 +1,18 @@
-#include "../headers/error.h"
+#include "core/error.h"
 
-#include "../headers/types.h"
+#include "core/types.h"
 
-#include "../headers/std.h"
+#include "core/std.h"
 
-#include "../headers/time.h"
+#include "core/time.h"
 
-#include "../headers/pit.h"
+#include "drivers/high-level/pit.h"
 
-#include "../headers/speaker.h"
+#include "drivers/high-level/speaker.h"
 
-#include "../headers/ugsm.h"
+#include "charset/ugsm.h"
 
-#include "../headers/colors.h"
+#include "charset/colors.h"
 
 extern uint16 y;
 

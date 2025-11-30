@@ -13,8 +13,6 @@
 
 void STDInit(void);
 
-bool isFormatSymbol(UGSMGlyphCode glyphCode);
-
 uint32 getStringLength(UGSMGlyphCode str[6]);
 
 void setConsoleCursorPosition(uint8 x, uint8 y);

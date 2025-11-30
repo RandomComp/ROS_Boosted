@@ -38,9 +38,24 @@ const Season seasonFromMonth[] = {
 	[MONTH_JULY] = 		SEASON_SUMMER,
 	[MONTH_AUGUST] = 	SEASON_SUMMER,
 	[MONTH_SEPTEMBER] = SEASON_AUTUMN,
-	[MONTH_NOVEMBER] = 	SEASON_AUTUMN,
 	[MONTH_OCTOBER] = 	SEASON_AUTUMN,
+	[MONTH_NOVEMBER] = 	SEASON_AUTUMN,
 	[MONTH_DECEMBER] = 	SEASON_WINTER
+};
+
+const Day daysPerMonth[] = {
+	[MONTH_JANUARY] = 	31,
+	[MONTH_FEBRUARY] = 	28,
+	[MONTH_MARCH] = 	31,
+	[MONTH_APRIL] = 	30,
+	[MONTH_MAY] = 		31,
+	[MONTH_JUNE] = 		30,
+	[MONTH_JULY] = 		31,
+	[MONTH_AUGUST] = 	31,
+	[MONTH_SEPTEMBER] = 30,
+	[MONTH_OCTOBER] = 	31,
+	[MONTH_NOVEMBER] = 	30,
+	[MONTH_DECEMBER] = 	31
 };
 
 void TimeInit(void) {
@@ -53,36 +68,81 @@ void TimeInit(void) {
 	bTimeInitialized = true;
 }
 
-Day calculateFebruaryNumberDays(Time time) {
-	return time.Year % 4 ? 28 : 29;
+int64 convert(int64 value, int64 maxValue, int64 divisor) {
+	return (value % maxValue) / divisor;
 }
 
-Time calculateAbsoluteTimeToday(Time time) {
+Millisecond getMillisecond(Time time) {
+	return convert(time, MS_PER_SECOND, 1);
+}
+
+Second getSecond(Time time) {
+	return convert(time, MS_PER_MINUTE, MS_PER_SECOND);
+}
+
+Minute getMinute(Time time) {
+	return convert(time, MS_PER_HOUR, MS_PER_MINUTE);
+}
+
+Hour getHour(Time time) {
+	return convert(time, MS_PER_DAY, MS_PER_HOUR);
+}
+
+Day getDaysPerMonth(Year year, Month month) {
+	if (month == MONTH_FEBRUARY && isLeapYear(year)) return 29;
+
+	return daysPerMonth[month];
+}
+
+Day getDay(Time time) {
+	Day daysPerMonth = getDaysPerMonth(getYear(time), getMonth(time));
+
+	return getYearDay(time) % daysPerMonth;
+}
+
+Day getYearDay(Time time) {
+	return convert(time, MS_PER_YEAR, MS_PER_DAY);
+}
+
+DayWeek getDayWeek(Time time) {
+	DayWeek result = (getYear(time) - 1) * DAYS_PER_YEAR;
+}
+
+Month getMonth(Time time) {
+	Month month = MONTH_UNKNOWN;
+
+	Time msPerCurrentMonth = getDaysPerMonth(getYear(time), month) * MS_PER_DAY;
+
+	while (time >= msPerCurrentMonth) {
+		month++;
+
+		msPerCurrentMonth = getDaysPerMonth(getYear(time), month) * MS_PER_DAY;
+		
+		time -= msPerCurrentMonth;
+	}
+
+	return month;
+}
+
+Season getSeason(Time time) {
+	return seasonFromMonth[getMonth(time)];
+}
+
+Year getYear(Time time) {
+	return convert(time, INT64_MAX, MS_PER_YEAR);
+}
+
+Time getAbsoluteTimeToday(Time time) {
 	return time % MS_PER_DAY;
 }
 
-DayWeek calculateDayWeek(Time time) {
-	DayWeek result = ((time.Year - 1) * 365) + (time.Year / 4); // Year * 365.25 = January first
-
-	result--;
-
-	for (Month m = 0; m < time.month; m++)
-		result += numberDaysOfMonthes[m];
-
-	result += time.day;
-
-	return result % 7;
+// Если год делиться на 4 без остатка, то високосный, если делиться на 100, и не делиться на 400 то не високосный.
+bool isLeapYear(Year year) {
+	return year % 4 == 0 && !(year % 100 == 0 && year % 400 != 0);
 }
 
-Day calculateYearDay(Time time) {
-	Day result = 0;
-
-	for (Month m = 0; m < time.month; m++)
-		result += numberDaysOfMonthes[m];
-
-	result += time.day;
-
-	return result;
+uint8 RTCRead() {
+	
 }
 
 void updateProgressFlag(void) {
@@ -99,85 +159,47 @@ void updateRegisterB(void) {
 	in8(0x71, &registerB);
 }
 
-int8 binaryX8ValueToRTCFormatedIfNecessary(int8 value) {
-	if (!(registerB & 0x04))
-		return toBCDX8(value);
-
-	return value;
-}
-
-Hour binaryHourToRTCFormatedIfNecessary(Hour hour) {
-	if (!(registerB & 0x04))
-		return hourToBCD(hour);
-
-	return hour;
-}
-
-Year binaryYearToRTCFormatedIfNecessary(Year year) {
-	if (!(registerB & 0x04))
-		return toBCDX16(year);
-
-	return year;
-}
-
 Time binaryTimeToRTCFormatedIfNecessary(Time time) {
 	if (!(registerB & 0x04)) {
-		Time result = newTime();
+		Time result = 0;
 
-		result.second = toBCDX8(time.second);
+		Year year = getYear(time);
 
-		result.minute = toBCDX8(time.minute);
+		Month month = getMonth(time);
 
-		result.hour = hourToBCD(time.hour);
+		result += (int64)toBCDX8(getSecond(time))	* MS_PER_SECOND;
 
-		result.day = toBCDX8(time.day);
+		result += (int64)toBCDX8(getMinute(time))	* MS_PER_MINUTE;
 
-		result.month = toBCDX8(time.month);
+		result += (int64)hourToBCD(getHour(time))	* MS_PER_HOUR;
 
-		result.year = toBCDX16(time.year);
+		result += (int64)toBCDX8(getDay(time))		* MS_PER_DAY;
+
+		result += (int64)toBCDX8(getMonth(time))	* getDaysPerMonth(year, month) * MS_PER_DAY;
+
+		result += (int64)toBCDX16(getYear(time))	* 	MS_PER_YEAR;
 
 		return result;
 	}
 
 	return time;
-}
-
-int8 binaryX8ValueFromRTCFormatedIfNecessary(int8 value) {
-	if (!(registerB & 0x04))
-		return fromBCDX8(value);
-
-	return value;
-}
-
-Hour binaryHourFromRTCFormatedIfNecessary(Hour hour) {
-	if (!(registerB & 0x04))
-		return hourFromBCD(hour);
-
-	return hour;
-}
-
-Year binaryYearFromRTCFormatedIfNecessary(Year year) {
-	if (!(registerB & 0x04))
-		return fromBCDX16(year);
-
-	return year;
 }
 
 Time binaryTimeFromRTCFormatedIfNecessary(Time time) {
 	if (!(registerB & 0x04)) {
 		Time result = 0;
 
-		result.second = fromBCDX8(time.second);
+		result.second = fromBCDX8(getSecond(time));
 
-		result.minute = fromBCDX8(time.minute);
+		result.minute = fromBCDX8(getMinute(time));
 
-		result.hour = hourFromBCD(time.hour);
+		result.hour = hourFromBCD(getHour(time));
 
-		result.day = fromBCDX8(time.day);
+		result.day = fromBCDX8(getDay(time));
 
-		result.month = fromBCDX8(time.month);
+		result.month = fromBCDX8(getMonth(time));
 
-		result.year = fromBCDX16(time.year);
+		result.year = fromBCDX16(getYear(time));
 
 		return result;
 	}
@@ -185,137 +207,10 @@ Time binaryTimeFromRTCFormatedIfNecessary(Time time) {
 	return time;
 }
 
-Time newTime(void) {
-	Time result;
-
-	result.millisecond = 0;
-
-	result.second = 0;
-
-	result.minute = 0;
-
-	result.hour = 0;
-
-	result.day = 1;
-
-	result.absoluteTimeToday = 0;
-
-	result.dayWeek = 0;
-
-	result.Day = 1;
-
-	result.decade = 0;
-
-	result.month = 0;
-
-	result.season = 0;
-
-	result.year = 0;
-
-	result.century = 0;
-
-	result.Year = 0;
-
-	return result;
-}
-
-Time copyTime(Time time) {
-	return time;
-}
-
-bool timeEquals(Time time, Time time2) {
-	return  time.absoluteTimeToday == time2.absoluteTimeToday &&
-			time.Day == time2.Day &&
-			time.Year == time2.year4Digits;
-}
-
-bool timeNotEquals(Time time, Time time2) {
-	return  time.absoluteTimeToday != time2.absoluteTimeToday ||
-			time.Day != time2.Day ||
-			time.Year != time2.year4Digits;
-}
-
-bool timeBigThan(Time time, Time time2) {
-	if ((time.Year - time2.year4Digits) > 0) return true;
-
-	if ((time.Day - time2.yearDay) > 0) return true;
-
-	return (time.absoluteTimeToday - time2.absoluteTimeToday) > 0;
-}
-
-bool timeLessThan(Time time, Time time2) {
-	if ((time.Year - time2.year4Digits) < 0) return true;
-
-	if ((time.Day - time2.yearDay) < 0) return true;
-
-	return (time.absoluteTimeToday - time2.absoluteTimeToday) < 0;
-}
-
-bool timeBigOrEqualThan(Time time, Time time2) {
-	if ((time.Year - time2.year4Digits) >= 0) return true;
-
-	if ((time.Day - time2.yearDay) >= 0) return true;
-
-	return (time.absoluteTimeToday - time2.absoluteTimeToday) >= 0;
-}
-
-bool timeLessOrEqualThan(Time time, Time time2) {
-	if ((time.Year - time2.year4Digits) <= 0) return true;
-
-	if ((time.Day - time2.yearDay) <= 0) return true;
-
-	return (time.absoluteTimeToday - time2.absoluteTimeToday) <= 0;
-}
-
-Time add(Time time, Time time2) {
-	Time result = copyTime(time);
-
-	result.millisecond += time2.millisecond;
-
-	result.second += time2.second;
-
-	result.minute += time2.minute;
-
-	result.hour += time2.hour;
-
-	if (result.day > 1 && time2.day > 1)
-		result.day += time2.day;
-
-	result.month += time2.month;
-
-	result.Year += time2.year4Digits;
-
-	return calculateVAll(result);
-}
-
-Time subtract(Time time, Time time2) {
-	Time result = copyTime(time);
-
-	result.millisecond -= time2.millisecond;
-
-	result.second -= time2.second;
-
-	result.minute -= time2.minute;
-
-	result.hour -= time2.hour;
-
-	if (result.day > 1 && time2.day > 1)
-		result.day -= time2.day;
-
-	if (result.day == 0)
-		result.day = 1;
-
-	result.month -= time2.month;
-
-	result.Year -= time2.year4Digits;
-
-	return calculateVAll(result);
-}
-
 void setRTCTime(Time time) {
-	if (startOnVirtualMachine) time.hour -= 3;
+	if (startOnVirtualMachine) getHour(time) -= 3;
 
-	time.month++;
+	getMonth(time)++;
 
 	updateRegisterB();
 
@@ -323,32 +218,32 @@ void setRTCTime(Time time) {
 
 	out8(0x70, 0x00);
 
-	out8(0x71, time.second);
+	out8(0x71, getSecond(time));
 
 
 	out8(0x70, 0x02);
 
-	out8(0x71, time.minute);
+	out8(0x71, getMinute(time));
 
 
 	out8(0x70, 0x04);
 
-	out8(0x71, time.hour);
+	out8(0x71, getHour(time));
 
 
 	out8(0x70, 0x07);
 
-	out8(0x71, time.day);
+	out8(0x71, getDay(time));
 
 
 	out8(0x70, 0x08);
 
-	out8(0x71, time.month);
+	out8(0x71, getMonth(time));
 
 
 	out8(0x70, 0x09);
 
-	out8(0x71, time.year);
+	out8(0x71, getYear(time));
 }
 
 Time loadRTCTime(void) {
@@ -420,5 +315,5 @@ Time loadRTCTime(void) {
 	
 	result.century = 20;
 
-	return calculateAll(result);
+	return getAll(result);
 }

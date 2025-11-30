@@ -57,12 +57,19 @@ void PITSetFreq(uint16 freq) {
 void tick(struct Registers* regs) {
 	now += millisecondDelta;
 
-	if (everyMillisecond)
-		everyMillisecond();
+	
+}
+
+bool sleepHandler() {
+	return (now - past) < delay;
 }
 
 void sleepTime(Time delay) {
 	Time past = copyTime(now);
 
-	while (timeLessThan(subtract(now, past), delay));
+	void* addr;
+
+	asm volatile("movl %%eip, %0" : "=r"(addr));
+
+	while () await();
 }

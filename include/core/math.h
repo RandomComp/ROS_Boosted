@@ -7,9 +7,23 @@
 
 #define E 2.718281828459
 
-#define zero 0
+int64 abs(int64 x);
 
-uint32 pow(uint8 a, uint8 b);
+float fabs(float x);
+
+int64 scaleToInteger(float x);
+
+uint8 getCountDecimalPlaces(int64 x);
+
+float trunc(float x);
+
+float floor(float x);
+
+float ceil(float x);
+
+float round(float x);
+
+int64 pow(int16 a, int16 b);
 
 //float fsinus(uint16 deg);
 

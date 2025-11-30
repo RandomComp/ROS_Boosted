@@ -1,12 +1,12 @@
-#include "../headers/glyph.h"
+#include "charset/glyph.h"
 
-#include "../headers/types.h"
+#include "core/types.h"
 
-#include "../headers/std.h"
+#include "core/std.h"
 
-#include "../headers/warning.h"
+#include "core/warning.h"
 
-#include "../headers/error.h"
+#include "core/error.h"
 
 uint8 reserved[128] = { 0 }; // bitset for check reservations UGSM ( единая память для хранения глифов ) ( unified glyph storage memory )
 

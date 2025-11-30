@@ -6,24 +6,23 @@ AsyncMethods asyncMethods = { 0 };
 
 uint16 addOffset = 0, callingPos = 0;
 
-void ASYNCTick() {
+void asyncHandle() {
     AsyncMethod currentAsyncMethod = asyncMethods.asyncMethods[callingPos];
 
-    if (currentAsyncMethod != 0) {
+    if (currentAsyncMethod != 0)
         currentAsyncMethod();
 
-        asyncMethods.asyncMethods[callingPos] = 0;
+    asyncMethods.asyncMethods[callingPos] = 0;
 
-        callingPos++;
-    }
+    callingPos++;
 }
 
-void ASYNCaddAsyncMethod(AsyncMethod method) {
-    asyncMethods.asyncMethods[addOffset] = method;
+void asyncAddAsyncMethod(AsyncMethod method) {
+    if (asyncMethods.asyncMethods[addOffset] == 0) {
+        asyncMethods.asyncMethods[addOffset] = method;
 
-    addOffset++;
+        addOffset++;
 
-    if (addOffset >= MAX_QUEUE_SIZE - 1) {
-        // wait for asyncMethods going to empty
+        addOffset = addOffset % MAX_QUEUE_SIZE;
     }
 }

@@ -13,6 +13,8 @@ typedef struct {
     AsyncMethod asyncMethods[MAX_QUEUE_SIZE];
 } AsyncMethods;
 
-void addAsyncMethod(AsyncMethod method);
+void asyncHandle();
+
+void asyncAddAsyncMethod(AsyncMethod method);
 
 #endif
