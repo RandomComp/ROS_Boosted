@@ -17,6 +17,12 @@
 
 #define DAYS_PER_YEAR 365.2425
 
+#define DAYS_PER_SEASON_SPRING (30 + 31 + 31) // 92 Days of summer
+
+#define DAYS_PER_SEASON_SUMMER (30 + 31 + 31) // 92 Days of summer
+
+#define DAYS_PER_SEASON_AUTUMN (30 + 31 + 31) // 92 Days of summer
+
 #define MS_PER_MINUTE (SECONDS_PER_MINUTE * MS_PER_SECOND)
 
 #define MS_PER_HOUR (MINUTES_PER_HOUR * MS_PER_MINUTE)
@@ -39,10 +45,6 @@ typedef int32 Day;
 
 typedef int64 Year;
 
-typedef bool ProgressFlag;
-
-typedef uint8 RegisterB;
-
 typedef enum Month {
 	MONTH_UNKNOWN = -1, // Неопределенный месяц
 	MONTH_JANUARY, 		// Январь
@@ -59,15 +61,15 @@ typedef enum Month {
 	MONTH_DECEMBER 		// Декабрь
 } Month;
 
-typedef enum DayWeek {
-	DAYWEEK_MONDAY, 	// Понедельник
-	DAYWEEK_TUESDAY,	// Вторник
-	DAYWEEK_WEDNESDAY, 	// Среда
-	DAYWEEK_THURSDAY, 	// Четверг
-	DAYWEEK_FRIDAY, 	// Пятница
-	DAYWEEK_SATURDAY, 	// Суббота
-	DAYWEEK_SUNDAY		// Воскресенье
-} DayWeek;
+typedef enum DayOfWeek {
+	DayOfWeek_MONDAY, 	// Понедельник
+	DayOfWeek_TUESDAY,	// Вторник
+	DayOfWeek_WEDNESDAY, 	// Среда
+	DayOfWeek_THURSDAY, 	// Четверг
+	DayOfWeek_FRIDAY, 	// Пятница
+	DayOfWeek_SATURDAY, 	// Суббота
+	DayOfWeek_SUNDAY		// Воскресенье
+} DayOfWeek;
 
 typedef enum Season {
 	SEASON_WINTER, 	// Зима
@@ -76,9 +78,43 @@ typedef enum Season {
 	SEASON_AUTUMN 	// Осень
 } Season;
 
+typedef struct TimeStruct {
+	Millisecond milliseconds;
+
+	Second seconds;
+
+	Minute minutes;
+
+	Hour hours;
+
+	Day days;
+
+	Month months;
+
+	Year years;
+} TimeStruct;
+
+typedef enum TimeUnit {
+	TIMEUNIT_MILLISECONDS,
+	TIMEUNIT_SECONDS,
+	TIMEUNIT_MINUTES,
+	TIMEUNIT_HOURS,
+	TIMEUNIT_ABSOLUTE_TIME_TODAY,
+	TIMEUNIT_DAY_OF_WEEK,
+	TIMEUNIT_DAY_OF_MONTH,
+	TIMEUNIT_MONTHS,
+	TIMEUNIT_SEASON,
+	TIMEUNIT_YEAR_DAY,
+	TIMEUNIT_YEARS
+} TimeUnit;
+
 void TimeInit();
 
 int64 convert(int64 value, int64 maxValue, int64 divisor);
+
+Time convertToTimeStamp(TimeUnit timeFrom, int64 value);
+
+Time convertToTimeStampFromTimeStruct(TimeStruct timeFrom);
 
 Millisecond getMillisecond(Time time);
 
@@ -88,13 +124,15 @@ Minute getMinute(Time time);
 
 Hour getHour(Time time);
 
-Day getDaysPerMonth(Year year, Month month);
+Day getDaysPerMonth(bool bIsLeapYear, Month month);
+
+Day getDaysPerSeason(bool bIsLeapYear, Season season);
 
 Day getDay(Time time);
 
 Day getYearDay(Time time);
 
-DayWeek getDayWeek(Time time);
+DayOfWeek getDayOfWeek(Time time);
 
 Month getMonth(Time time);
 
@@ -104,30 +142,20 @@ Year getYear(Time time);
 
 Time getAbsoluteTimeToday(Time time);
 
+Day getDaysPerMonthFromTimeStruct(TimeStruct time);
+
+Day getYearDayFromTimeStruct(TimeStruct time);
+
+DayOfWeek getDayOfWeekFromTimeStruct(TimeStruct time);
+
+Season getSeasonFromTimeStruct(TimeStruct time);
+
+Time getAbsoluteTimeTodayFromTimeStruct(TimeStruct time);
+
 bool isLeapYear(Year year);
 
-void updateProgressFlag();
+TimeStruct binaryTimeToRTCFormatedIfNecessary(TimeStruct time);
 
-void updateRegisterB();
-
-int8 binaryX8ValueToRTCFormatedIfNecessary(int8 value);
-
-Hour binaryHourToRTCFormatedIfNecessary(Hour hour);
-
-Year binaryYearToRTCFormatedIfNecessary(Year year);
-
-Time binaryTimeToRTCFormatedIfNecessary(Time time);
-
-int8 binaryX8ValueFromRTCFormatedIfNecessary(int8 value);
-
-Hour binaryHourFromRTCFormatedIfNecessary(Hour hour);
-
-Year binaryYearFromRTCFormatedIfNecessary(Year year);
-
-Time binaryTimeFromRTCFormatedIfNecessary(Time time);
-
-void setRTCTime(Time time);
-
-Time loadRTCTime(void);
+TimeStruct binaryTimeFromRTCFormatedIfNecessary(TimeStruct time);
 
 #endif

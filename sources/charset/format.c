@@ -1,8 +1,6 @@
 #include "core/types.h"
 
-#include "core/time.h"
-
-extern RegisterB registerB;
+#include "drivers/low-level/io/cmos.h"
 
 uint32 toBCD(uint32 num) {
 	if (num == 0) return 0x00;
@@ -21,15 +19,11 @@ uint32 toBCD(uint32 num) {
 }
 
 Hour hourToBCD(Hour hour) {
-	Hour result = hour;
+	Hour result = 0;
 
-	if (!(registerB & 0x02) && hour >= 12) {
-		result %= 12;
-		
-		result |= 0x80;
-	}
+	
 
-	return (result % 10) | ((result / 10) << 4);
+	return result;
 }
 
 uint32 fromBCD(uint32 num) {
@@ -37,10 +31,9 @@ uint32 fromBCD(uint32 num) {
 }
 
 Hour hourFromBCD(Hour hour) {
-	Hour result = ((hour & 0x0F) + (((hour & 0x70) / 16) * 10)) | (hour & 0x80);
+	Hour result = 0;
 
-	if (!(registerB & 0x02) && (result & 0x80))
-		result = ((result & 0x7F) + 12) % 24;
+	
 
 	return result;
 }
