@@ -1,16 +1,16 @@
-#include "../headers/ugsm.h"
+#include "charset/ugsm.h"
 
-#include "../headers/std.h"
+#include "core/std.h"
 
-#include "../headers/types.h"
+#include "core/types.h"
 
-#include "../headers/error.h"
+#include "core/error.h"
 
-#include "../headers/glyph.h"
+#include "charset/glyph.h"
 
-#include "../headers/ascii.h"
+#include "charset/ascii.h"
 
-#include "../headers/rus.h"
+#include "charset/rus.h"
 
 extern UGSMGlyphSetCode ASCIIOffset;
 
@@ -27,9 +27,8 @@ IUGSM UGSM = { 0 }; // UGSM itself ( единая память для хране
 IUGSMSize UGSMSize = 0;
 
 UGSMGlyphSetCode UGSMloadGlyphSet(UGSMGlyphSet glyphSet, UGSMGlyphSetSize length) {
-	if (length == 1) {
-		UGSMloadGlyph(glyphSet[0]);
-	}
+	if (length == 1)
+		return UGSMloadGlyph(glyphSet[0]);
 
 	UGSMGlyphSetCode glyphSetCode = getFreeSpaceForGlyph();
 
@@ -85,12 +84,13 @@ void UGSMASCIIputChar(int8 c) {
 
 UGSMGlyphCode ASCIICharToUGSM(int8 c) {
 	switch (c) {
-		case 32: return 1;
-		case 10: return 2;
-		case 13: return 3;
-		case 9:  return 4;
-		default: return ASCIIOffset + (UGSMGlyphCode)(c) - 33 + 5;
+		case ASCII_CHAR_SPACE: 				return UGSM_CHAR_SPACE;
+		case ASCII_CHAR_NEW_LINE: 			return UGSM_CHAR_NEW_LINE;
+		case ASCII_CHAR_CARRIAGE_RETURN: 	return UGSM_CHAR_CARRIAGE_RETURN;
+		case ASCII_CHAR_TAB:  				return UGSM_CHAR_TAB;
 	}
+
+	return ASCIIOffset + (UGSMGlyphCode)(c) - ASCII_CHAR_EXCLAMATION_MARK + UGSM_CHAR_EXCLAMATION_MARK;
 }
 
 void UGSMASCIIsetString(uint16 x, uint16 y, int8* str) {
@@ -99,6 +99,6 @@ void UGSMASCIIsetString(uint16 x, uint16 y, int8* str) {
 }
 
 void UGSMASCIIsetChar(uint16 x, uint16 y, int8 c) {
-	if (c >= 32 && c <= 126)
-		setChar(x, y, (UGSMGlyphCode)(c - 32) + ASCIIOffset + 3);
+	if (c >= ASCII_CHAR_SPACE && c <= ASCII_CHAR_TILDE)
+		setChar(x, y, ASCIICharToUGSM(c));
 }

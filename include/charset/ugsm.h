@@ -29,7 +29,7 @@ enum UGSMKeyCodes {
     UGSM_CHAR_NULL,                 // \0
     UGSM_CHAR_SPACE,                // 
     UGSM_CHAR_NEW_LINE,             // \n
-    UGSM_CHAR_CR,                   // \r
+    UGSM_CHAR_CARRIAGE_RETURN,      // \r
     UGSM_CHAR_TAB,                  // \t
     UGSM_CHAR_EXCLAMATION_MARK,     // !
     UGSM_CHAR_DOUBLE_QUOTES,        // "
@@ -90,7 +90,7 @@ enum UGSMKeyCodes {
     UGSM_CHAR_BIG_Y,                // Y
     UGSM_CHAR_BIG_Z,                // Z
     UGSM_CHAR_LEFT_BRACKET,         // [
-    UGSM_CHAR_BACKSLASH,            // \ //
+    UGSM_CHAR_BACKSLASH,            /* \ */
     UGSM_CHAR_RIGHT_BRACKET,        // ]
     UGSM_CHAR_CIRCUMFLEX,           // ^
     UGSM_CHAR_UNDERSCORE,           // _
@@ -197,7 +197,7 @@ enum ASCIIKeyCodes {
     ASCII_CHAR_NULL = 0,
     ASCII_CHAR_SPACE = 32,
     ASCII_CHAR_NEW_LINE = 10,
-    ASCII_CHAR_CR = 13,
+    ASCII_CHAR_CARRIAGE_RETURN = 13,
     ASCII_CHAR_TAB = 9,
     ASCII_CHAR_EXCLAMATION_MARK = 33,
     ASCII_CHAR_DOUBLE_QUOTES,

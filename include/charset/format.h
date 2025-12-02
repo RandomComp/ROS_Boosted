@@ -3,15 +3,11 @@
 
 #include "core/types.h"
 
-int8 toBCDX8(int8 num);
+uint32 toBCD(uint32 num);
 
-int16 toBCDX16(int16 num);
+uint32 fromBCD(uint32 num);
 
 Hour hourToBCD(Hour hour);
-
-int8 fromBCDX8(int8 num);
-
-int16 fromBCDX16(int16 num);
 
 Hour hourFromBCD(Hour hour);
 

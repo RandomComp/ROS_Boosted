@@ -11,17 +11,13 @@ void CMOSWrite(UniversalCMOSCode code, uint8 data) {
 }
 
 uint8 CMOSRead(UniversalCMOSCode code) {
-	uint8 result = 0;
-
 	out8(CMOS_ADDRESS_PORT, code);
 
-	in8(CMOS_DATA_PORT, &result);
-
-	return result;
+	return in8(CMOS_DATA_PORT);
 }
 
 bool checkProgressFlag(void) {
-	return CMOSRead(CMOS_RTC_REGISTER_A) & (1 << REGISTER_A_UPDATE_IN_PROGRESS);
+	return CMOSRead(CMOS_REGISTER_A) & (1 << REGISTER_A_UPDATE_IN_PROGRESS);
 }
 
 void setRTCTime(TimeStruct time) {
@@ -31,11 +27,9 @@ void setRTCTime(TimeStruct time) {
 
 	time = binaryTimeToRTCFormatedIfNecessary(time);
 
-    Register registerB = CMOSRead(CMOS_RTC_REGISTER_B);
+    Register registerB = CMOSRead(CMOS_REGISTER_B);
 
-    registerB |= (1 << REGISTER_B_SET);
-
-    CMOSWrite(CMOS_RTC_REGISTER_B, registerB);
+    CMOSWrite(CMOS_REGISTER_B, registerB | (1 << REGISTER_B_TIME_SET));
 
 	CMOSWrite(CMOS_RTC_SECONDS, time.seconds);
 
@@ -49,17 +43,15 @@ void setRTCTime(TimeStruct time) {
 
 	CMOSWrite(CMOS_RTC_YEARS, time.years);
 
-    Register registerB = CMOSRead(CMOS_RTC_REGISTER_B);
+    registerB = CMOSRead(CMOS_REGISTER_B);
 
-    registerB &= ~(1 << REGISTER_B_SET);
-
-    CMOSWrite(CMOS_RTC_REGISTER_B, registerB);
+    CMOSWrite(CMOS_REGISTER_B, registerB & ~(1 << REGISTER_B_TIME_SET));
 }
 
 TimeStruct getRTCTime(void) {
 	TimeStruct result = { 0 };
 
-	while (CMOSRead(CMOS_RTC_REGISTER_B));
+	while (CMOSRead(CMOS_REGISTER_A) & (1 << REGISTER_A_UPDATE_IN_PROGRESS));
 
 	result.seconds = CMOSRead(CMOS_RTC_SECONDS);
 

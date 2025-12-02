@@ -24,7 +24,8 @@
         "x86emu_regs.h": "c",
         "format.h": "c",
         "speaker.h": "c",
-        "cmos.h": "c"
+        "cmos.h": "c",
+        "math.h": "c"
     },
     
     "C_Cpp.default.includePath": [],

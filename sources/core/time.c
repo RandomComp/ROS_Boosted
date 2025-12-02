@@ -217,7 +217,7 @@ bool isLeapYear(Year year) {
 }
 
 TimeStruct binaryTimeToRTCFormatedIfNecessary(TimeStruct time) {
-	RTCRegister registerB = CMOSRead(CMOS_RTC_REGISTER_B);
+	Register registerB = CMOSRead(CMOS_REGISTER_B);
 
 	if (!(registerB & (1 << REGISTER_B_DATA_MODE))) {
 		TimeStruct result = { 0 };
@@ -241,9 +241,9 @@ TimeStruct binaryTimeToRTCFormatedIfNecessary(TimeStruct time) {
 }
 
 TimeStruct binaryTimeFromRTCFormatedIfNecessary(TimeStruct time) {
-	RTCRegister registerB = CMOSRead(CMOS_RTC_REGISTER_B);
+	Register registerB = CMOSRead(CMOS_REGISTER_B);
 
-	if (!(registerB & 0x04)) {
+	if (!(registerB & (1 << REGISTER_B_DATA_MODE))) {
 		TimeStruct result = { 0 };
 
 		result.seconds = fromBCDX8(time.seconds);

@@ -1,18 +1,30 @@
 #include "core/types.h"
 
+#include "core/math.h"
+
 #include "drivers/low-level/io/cmos.h"
 
-uint32 toBCD(uint32 num) {
-	if (num == 0) return 0x00;
+uint32 toBCD(uint32 x) {
+	if (x < 10) return x;
 
-	uint32 i = 0, result = 0;
+	uint32 result = 0;
 
-	while (num != 0) {
-		result += (num % 10) << (i * 4);
+	for (int16 i = 0; x != 0; i++) {
+		result += (x % 10) * pow(16, i);
 
-		i++;
+		x /= 10;
+	}
 
-		num /= 10;
+	return result;
+}
+
+uint32 fromBCD(uint32 x) {
+	uint32 result = 0;
+
+	for (int16 i = 0; x != 0; i++) {
+		result += (x % 16) * pow(10, i);
+
+		x /= 16;
 	}
 
 	return result;
@@ -24,10 +36,6 @@ Hour hourToBCD(Hour hour) {
 	
 
 	return result;
-}
-
-uint32 fromBCD(uint32 num) {
-	return (num & 0x0F) + ((num / 16) * 10);
 }
 
 Hour hourFromBCD(Hour hour) {

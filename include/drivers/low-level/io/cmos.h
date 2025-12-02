@@ -14,29 +14,29 @@ typedef uint8 Register;
 // CMOS коды для чтения/записи значений.
 typedef enum UniversalCMOSCode {
 	CMOS_RTC_SECONDS, 					// Получение значения секунд. 					                                        Чтение и запись разрешены.
-	CMOS_RTC_SECONDS_ALARM, 			// Получение значения секунд будильника. 		                                        Чтение и запись разрешены.
+	CMOS_RTC_SECOND_ALARM, 				// Получение значения секунд будильника. 		                                        Чтение и запись разрешены.
 	CMOS_RTC_MINUTES,					// Получение значения минут. 					                                        Чтение и запись разрешены.
-	CMOS_RTC_MINUTES_ALARM,				// Получение значения минут будильника. 		                                        Чтение и запись разрешены.
+	CMOS_RTC_MINUTE_ALARM,				// Получение значения минут будильника. 		                                        Чтение и запись разрешены.
 	CMOS_RTC_HOURS,						// Получение значения часов. 					                                        Чтение и запись разрешены.
-	CMOS_RTC_HOURS_ALARM,				// Получение значения часов будильника. 		                                        Чтение и запись разрешены.
+	CMOS_RTC_HOUR_ALARM,				// Получение значения часов будильника. 		                                        Чтение и запись разрешены.
 	CMOS_RTC_DAY_OF_WEEK,				// Получение значения дня недели. 				                                        Чтение и запись разрешены.
 	CMOS_RTC_DAY_OF_MONTH,				// Получение значения дня месяца. 				                                        Чтение и запись разрешены.
 	CMOS_RTC_MONTHS,					// Получение значения месяца. 					                                        Чтение и запись разрешены.
 	CMOS_RTC_YEARS,						// Получение значения годов. 					                                        Чтение и запись разрешены.
-	CMOS_RTC_CENTURY = 0x32,            // Получение значения века.                                                             Чтение и запись разрешены.
-	CMOS_RTC_REGISTER_A,				// Получение регистра A. см RegisterA_Bits. 	                                        Чтение и запись разрешены.
-	CMOS_RTC_REGISTER_B,				// Получение регистра B. см RegisterB_Bits. 	                                        Чтение и запись разрешены.
-	CMOS_RTC_REGISTER_C,				// Получение регистра C. см RegisterC_Bits. 	                                        Только чтение.
-	CMOS_RTC_REGISTER_D,				// Получение регистра D. см RegisterD_Bits. 	                                        Только чтение.
+	CMOS_REGISTER_A,					// Получение регистра A. см RegisterA_Bits. 	                                        Чтение и запись разрешены.
+	CMOS_REGISTER_B,					// Получение регистра B. см RegisterB_Bits. 	                                        Чтение и запись разрешены.
+	CMOS_REGISTER_C,					// Получение регистра C. см RegisterC_Bits. 	                                        Только чтение.
+	CMOS_REGISTER_D,					// Получение регистра D. см RegisterD_Bits. 	                                        Только чтение.
 	CMOS_FLOPPY_TYPE = 0x10, 			// Получение типа дискетты.                                                             Только чтение.
-	CMOS_HARD_DISK_TYPE = 0x12,         // Получение типа жесткого диска.                                                        Только чтение.
+	CMOS_HARD_DISK_TYPE = 0x12,         // Получение типа жесткого диска.														Только чтение.
 	CMOS_EQUIPMENT_BYTE = 0x14,         // Получение списка доступных устройств.                                                Только чтение.
 	CMOS_BASE_MEMORY_KB_LOW_BYTE,       // Получение нижнего байта размера RAM до 1 МБ.                                         Только чтение.
 	CMOS_BASE_MEMORY_KB_HIGH_BYTE,      // Получение верхнего байта размера RAM до 1 МБ.                                        Только чтение.
 	CMOS_EXTENDED_KB_MEMORY_LOW_BYTE,   // Получение нижнего байта размера RAM после 1 МБ.                                      Только чтение.
 	CMOS_EXTENDED_KB_MEMORY_HIGH_BYTE,  // Получение верхнего байта размера RAM после 1 МБ.                                     Только чтение.
 	CMOS_CHECKSUM_HIGH_BYTE = 0x2E,     // Получение верхнего байта CMOS CHECKSUM.                                              Только чтение.
-	CMOS_CHECKSUM_LOW_BYTE              // Получение нижнего байта CMOS CHECKSUM.                                               Только чтение.
+	CMOS_CHECKSUM_LOW_BYTE,				// Получение нижнего байта CMOS CHECKSUM.                                               Только чтение.
+	CMOS_RTC_CENTURY = 0x32            	// Получение значения века.                                                             Чтение и запись разрешены.
 } UniversalCMOSCode;
 
 typedef enum AMICMOSCode {
@@ -77,12 +77,12 @@ typedef enum RegisterA_Bits {
 typedef enum RegisterB_Bits {
 	REGISTER_B_DAYLIGHT_SAVINGS_ENABLE,     // Флаг автоматического перехода на летнее время, т.е в последнее воскресенье марта переходят на час вперед, в последнее воскресенье октября начинается обычное время
 	REGISTER_B_IS_24_FORMAT, 				// Флаг 24 часового режима, 1 - 0-24 часа, 0 - 0-12 часа, при 0 - AM/PM режим бит работает.
-	REGISTER_B_DATA_MODE, 					// Переключение BCD и binary режимов.
-	REGISTER_B_SQUARE_WAVE_ENABLE, 			// Вкл/выкл квадратный сигнал на вывод SQWB.
+	REGISTER_B_IS_BINARY_MODE, 				// Флаг активности binary режима, если 0 то BCD.
+	REGISTER_B_SQUARE_WAVE_ENABLE, 			// Вкл/выкл генерации квадратного сигнала на вывод SQWB.
 	REGISTER_B_UPDATE_INTERRUPT_ENABLE, 	// Вкл/выкл генерации прерывания при каждом обновлении секунды.
 	REGISTER_B_ALARM_INTERRUPT_ENABLE, 		// Вкл/выкл генерации прерывания будильника.
 	REGISTER_B_PERIODIC_INTERRUPT_ENABLE, 	// Вкл/выкл периодическую генерацию прерывания IRQ8.
-	REGISTER_B_SET 							// Отключить обновление времени RTC. ( для записи )
+	REGISTER_B_TIME_SET 					// Отключить обновление времени RTC. ( для записи )
 } RegisterB_Bits;
 
 // Важно: Чтение флагов из регистра C обнулят все флаги в этом регистре. Только чтение. Регистр C является регистром событий.
