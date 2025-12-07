@@ -19,22 +19,16 @@ all: backup clean $(OBJECT_C_FILES) $(OBJECT_GAS_FILES) $(OBJECT_NASM_FILES) ker
 restore:
 	@echo "Restore in progress..."
 
-	@cd ..
-
-	@mv RandomOS_Boosted RandomOS_Boosted_Corrupted
-
-	@mv RandomOS_Boosted_backup RandomOS_Boosted
-
-	@cd RandomOS_Boosted
+	@mv ../RandomOS_Boosted_Backup
 
 	@echo "Restore done!"
 
 backup:
 	@echo "Backup in progress..."
 
-	@rm -rf ../RandomOS_Boosted_backup
+	@rm -rf ../RandomOS_Boosted_Backup
 
-	@cp -r ../RandomOS_Boosted ../RandomOS_Boosted_backup
+	@cp -r ../RandomOS_Boosted ../RandomOS_Boosted_Backup
 
 	@echo "Backup done!"
 
