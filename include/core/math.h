@@ -17,9 +17,13 @@ int64 scaleToInteger(float x);
 
 uint8 getCountDecimalPlaces(int64 x);
 
+uint8 getNumberOfDigits(int64 x);
+
 float trunc(float x);
 
 float frac(float x);
+
+uint32 getNumberAfterDecimalPoint(float x);
 
 float floor(float x);
 

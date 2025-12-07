@@ -1,3 +1,5 @@
+#include "core/math.h"
+
 #include "core/types.h"
 
 #include "core/fatal_error.h"
@@ -11,7 +13,7 @@ float fabs(float x) {
 }
 
 float fmod(float a, float b) {
-    if (b == 0) causeFatal(DivisionByZeroError);
+    if (b == 0.0f) causeFatal(DivisionByZeroError);
 
     return a - (trunc(a / b) * b);
 }

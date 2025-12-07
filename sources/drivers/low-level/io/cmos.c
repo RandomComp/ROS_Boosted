@@ -25,7 +25,7 @@ void CMOSDisableBit(UniversalCMOSCode code, uint8 bitIndex) {
 }
 
 bool CMOSCheckBit(UniversalCMOSCode code, uint8 bitIndex) {
-	return CMOSRead(code) & (1 << bitIndex);
+	return (CMOSRead(code) & (1 << bitIndex)) != 0;
 }
 
 void setRTCTime(TimeStruct time) {
