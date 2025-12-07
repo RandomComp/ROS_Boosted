@@ -1,4 +1,4 @@
-#include "../headers/ugsm.h"
+#include "charset/ugsm.h"
 
 bool bRUSInitialized = false;
 

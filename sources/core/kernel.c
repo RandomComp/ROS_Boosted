@@ -1,38 +1,38 @@
-#include "headers/multiboot.h"
+#include "core/multiboot.h"
 
-#include "headers/std.h"
+#include "core/std.h"
 
-#include "headers/pit.h"
+#include "drivers/high-level/pit.h"
 
-#include "headers/keyboardps2.h"
+#include "drivers/high-level/keyboardps2.h"
 
-#include "headers/time.h"
+#include "core/time.h"
 
-#include "headers/mem.h"
+#include "drivers/low-level/base/mem.h"
 
-#include "headers/ugsm.h"
+#include "charset/ugsm.h"
 
-#include "headers/ascii.h"
+#include "charset/ascii.h"
 
-#include "headers/rus.h"
+#include "charset/rus.h"
 
-#include "headers/speaker.h"
+#include "drivers/high-level/speaker.h"
 
-#include "headers/warning.h"
+#include "core/warning.h"
 
-#include "headers/error.h"
+#include "core/error.h"
 
-#include "headers/fatal_error.h"
+#include "core/fatal_error.h"
 
-#include "headers/power.h"
+#include "drivers/high-level/power.h"
 
-#include "headers/acpi.h"
+#include "drivers/high-level/acpi.h"
 
-#include "headers/RL/lexer.h"
+#include "RL/lexer.h"
 
-#include "headers/RMAL/lexer.h"
+#include "RMAL/lexer.h"
 
-#include "headers/RMAL/parser.h"
+#include "RMAL/parser.h"
 
 extern const uint32 columns;
 

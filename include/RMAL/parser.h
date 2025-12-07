@@ -1,9 +1,9 @@
 #ifndef _RMAL_PARSER_H
 #define _RMAL_PARSER_H
 
-#include "../core/types.h"
+#include "core/types.h"
 
-#include "../../headers/RMAL/lexer.h"
+#include "RMAL/lexer.h"
 
 // Parser of RMAL ( Random minimal assembly language )
 

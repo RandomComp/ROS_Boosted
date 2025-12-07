@@ -1,20 +1,42 @@
-CFLAGS  = -m32 -ffrestanding -fno-builtin -nostdinc -nostdlib
+CFLAGS  = -m32 -ffreestanding -fno-builtin -nostdinc -nostdlib
 
 GASFLAGS = --32
 
-C_FILES =			${shell find sources -type f -name "*.c" -printf "%p "}
+C_FILES :=				${shell find sources -type f -name "*.c" -printf "%p "}
 
-GAS_FILES = 		${shell find sources -type f -name "*.s" -printf "%p "}
+GAS_FILES := 			${shell find sources -type f -name "*.s" -printf "%p "}
 
-NASM_FILES =		${shell find sources -type f -name "*.n" -printf "%p "}
+NASM_FILES :=			${shell find sources -type f -name "*.n" -printf "%p "}
 
-OBJECT_C_FILES = 	${C_FILES:.c=.o}
+OBJECT_C_FILES := 		${C_FILES:.c=.o}
 
-OBJECT_GAS_FILES = 	${C_FILES:.s=.o}
+OBJECT_GAS_FILES := 	${GAS_FILES:.s=.o}
 
-OBJECT_NASM_FILES = ${C_FILES:.n=.o}
+OBJECT_NASM_FILES := 	${NASM_FILES:.n=.o}
 
-all: clean $(OBJECT_C_FILES) $(OBJECT_GAS_FILES) $(OBJECT_NASM_FILES) kernel.bin image vmwareDisk
+all: backup clean $(OBJECT_C_FILES) $(OBJECT_GAS_FILES) $(OBJECT_NASM_FILES) kernel.bin image vmwareDisk
+
+restore:
+	@echo "Restore in progress..."
+
+	@cd ..
+
+	@mv RandomOS_Boosted RandomOS_Boosted_Corrupted
+
+	@mv RandomOS_Boosted_backup RandomOS_Boosted
+
+	@cd RandomOS_Boosted
+
+	@echo "Restore done!"
+
+backup:
+	@echo "Backup in progress..."
+
+	@rm -rf ../RandomOS_Boosted_backup
+
+	@cp -r ../RandomOS_Boosted ../RandomOS_Boosted_backup
+
+	@echo "Backup done!"
 
 image:
 	@echo "Creating hdd.img..."
@@ -36,19 +58,13 @@ run:
 flash:
 	@sudo dd if=./hdd.img of=/dev/sdb
 
-nasmsources:
-	@nasm -f elf32 sources/gdt.n -o objectFiles/gdts.o
+%.o: %.n
+	@nasm -f elf32 $< -o $@
 
-	@nasm -f elf32 sources/idt.n -o objectFiles/idts.o
+%.o: %.s
+	@as $(GASFLAGS) -o $@ $<
 
-gassources:
-	@as $(GASFLAGS) -o objectFiles/loader.o loader.s
-
-	@as $(GASFLAGS) -o objectFiles/mems.o sources/mem.s
-
-	@as $(GASFLAGS) -o objectFiles/setjmp.o sources/setjmp.s
-
-csources: $(OBJECT_C_FILES)
+%.o: %.c
 	@gcc -Iinclude $(CFLAGS) -o $@ -c $<
 
 kernel.bin:
@@ -56,4 +72,5 @@ kernel.bin:
 vmwareDisk:
 	@qemu-img convert -f raw hdd.img -O vmdk ./RandomOS.vmdk
 clean:
-	@rm -rf ${OBJECT_C_FILES} ${OBJECT_GAS_FILES} ${OBJECT_NASM_FILES}
+	@echo ${OBJECT_C_FILES} ${OBJECT_GAS_FILES} ${OBJECT_NASM_FILES}
+#	@rm -rf ${OBJECT_C_FILES} ${OBJECT_GAS_FILES} ${OBJECT_NASM_FILES}

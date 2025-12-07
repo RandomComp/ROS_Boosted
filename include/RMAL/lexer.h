@@ -3,9 +3,9 @@
 
 // Lexer of RMAL ( Random minimal assembly language )
 
-#include "../core/types.h"
+#include "core/types.h"
 
-#include "../../headers/ugsm.h"
+#include "charset/ugsm.h"
 
 typedef uint16 LabelID;
 

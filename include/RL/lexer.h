@@ -1,9 +1,9 @@
 #ifndef _RL_LEXER_H
 #define _RL_LEXER_H
 
-#include "../types.h"
+#include "core/types.h"
 
-#include "../ugsm.h"
+#include "charset/ugsm.h"
 
 enum RLTokenType {
 	RLNUMBER,
