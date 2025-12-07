@@ -1,8 +1,8 @@
-#include "../headers/vbe.h"
+#include "drivers/high-level/vbe.h"
 
 #include "core/std.h"
 
-#include "../headers/bios.h"
+#include "drivers/low-level/x86emu/bios.h"
 
 #include "drivers/low-level/base/mem.h"
 

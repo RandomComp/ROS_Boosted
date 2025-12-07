@@ -6,6 +6,8 @@
 
 #include "core/time.h"
 
+#include "core/math.h"
+
 #include "drivers/high-level/pit.h"
 
 #include "drivers/high-level/speaker.h"
@@ -69,7 +71,7 @@ void cause(ErrorType errorType) {
 	for (uint16 i = 0; i < 500; i++) {
 		uint16 temp = (i % 100) * 10;
 
-		makeSound((temp < 500 ? 500 - temp : temp - 500) + 1000);
+		makeSound(fabs(temp - 500) + 1000);
 
 		sleepMilliseconds(10);
 	}
