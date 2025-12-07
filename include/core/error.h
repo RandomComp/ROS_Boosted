@@ -3,62 +3,39 @@
 
 #include "core/types.h"
 
-typedef enum ErrorsType {
+typedef enum ErrorType {
 	VBENotSupportedError,
-
 	VBESetupError,
-
 	USBTDBitstuffError,
-
 	USBTDTimeoutError,
-
 	USBTDBabbleError,
-
 	USBTDDataBufferError,
-
 	USBTDStalledError,
-
 	USBTDNAKError,
-
 	USBAllocQHError,
-
 	USBAllocTDError,
-
 	USBMissedMicroFrameError,
-
 	USBTransactionError,
-
 	USBUnexpectedEHCIQHSize,
-
 	GlyphNotReservedError,
-
 	GlyphReservedError,
-
 	UGSMIncorrectGlyphSetSizeError,
-
 	UGSMGlyphNotReservedButWeTryUse,
-
 	X16BitEmulatorError,
-
 	ACPIS5ParseError,
-
 	ACPIS5NotPresentError,
-
 	ACPIDSDTError,
-
 	ACPINoValidFACPPresentError,
-
 	ACPINoACPIError,
-
 	ACPICannotBeEnabledError,
-
 	ACPINoKnownWayToEnableACPIError,
-
+	ACPIShutdownError,
+	ACPIUnableToShutdownError,
 	MemoryLackError
-} ErrorsType;
+} ErrorType;
 
-int8* getErrorDescription(enum ErrorsType errorType);
+int8* getErrorDescription(enum ErrorType errorType);
 
-void cause(enum ErrorsType errorType);
+void cause(enum ErrorType errorType);
 
 #endif

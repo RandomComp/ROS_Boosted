@@ -1,18 +1,18 @@
-#include "../../headers/RMAL/parser.h"
+#include "RMAL/parser.h"
 
-#include "../core/types.h"
+#include "core/types.h"
 
-#include "../../headers/std.h"
+#include "core/std.h"
 
-#include "../../headers/ugsm.h"
+#include "charset/ugsm.h"
 
-#include "../../headers/multiboot.h"
+#include "core/multiboot.h"
 
-#include "../../headers/RMAL/lexer.h"
+#include "RMAL/lexer.h"
 
-#include "../../headers/warning.h"
+#include "core/warning.h"
 
-#include "../../headers/error.h"
+#include "core/error.h"
 
 extern struct RMALToken RMALTokens[128];
 

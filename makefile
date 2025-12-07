@@ -19,7 +19,7 @@ all: backup clean $(OBJECT_C_FILES) $(OBJECT_GAS_FILES) $(OBJECT_NASM_FILES) ker
 restore:
 	@echo "Restore in progress..."
 
-	@mv ../RandomOS_Boosted_Backup
+	@cp ${shell find ../RandomOS_Boosted_Backup/* -type f -name "*.c" -printf "%p "}
 
 	@echo "Restore done!"
 

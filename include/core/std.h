@@ -29,6 +29,8 @@ void putChar(UGSMGlyphCode glyphCode);
 
 void clear(uint32 backgroundColor);
 
-void swap(void);
+void resetConsole();
+
+void swap();
 
 #endif

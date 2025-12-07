@@ -51,22 +51,22 @@ void MEMInit(AbsoluteSize size) {
 
 	RAMSize.bytes = AbsoluteRAMSizeInBytes % 1024;
 
-	RAMSize.kilobytes = (AbsoluteRAMSizeInBytes / 1024) % 1024;
+	RAMSize.kb = (AbsoluteRAMSizeInBytes / 1024) % 1024;
 
-	RAMSize.megabytes = (AbsoluteRAMSizeInBytes / 1024 / 1024) % 1024;
+	RAMSize.mb = (AbsoluteRAMSizeInBytes / 1024 / 1024) % 1024;
 
-	RAMSize.gigabytes = (AbsoluteRAMSizeInBytes / 1024 / 1024 / 1024) % 1024;
+	RAMSize.gb = (AbsoluteRAMSizeInBytes / 1024 / 1024 / 1024) % 1024;
 
 	heapSize.bytes = AbsoluteHeapSizeInBytes % 1024;
 
-	heapSize.kilobytes = (AbsoluteHeapSizeInBytes / 1024) % 1024;
+	heapSize.kb = (AbsoluteHeapSizeInBytes / 1024) % 1024;
 
-	heapSize.megabytes = (AbsoluteHeapSizeInBytes / 1024 / 1024) % 1024;
+	heapSize.mb = (AbsoluteHeapSizeInBytes / 1024 / 1024) % 1024;
 
-	heapSize.gigabytes = (AbsoluteHeapSizeInBytes / 1024 / 1024 / 1024) % 1024;
+	heapSize.gb = (AbsoluteHeapSizeInBytes / 1024 / 1024 / 1024) % 1024;
 }
 
-void* malloc(AbsoluteSize size, enum MemoryRegionStatus status) {
+void* malloc(AbsoluteSize size, MemoryRegionStatus status) {
 	Address addr = freeSpaceStart;
 
 	if ((addr + sizeof(MemoryRegionInformation) + size) >= AbsoluteRAMSizeInBytes - freeSpaceStart) {
@@ -87,33 +87,33 @@ void* malloc(AbsoluteSize size, enum MemoryRegionStatus status) {
 }
 
 AbsoluteSize sizeToAbsoluteSize(Size size) {
-	return 	size.gigabytes * pow(1024, 3) +
-			size.megabytes * pow(1024, 2) +
-			size.kilobytes * 1024 +
+	return 	size.gb * pow(1024, 3) +
+			size.mb * pow(1024, 2) +
+			size.kb * 1024 +
 			size.bytes;
 }
 
 void showSize(Size size) {
-	foregroundColor = 0xffff00;
+	uint32 tempForegroundColor = foregroundColor;
 
-	if (size.gigabytes != 0) {
-		putUX16Integer(size.gigabytes);
+	if (size.gb != 0) {
+		putUX16Integer(size.gb);
 
 		foregroundColor = 0x00ff00;
 
 		UGSMASCIIputString(" gigabytes\n");
 	}
 
-	if (size.megabytes != 0) {
-		putUX16Integer(size.megabytes);
+	if (size.mb != 0) {
+		putUX16Integer(size.mb);
 
 		foregroundColor = 0x00ff00;
 
 		UGSMASCIIputString(" megabytes\n");
 	}
 
-	if (size.kilobytes != 0) {
-		putUX16Integer(size.kilobytes);
+	if (size.kb != 0) {
+		putUX16Integer(size.kb);
 
 		foregroundColor = 0x00ff00;
 
@@ -127,15 +127,14 @@ void showSize(Size size) {
 
 		UGSMASCIIputString(" bytes\n");
 	}
+
+	foregroundColor = tempForegroundColor;
 }
 
-void free(void* argMem, AbsoluteSize size) {
+void free(void* mem, AbsoluteSize size) {
 	size += sizeof(MemoryRegionInformation);
 
-	Address addr = (uint32)(argMem) - sizeof(MemoryRegionInformation);
+	Address addr = (uint32)(mem) - sizeof(MemoryRegionInformation);
 
-	uint8* mem = (uint8*)(addr);
-
-	for (Address i = 0; i < size; i++)
-		mem[i] = 0;
+	memset((uint8*)(addr), 0, size);
 }

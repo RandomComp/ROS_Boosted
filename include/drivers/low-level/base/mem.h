@@ -148,25 +148,29 @@ typedef uint32 Address;
 
 typedef uint64 AbsoluteSize;
 
-enum MemoryRegionStatus {
+typedef enum MemoryRegionStatus {
 	RESERVED_MEMORY,
 
 	RESERVED_EXECUTABLE_MEMORY
-};
+} MemoryRegionStatus;
 
 typedef struct Size {
-	uint32 gigabytes, megabytes, kilobytes, bytes;
+	uint32 gb, mb, kb, bytes;
 } Size;
 
 typedef struct MemoryRegionInformation {
 	AbsoluteSize size;
 
-	enum MemoryRegionStatus status;
+	MemoryRegionStatus status;
 } MemoryRegionInformation;
 
 void MEMInit(AbsoluteSize size);
 
-void* malloc(AbsoluteSize size, enum MemoryRegionStatus status);
+void* malloc(AbsoluteSize size, MemoryRegionStatus status);
+
+AbsoluteSize sizeToAbsoluteSize(Size size);
+
+void showSize(Size size);
 
 void free(void* mem, AbsoluteSize size);
 

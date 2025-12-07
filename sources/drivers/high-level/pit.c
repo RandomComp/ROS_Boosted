@@ -60,16 +60,12 @@ void tick(struct Registers* regs) {
 	
 }
 
-bool sleepHandler() {
-	return (now - past) < delay;
-}
+// bool sleepHandler() {
+// 	return (now - past) < delay;
+// }
 
 void sleepTime(Time delay) {
-	Time past = copyTime(now);
+	//while () await();
 
-	void* addr;
-
-	asm volatile("movl %%eip, %0" : "=r"(addr));
-
-	while () await();
+	return;
 }

@@ -103,46 +103,20 @@ UGSMGlyphCode QWERTYToShiftQWERTY[] = {
 	[UGSM_CHAR_0] = 			UGSM_CHAR_RIGHT_PAREN,
 	[UGSM_CHAR_MINUS_SIGN] = 	UGSM_CHAR_UNDERSCORE,
 	[UGSM_CHAR_EQUAL_SIGN] = 	UGSM_CHAR_PLUS_SIGN,
-	[UGSM_CHAR_Q] = 			UGSM_CHAR_BIG_Q,
-	[UGSM_CHAR_W] = 			UGSM_CHAR_BIG_W,
-	[UGSM_CHAR_E] = 			UGSM_CHAR_BIG_E,
-	[UGSM_CHAR_R] = 			UGSM_CHAR_BIG_R,
-	[UGSM_CHAR_T] = 			UGSM_CHAR_BIG_T,
-	[UGSM_CHAR_Y] = 			UGSM_CHAR_BIG_Y,
-	[UGSM_CHAR_U] = 			UGSM_CHAR_BIG_U,
-	[UGSM_CHAR_I] = 			UGSM_CHAR_BIG_I,
-	[UGSM_CHAR_O] = 			UGSM_CHAR_BIG_O,
-	[UGSM_CHAR_P] = 			UGSM_CHAR_BIG_P,
 	[UGSM_CHAR_LEFT_BRACKET] = 	UGSM_CHAR_LEFT_BRACE,
 	[UGSM_CHAR_RIGHT_BRACKET] = UGSM_CHAR_RIGHT_BRACE,
-	[UGSM_CHAR_A] = 			UGSM_CHAR_BIG_A,
-	[UGSM_CHAR_S] = 			UGSM_CHAR_BIG_S,
-	[UGSM_CHAR_D] = 			UGSM_CHAR_BIG_D,
-	[UGSM_CHAR_F] = 			UGSM_CHAR_BIG_F,
-	[UGSM_CHAR_G] = 			UGSM_CHAR_BIG_G,
-	[UGSM_CHAR_H] = 			UGSM_CHAR_BIG_H,
-	[UGSM_CHAR_J] = 			UGSM_CHAR_BIG_J,
-	[UGSM_CHAR_K] = 			UGSM_CHAR_BIG_K,
-	[UGSM_CHAR_L] = 			UGSM_CHAR_BIG_L,
 	[UGSM_CHAR_SEMICOLON] = 	UGSM_CHAR_COLON,
 	[UGSM_CHAR_QUOTE] = 		UGSM_CHAR_DOUBLE_QUOTES,
 	[UGSM_CHAR_BACK_TICK] = 	UGSM_CHAR_TILDE,
 	[UGSM_CHAR_BACKSLASH] = 	UGSM_CHAR_VERTICAL_LINE,
-	[UGSM_CHAR_Z] = 			UGSM_CHAR_BIG_Z,
-	[UGSM_CHAR_X] = 			UGSM_CHAR_BIG_X,
-	[UGSM_CHAR_C] = 			UGSM_CHAR_BIG_C,
-	[UGSM_CHAR_V] = 			UGSM_CHAR_BIG_V,
-	[UGSM_CHAR_B] = 			UGSM_CHAR_BIG_B,
-	[UGSM_CHAR_N] = 			UGSM_CHAR_BIG_N,
-	[UGSM_CHAR_M] = 			UGSM_CHAR_BIG_M,
 	[UGSM_CHAR_COMMA] = 		UGSM_CHAR_LESS_SIGN,
 	[UGSM_CHAR_DOT] = 			UGSM_CHAR_BIG_SIGN,
 	[UGSM_CHAR_SLASH] = 		UGSM_CHAR_QUESTION_MARK
 };
 
-KeyState keyStates[128] = { KEY_FREE };
+KeyState keyStates[128] = 		{ KEY_FREE };
 
-KeyState oldKeyStates[128] = { KEY_FREE };
+KeyState oldKeyStates[128] = 	{ KEY_FREE };
 
 Scancode updatedKey = SCANCODE_NULL;
 
@@ -211,10 +185,11 @@ UGSMGlyphCode scancodeToUGSM(Scancode key) {
 	UGSMGlyphCode result = QWERTY[key];
 
 	if (bKeyboardPS2Shift) {
-		result = QWERTYToShiftQWERTY[result];
-
-		if (bKeyboardPS2CapsLock)
-			result = UGSMGlyphToLowerCase(result);
+		if (UGSMGlyphIsLetter(result)) {
+			if (!bKeyboardPS2CapsLock)
+				result = UGSMGlyphToUpperCase(result);
+		}
+		else result = QWERTYToShiftQWERTY[result];
 	}
 
 	else if (bKeyboardPS2CapsLock)

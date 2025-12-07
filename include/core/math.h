@@ -29,8 +29,4 @@ float round(float x);
 
 int64 pow(int16 a, int16 b);
 
-//float fsinus(uint16 deg);
-
-//float fcosinus(uint16 deg);
-
 #endif

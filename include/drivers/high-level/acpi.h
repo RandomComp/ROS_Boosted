@@ -3,7 +3,7 @@
 
 #include "core/types.h"
 
-struct RSDPtr {
+typedef struct RSDPtr {
 	int8 Signature[8];
 
 	int8 CheckSum;
@@ -13,7 +13,7 @@ struct RSDPtr {
 	int8 Revision;
 
 	int32* RSDTAddress;
-};
+} RSDPtr;
 
 struct FACP {
 	int8 Signature[4];

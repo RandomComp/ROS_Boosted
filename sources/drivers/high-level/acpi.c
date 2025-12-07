@@ -1,14 +1,14 @@
-#include "../headers/acpi.h"
+#include "drivers/high-level/acpi.h"
 
 #include "core/types.h"
 
 #include "core/std.h"
 
-#include "../headers/io.h"
+#include "drivers/low-level/io/io.h"
 
 #include "drivers/low-level/base/mem.h"
 
-#include "../headers/pit.h"
+#include "drivers/high-level/pit.h"
 
 #include "core/error.h"
 
@@ -130,18 +130,16 @@ void ACPIInit(void) {
 }
 
 int32 ACPIEnable(void) {
-	int16 temp = 0;
+	int16 temp = in16((uint32)PM1a_CNT);
 
-	in16((uint32)PM1a_CNT, &temp);
-
-	if ( ( & SCI_EN) == 0 ) {
+	if ((&SCI_EN) == 0 ) {
 		if (SMI_CMD != 0 && ACPI_ENABLE != 0) {
 			out8((uint32)SMI_CMD, ACPI_ENABLE);
 
 			int32 i;
 
 			for (i = 0; i < 300; i++) {
-				in16((uint32)PM1a_CNT, &temp);
+				temp = in16((uint32)PM1a_CNT);
 
 				if ((temp & SCI_EN) == 1)
 					break;
@@ -151,7 +149,7 @@ int32 ACPIEnable(void) {
 
 			if (PM1b_CNT != 0)
 				for (; i < 300; i++) {
-					in16((uint32)PM1b_CNT, &temp);
+					temp = in16((uint32)PM1b_CNT);
 
 					if ((temp & SCI_EN) == 1)
 						break;
@@ -164,20 +162,16 @@ int32 ACPIEnable(void) {
 			else return -1;
 		} 
 
-		else {
-			return -1;
-		}
+		else return -1;
 	} 
 
-	else {
-		return 0;
-	}
+	else return 0;
 }
 
 uint32* ACPICheckRSDPtr(uint32* ptr) {
 	int8* sig = "RSD PTR ";
 
-	struct RSDPtr* rsdp = (struct RSDPtr* ) ptr;
+	RSDPtr* rsdp = (RSDPtr*) ptr;
 
 	int8* bptr;
 
@@ -192,9 +186,8 @@ uint32* ACPICheckRSDPtr(uint32* ptr) {
 			bptr++;
 		}
 
-		if (check == 0) {
+		if (check == 0)
 			return (uint32*)rsdp->RSDTAddress;
-		}
 	}
 
 	return 0;
@@ -240,15 +233,17 @@ int32 ACPICheckHeader(uint32* ptr, int8* sig) {
 			checkPtr++;
 		}
 
-		if (check == 0)
-			return 0;
+		if (check == 0) return 0;
 	}
 	return -1;
 }
 
 void ACPIPowerOff(void) {
-	if (SCI_EN == 0)
+	if (SCI_EN == 0) {
+		cause(ACPIUnableToShutdownError);
+
 		return;
+	}
 
 	ACPIEnable();
 
@@ -257,5 +252,7 @@ void ACPIPowerOff(void) {
 	if (PM1b_CNT != 0)
 		out16((uint32)PM1b_CNT, SLP_TYPb | SLP_EN);
 
-	//wrstr("ACPI poweroff failed.\n");
+	sleepTime(1000);
+
+	cause(ACPIShutdownError);
 }

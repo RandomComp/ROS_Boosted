@@ -1,39 +1,38 @@
-#include "../headers/warning.h"
+#include "core/warning.h"
 
 #include "core/types.h"
 
 #include "core/std.h"
 
-#include "../headers/time.h"
+#include "core/time.h"
 
-#include "../headers/pit.h"
+#include "drivers/high-level/pit.h"
 
-#include "../headers/speaker.h"
+#include "drivers/high-level/speaker.h"
 
-#include "../headers/colors.h"
-
-extern uint16 y;
+#include "charset/colors.h"
 
 extern uint32 foregroundColor;
 
-int8* getWarningDescription(enum WarningsType warningType) {
-	if (warningType == USBBabbleDetectedWarning) return "What? One more time. I don't understand what you're mumbling. \n\nMy friend taught me how to talk to my USB port, so now I have to mess with it for days without understanding it...\n\n";
+int8* getWarningDescription(WarningsType warningType) {
+	int8* warningMessages[] = {
+		[USBBabbleDetectedWarning] = 			"What? One more time. I don't understand what you're mumbling. \n\nMy friend taught me how to talk to my USB port, so now I have to mess with it for days without understanding it...\n\n",
+		[AllGlyphsAreReservedWarning] = 		"Dude, everything is booked, what can we do, we'll come tomorrow :(\n\n",
+		[RequiredNumberOfArgumentsNotReached] = "So wait, where's everything else?! ( The required number of arguments has not been reached )"
+	};
 
-	else if (warningType == AllGlyphsAreReservedWarning) return "Dude, everything is booked, what can we do, we'll come tomorrow :(\n\n";
-
-	else if (warningType == RequiredNumberOfArgumentsNotReached) return "So wait, where's everything else?! ( The required number of arguments has not been reached )";
+	if (warningType < sizeof(warningMessages) / sizeof(int8*))
+		return warningMessages[warningType];
 
 	return "There are no words. ( Unknown warning type )\n\n";
 }
 
-void warn(enum WarningsType warningType) {
+void warn(WarningsType warningType) {
 	TimeInit();
 
 	uint16 tempForegroundColor = foregroundColor;
 
 	foregroundColor = 0xffff00;
-
-	if (y) UGSMASCIIputChar('\n');
 
 	UGSMASCIIputString(getWarningDescription(warningType));
 

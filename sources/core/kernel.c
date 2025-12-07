@@ -6,6 +6,8 @@
 
 #include "drivers/high-level/keyboardps2.h"
 
+#include "drivers/high-level/mouseps2.h"
+
 #include "core/time.h"
 
 #include "drivers/low-level/base/mem.h"
@@ -80,159 +82,12 @@ extern struct Size heapSize;
 
 struct multibootInfo* bootInfo;
 
-enum Commands {
-	HELP,
-
-	ECHO,
-
-	COLOR,
-
-	PROGRAM,
-
-	SHUTDOWN,
-
-	REBOOT,
-
-	CLEAR
-} Commands;
-
-void DrawMenuBar() {
-	uint16 tempX = x;
-
-	uint16 tempY = y;
-
-	x = 0;
-
-	y = 0;
-
-	uint32 tempForegroundColor = foregroundColor;
-
-	uint32 tempBackgroundColor = backgroundColor;
-
-	foregroundColor = 0xffffff;
-
-	backgroundColor = 0x800000;
-
-	int8* str = "Random OS";
-
-	uint16 length = 0;
-
-	for (; str[length]; length++);
-
-	putChar(1);
-
-	if (now.day < 10)
-		UGSMASCIIputChar('0');
-
-	putX8Integer(now.day);
-
-	UGSMASCIIputChar('.');
-
-	if (now.month < 10)
-		UGSMASCIIputChar('0');
-
-	putX8Integer(now.month + 1);
-
-	UGSMASCIIputChar('.');
-
-	uint8 digitsCount = 0;
-
-	for (uint32 tempNum = now.year4Digits; tempNum != 0; tempNum /= 10) 
-		digitsCount++;
-
-	for (uint8 i = 0; i < 3 - digitsCount; i++) {
-		UGSMASCIIputChar('0');
-	}
-
-	putX32Integer(now.year4Digits);
-
-	uint16 pos = (columns / 2) - (length / 2);
-
-	for (uint16 i = x; i < pos; i++) putChar(1);
-
-	UGSMASCIIputString(str);
-
-	for (uint16 i = pos + length; i < columns; i++) putChar(1);
-
-	x = columns - 9;
-
-	y = 0;
-
-	if (now.hour < 10) {
-		UGSMASCIIputChar('0');
-	}
-
-	putX8Integer(now.hour);
-
-	UGSMASCIIputChar(':');
-
-	if (now.minute < 10) {
-		UGSMASCIIputChar('0');
-	}
-
-	putX8Integer(now.minute);
-
-	UGSMASCIIputChar(':');
-
-	if (now.second < 10) {
-		UGSMASCIIputChar('0');
-	}
-
-	putX8Integer(now.second);
-
-	swap();
-
-	foregroundColor = tempForegroundColor;
-
-	backgroundColor = tempBackgroundColor;
-
-	x = tempX;
-
-	y = tempY;
-}
-
-void EverySecond(void) {
-	DrawMenuBar();
-}
-
-void RMALcompileASCII(int8* code) {
-	putChar(UGSM_CHAR_SPACE);
-
-	UGSMGlyphCode UGSMCode[384] = { 0 };
-
-	for (uint16 i = 0; code[i]; i++) {
-		switch (code[i]) {
-			case 32: UGSMCode[i] = 1; break;
-			case 10: UGSMCode[i] = 2; break;
-			case 13: UGSMCode[i] = 3; break;
-			case 9:  UGSMCode[i] = 4; break;
-			default: UGSMCode[i] = (UGSMGlyphCode)(code[i] - 33) + ASCIIOffset + 5; break;
-		}
-	}
-
-	putString(UGSMCode);
-
-	RMALTokenize(UGSMCode);
-
-	RMALTokensView();
-
-	putChar(UGSM_CHAR_NEW_LINE);
-
-	RMALParse();
-
-	RMALCompile();
-
-	putChar(UGSM_CHAR_NEW_LINE);
-}
-
 void main(uint32 magic, struct multibootInfo* bootInfoArg) {
 	bootInfo = bootInfoArg;
 
 	STDInit();
 
 	ASCIIInit();
-
-	y += 3;
 
 	foregroundColor = 0x00ff00;
 
@@ -268,10 +123,6 @@ void main(uint32 magic, struct multibootInfo* bootInfoArg) {
 
 	UGSMASCIIputString("Russian is initialized!\n");
 
-	everySecond = &EverySecond;
-
-	EverySecond();
-
 	KeyboardPS2Init();
 
 	UGSMASCIIputString("Interrupt for PS/2 keyboard is ready to use!\n");
@@ -286,25 +137,19 @@ void main(uint32 magic, struct multibootInfo* bootInfoArg) {
 
 	backgroundColor = 0x000000;
 
-	//causeFatal(BadTSError);
-
 	while (true) {
 		if (bKeyboardPS2Updated) {
-			UGSMASCIIputString("Getted ");
+			clear(0x000000);
 
-			putUX32Integer(updatedKey);
-
-			UGSMASCIIputString(", ");
+			putChar(UGSM_CHAR_DOUBLE_QUOTES);
 
 			putChar(scancodeToUGSM(updatedKey));
-
-			putChar(UGSM_CHAR_NEW_LINE);
+			
+			putChar(UGSM_CHAR_DOUBLE_QUOTES);
 
 			bKeyboardPS2Updated = false;
 
 			swap();
 		}
 	}
-
-	for (;;);
 }

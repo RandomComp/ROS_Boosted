@@ -2,6 +2,8 @@
 
 #include "drivers/high-level/vbe.h"
 
+#include "drivers/low-level/base/mem.h"
+
 #include "charset/ugsm.h"
 
 #include "charset/abc.h"
@@ -61,27 +63,6 @@ void STDInit(void) {
 	bSTDInitialized = true;
 }
 
-/*uint8* numberToString(uint32 num) {
-	uint16 digitsCount = 0;
-
-	uint64 tempNum = num;
-
-	for (; tempNum != 0; tempNum /= 10) digitsCount++;
-
-	uint8* result = malloc(digitsCount * sizeof(uint8));
-
-	uint16 i = 0;
-
-	uint8 n = 0;
-
-	for (digitsCountPowed = 1; n != num; digitsCountPowed *= 10) {
-		i++;
-		n = num % digitsCountPowed;
-
-		result[(digitsCount - 1) - i] = 20 + n;
-	}
-}*/
-
 uint32 getStringLength(UGSMGlyphCode str[6]) {
 	uint32 result = 0;
 
@@ -94,8 +75,8 @@ void setConsoleCursorPosition(int16 _x, int16 _y) {
 	x = _x; y = _y;
 }
 
-void showConsoleCursor() {
-	showCursor = false;
+void setConsoleCursorVisible(bool bVisible) {
+	showCursor = bVisible;
 }
 
 void setString(uint16 x, uint16 y, UGSMGlyphCode str[6]) {
@@ -143,13 +124,13 @@ void putChar(UGSMGlyphCode glyphCode) {
 		switch (glyphCode) {
 			case UGSM_CHAR_NULL: return;
 
-			case UGSM_CHAR_SPACE: x++; break;
+			case UGSM_CHAR_SPACE: 			x++; break;
 
-			case UGSM_CHAR_NEW_LINE: y++; x = 0; break;
+			case UGSM_CHAR_NEW_LINE: 		y++; x = 0; break;
 			
-			case UGSM_CHAR_CR: x = 0; break;
+			case UGSM_CHAR_CARRIAGE_RETURN: x = 0; break;
 
-			case UGSM_CHAR_TAB: x += 4; break;
+			case UGSM_CHAR_TAB: 			x += 4; break;
 		}
 	}
 
@@ -213,12 +194,26 @@ void putChar(UGSMGlyphCode glyphCode) {
 	}
 }
 
+void fastClear(uint8 backgroundColor) {
+	memset(framebuffer, backgroundColor, sizeof(framebuffer));
+
+	resetConsole();
+}
+
 void clear(uint32 backgroundColor) {
 	for (uint32 i = 0; i < width; i++) {
 		for (uint32 j = 0; j < height; j++) {
 			framebuffer[i][j] = backgroundColor;
 		}
 	}
+
+	resetConsole();
+}
+
+void resetConsole() {
+	foregroundColor = 0xffffff;
+
+	backgroundColor = 0x000000;
 
 	x = 0;
 
@@ -227,16 +222,22 @@ void clear(uint32 backgroundColor) {
 	if (onClearScreen) onClearScreen();
 }
 
-void swap(void) {
-	for (uint32 i = 0; i < width; i++) {
-		for (uint32 j = 0; j < height; j++) {
-			if (viewbuffer[i][j] != framebuffer[i][j]) {
-				uint32 posp = (i + (j * width)) * vidchannels;
+void swap() {
+	// for (uint32 i = 0; i < width; i++) {
+	// 	for (uint32 j = 0; j < height; j++) {
+	// 		if (viewbuffer[i][j] != framebuffer[i][j]) {
+	// 			uint32 posp = (i + (j * width)) * vidchannels;
 
-				*(uint32*)((uint8*)vidmemaddr + posp) = framebuffer[i][j];
+	// 			*(uint32*)((uint8*)vidmemaddr + posp) = framebuffer[i][j];
 				
-				viewbuffer[i][j] = framebuffer[i][j];
-			}
-		}
-	}
+	// 			viewbuffer[i][j] = framebuffer[i][j];
+	// 		}
+	// 	}
+	// }
+
+	// EXPERIMENTAL CODE!!! MAY BE NOT WORK!
+
+	memcpy((uint8*)vidmemaddr, framebuffer, sizeof(framebuffer));
+
+	memcpy(viewbuffer, framebuffer, sizeof(framebuffer));
 }
