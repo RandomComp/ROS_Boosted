@@ -13,23 +13,21 @@
 
 #define HOURS_PER_DAY 24
 
+#define DAYS_PER_WEEK 7
+
 #define MONTHS_PER_YEAR 12
+
+#define SEASONS_PER_YEAR 4
 
 #define DAYS_PER_YEAR 365.2425
 
-#define DAYS_PER_SEASON_SPRING (30 + 31 + 31) // 92 Days of summer
+#define MS_PER_MINUTE	(SECONDS_PER_MINUTE * MS_PER_SECOND)
 
-#define DAYS_PER_SEASON_SUMMER (30 + 31 + 31) // 92 Days of summer
+#define MS_PER_HOUR		(MINUTES_PER_HOUR * MS_PER_MINUTE)
 
-#define DAYS_PER_SEASON_AUTUMN (30 + 31 + 31) // 92 Days of summer
+#define MS_PER_DAY		(HOURS_PER_DAY * MS_PER_HOUR)
 
-#define MS_PER_MINUTE (SECONDS_PER_MINUTE * MS_PER_SECOND)
-
-#define MS_PER_HOUR (MINUTES_PER_HOUR * MS_PER_MINUTE)
-
-#define MS_PER_DAY (HOURS_PER_DAY * MS_PER_HOUR)
-
-#define MS_PER_YEAR ((int64)DAYS_PER_YEAR * (int64)MS_PER_DAY)
+#define MS_PER_YEAR		((int64)DAYS_PER_YEAR * (int64)MS_PER_DAY)
 
 typedef int64 Time;
 
@@ -62,11 +60,11 @@ typedef enum Month {
 } Month;
 
 typedef enum DayOfWeek {
-	DayOfWeek_MONDAY, 	// Понедельник
-	DayOfWeek_TUESDAY,	// Вторник
+	DayOfWeek_MONDAY,		// Понедельник
+	DayOfWeek_TUESDAY,		// Вторник
 	DayOfWeek_WEDNESDAY, 	// Среда
-	DayOfWeek_THURSDAY, 	// Четверг
-	DayOfWeek_FRIDAY, 	// Пятница
+	DayOfWeek_THURSDAY,		// Четверг
+	DayOfWeek_FRIDAY, 		// Пятница
 	DayOfWeek_SATURDAY, 	// Суббота
 	DayOfWeek_SUNDAY		// Воскресенье
 } DayOfWeek;
@@ -110,9 +108,9 @@ typedef enum TimeUnit {
 
 void TimeInit();
 
-int64 convert(int64 value, int64 maxValue, int64 divisor);
+int64 convertAndDivide(int64 value, int64 maxValue, int64 divisor);
 
-Time convertToTimeStamp(TimeUnit timeFrom, int64 value);
+Time convertToTimeStamp(TimeUnit timeUnit, int64 value, bool isLeapYear);
 
 Time convertToTimeStampFromTimeStruct(TimeStruct timeFrom);
 

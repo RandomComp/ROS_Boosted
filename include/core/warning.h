@@ -1,15 +1,15 @@
 #ifndef _WARNING_H
 #define _WARNING_H
 
-#include "../headers/types.h"
+#include "core/types.h"
 
-enum WarningsType {
+typedef enum WarningsType {
 	USBBabbleDetectedWarning = 0,
 
 	AllGlyphsAreReservedWarning = 1,
 
 	RequiredNumberOfArgumentsNotReached = 2
-};
+} WarningsType;
 
 int8* getWarningDescription(enum WarningsType warningType);
 

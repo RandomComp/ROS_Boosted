@@ -16,8 +16,16 @@ uint8 CMOSRead(UniversalCMOSCode code) {
 	return in8(CMOS_DATA_PORT);
 }
 
-bool checkProgressFlag(void) {
-	return CMOSRead(CMOS_REGISTER_A) & (1 << REGISTER_A_UPDATE_IN_PROGRESS);
+void CMOSEnableBit(UniversalCMOSCode code, uint8 bitIndex) {
+	CMOSWrite(code, CMOSRead(code) | (1 << bitIndex));
+}
+
+void CMOSDisableBit(UniversalCMOSCode code, uint8 bitIndex) {
+	CMOSWrite(code, CMOSRead(code) & ~(1 << bitIndex));
+}
+
+bool CMOSCheckBit(UniversalCMOSCode code, uint8 bitIndex) {
+	return CMOSRead(code) & (1 << bitIndex);
 }
 
 void setRTCTime(TimeStruct time) {
@@ -27,25 +35,21 @@ void setRTCTime(TimeStruct time) {
 
 	time = binaryTimeToRTCFormatedIfNecessary(time);
 
-    Register registerB = CMOSRead(CMOS_REGISTER_B);
+	CMOSEnableBit(CMOS_REGISTER_B, REGISTER_B_TIME_SET);
 
-    CMOSWrite(CMOS_REGISTER_B, registerB | (1 << REGISTER_B_TIME_SET));
+	CMOSWrite(CMOS_RTC_SECONDS, 		time.seconds);
 
-	CMOSWrite(CMOS_RTC_SECONDS, time.seconds);
+	CMOSWrite(CMOS_RTC_MINUTES, 		time.minutes);
 
-	CMOSWrite(CMOS_RTC_MINUTES, time.minutes);
+	CMOSWrite(CMOS_RTC_HOURS, 			time.hours);
 
-	CMOSWrite(CMOS_RTC_HOURS, time.hours);
+	CMOSWrite(CMOS_RTC_DAY_OF_MONTH, 	time.days);
 
-	CMOSWrite(CMOS_RTC_DAY_OF_MONTH, time.days);
+	CMOSWrite(CMOS_RTC_MONTHS, 			time.months);
 
-	CMOSWrite(CMOS_RTC_MONTHS, time.months);
+	CMOSWrite(CMOS_RTC_YEARS, 			time.years);
 
-	CMOSWrite(CMOS_RTC_YEARS, time.years);
-
-    registerB = CMOSRead(CMOS_REGISTER_B);
-
-    CMOSWrite(CMOS_REGISTER_B, registerB & ~(1 << REGISTER_B_TIME_SET));
+	CMOSDisableBit(CMOS_REGISTER_B, REGISTER_B_TIME_SET);
 }
 
 TimeStruct getRTCTime(void) {

@@ -1,10 +1,20 @@
-CFLAGS  = -m32 -fno-builtin -nostdinc -nostdlib
+CFLAGS  = -m32 -ffrestanding -fno-builtin -nostdinc -nostdlib
 
 GASFLAGS = --32
 
-OBJECT_FILES = ${shell find sources -type f -name "*.o" -printf "%p "}
+C_FILES =			${shell find sources -type f -name "*.c" -printf "%p "}
 
-all: clean gassources nasmsources $(OBJECT_FILES) kernel.bin image vmwareDisk
+GAS_FILES = 		${shell find sources -type f -name "*.s" -printf "%p "}
+
+NASM_FILES =		${shell find sources -type f -name "*.n" -printf "%p "}
+
+OBJECT_C_FILES = 	${C_FILES:.c=.o}
+
+OBJECT_GAS_FILES = 	${C_FILES:.s=.o}
+
+OBJECT_NASM_FILES = ${C_FILES:.n=.o}
+
+all: clean $(OBJECT_C_FILES) $(OBJECT_GAS_FILES) $(OBJECT_NASM_FILES) kernel.bin image vmwareDisk
 
 image:
 	@echo "Creating hdd.img..."
@@ -38,7 +48,7 @@ gassources:
 
 	@as $(GASFLAGS) -o objectFiles/setjmp.o sources/setjmp.s
 
-csources: $(OBJECT_FILES)
+csources: $(OBJECT_C_FILES)
 	@gcc -Iinclude $(CFLAGS) -o $@ -c $<
 
 kernel.bin:
@@ -46,4 +56,4 @@ kernel.bin:
 vmwareDisk:
 	@qemu-img convert -f raw hdd.img -O vmdk ./RandomOS.vmdk
 clean:
-	@rm -rf ${OBJECT_FILES}
+	@rm -rf ${OBJECT_C_FILES} ${OBJECT_GAS_FILES} ${OBJECT_NASM_FILES}

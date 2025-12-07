@@ -34,8 +34,8 @@ typedef enum UniversalCMOSCode {
 	CMOS_BASE_MEMORY_KB_HIGH_BYTE,      // Получение верхнего байта размера RAM до 1 МБ.                                        Только чтение.
 	CMOS_EXTENDED_KB_MEMORY_LOW_BYTE,   // Получение нижнего байта размера RAM после 1 МБ.                                      Только чтение.
 	CMOS_EXTENDED_KB_MEMORY_HIGH_BYTE,  // Получение верхнего байта размера RAM после 1 МБ.                                     Только чтение.
-	CMOS_CHECKSUM_HIGH_BYTE = 0x2E,     // Получение верхнего байта CMOS CHECKSUM.                                              Только чтение.
-	CMOS_CHECKSUM_LOW_BYTE,				// Получение нижнего байта CMOS CHECKSUM.                                               Только чтение.
+	CMOS_CHECKSUM_HIGH_BYTE = 0x2E,		// Получение верхнего байта CMOS CHECKSUM.                                              Только чтение.
+	CMOS_CHECKSUM_LOW_BYTE = 0x2F,		// Получение нижнего байта  CMOS CHECKSUM.                                              Только чтение.
 	CMOS_RTC_CENTURY = 0x32            	// Получение значения века.                                                             Чтение и запись разрешены.
 } UniversalCMOSCode;
 
@@ -102,7 +102,11 @@ void CMOSWrite(UniversalCMOSCode code, uint8 data);
 
 uint8 CMOSRead(UniversalCMOSCode code);
 
-bool checkProgressFlag(void);
+void CMOSEnableBit(UniversalCMOSCode code, uint8 bitIndex);
+
+void CMOSDisableBit(UniversalCMOSCode code, uint8 bitIndex);
+
+bool CMOSCheckBit(UniversalCMOSCode code, uint8 bitIndex);
 
 void setRTCTime(TimeStruct time);
 

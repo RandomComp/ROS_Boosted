@@ -25,7 +25,8 @@
         "format.h": "c",
         "speaker.h": "c",
         "cmos.h": "c",
-        "math.h": "c"
+        "math.h": "c",
+        "warning.h": "c"
     },
     
     "C_Cpp.default.includePath": [],

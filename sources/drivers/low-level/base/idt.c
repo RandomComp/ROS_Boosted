@@ -1,16 +1,16 @@
-#include "../headers/idt.h"
+#include "drivers/low-level/base/idt.h"
 
-#include "../headers/gdt.h"
+#include "drivers/low-level/base/gdt.h"
 
-#include "../headers/types.h"
+#include "core/types.h"
 
-#include "../headers/std.h"
+#include "core/std.h"
 
-#include "../headers/fatal_error.h"
+#include "core/fatal_error.h"
 
-#include "../headers/mem.h"
+#include "drivers/low-level/base/mem.h"
 
-#include "../headers/io.h"
+#include "drivers/low-level/io/io.h"
 
 extern void IDTFlush(uint32);
 
@@ -32,125 +32,68 @@ void IDTInit(void) {
 	memset(&idtEntries, 0, sizeof(struct IDTEntryStruct) * 256);
 
 	out8(0x20, 0x11);
-
 	out8(0xa0, 0x11);
-
 	out8(0x21, 0x20);
-
 	out8(0xa1, 0x28);
-
 	out8(0x21, 0x04);
-
 	out8(0xa1, 0x02);
-
 	out8(0x21, 0x01);
-
 	out8(0xa1, 0x01);
-
 	out8(0x21, 0x00);
-
 	out8(0xa1, 0x00);
 
-	IDTSetGate(0, (uint32)isr0, 0x08, 0x8e);
+	IDTSetGate(0, 	(uint32)isr0, 	0x08, 0x8e);
+	IDTSetGate(1, 	(uint32)isr1, 	0x08, 0x8e);
+	IDTSetGate(2, 	(uint32)isr2, 	0x08, 0x8e);
+	IDTSetGate(3, 	(uint32)isr3, 	0x08, 0x8e);
+	IDTSetGate(4, 	(uint32)isr4, 	0x08, 0x8e);
+	IDTSetGate(5, 	(uint32)isr5, 	0x08, 0x8e);
+	IDTSetGate(6, 	(uint32)isr6, 	0x08, 0x8e);
+	IDTSetGate(7, 	(uint32)isr7, 	0x08, 0x8e);
+	IDTSetGate(8, 	(uint32)isr8, 	0x08, 0x8e);
+	IDTSetGate(9, 	(uint32)isr9, 	0x08, 0x8e);
+	IDTSetGate(10, 	(uint32)isr10, 	0x08, 0x8e);
+	IDTSetGate(11, 	(uint32)isr11, 	0x08, 0x8e);
+	IDTSetGate(12, 	(uint32)isr12, 	0x08, 0x8e);
+	IDTSetGate(13, 	(uint32)isr13, 	0x08, 0x8e);
+	IDTSetGate(14, 	(uint32)isr14, 	0x08, 0x8e);
+	IDTSetGate(15, 	(uint32)isr15, 	0x08, 0x8e);
+	IDTSetGate(16, 	(uint32)isr16, 	0x08, 0x8e);
+	IDTSetGate(17, 	(uint32)isr17, 	0x08, 0x8e);
+	IDTSetGate(18, 	(uint32)isr18, 	0x08, 0x8e);
+	IDTSetGate(19, 	(uint32)isr19, 	0x08, 0x8e);
+	IDTSetGate(20, 	(uint32)isr20, 	0x08, 0x8e);
+	IDTSetGate(21, 	(uint32)isr21, 	0x08, 0x8e);
+	IDTSetGate(22, 	(uint32)isr22, 	0x08, 0x8e);
+	IDTSetGate(23, 	(uint32)isr23, 	0x08, 0x8e);
+	IDTSetGate(24, 	(uint32)isr24, 	0x08, 0x8e);
+	IDTSetGate(25, 	(uint32)isr25, 	0x08, 0x8e);
+	IDTSetGate(26, 	(uint32)isr26, 	0x08, 0x8e);
+	IDTSetGate(27, 	(uint32)isr27, 	0x08, 0x8e);
+	IDTSetGate(28, 	(uint32)isr28, 	0x08, 0x8e);
+	IDTSetGate(29, 	(uint32)isr29, 	0x08, 0x8e);
+	IDTSetGate(30, 	(uint32)isr30, 	0x08, 0x8e);
+	IDTSetGate(31, 	(uint32)isr31, 	0x08, 0x8e);
 
-	IDTSetGate(1, (uint32)isr1, 0x08, 0x8e);
+	IDTSetGate(32, 	(uint32)irq0, 	0x08, 0x8e); // Прерывание PIT
+	IDTSetGate(33, 	(uint32)irq1, 	0x08, 0x8e); // Прерывание клавиатуры, 
+	IDTSetGate(34, 	(uint32)irq2, 	0x08, 0x8e);
+	IDTSetGate(35, 	(uint32)irq3, 	0x08, 0x8e); // Прерывание порта COM2
+	IDTSetGate(36, 	(uint32)irq4, 	0x08, 0x8e);
+	IDTSetGate(37, 	(uint32)irq5, 	0x08, 0x8e);
+	IDTSetGate(38, 	(uint32)irq6, 	0x08, 0x8e);
+	IDTSetGate(39, 	(uint32)irq7, 	0x08, 0x8e);
+	IDTSetGate(40, 	(uint32)irq8, 	0x08, 0x8e);
+	IDTSetGate(41, 	(uint32)irq9, 	0x08, 0x8e);
+	IDTSetGate(42, 	(uint32)irq10, 	0x08, 0x8e);
+	IDTSetGate(43, 	(uint32)irq11, 	0x08, 0x8e);
+	IDTSetGate(44, 	(uint32)irq12, 	0x08, 0x8e);
+	IDTSetGate(45, 	(uint32)irq13, 	0x08, 0x8e);
+	IDTSetGate(46, 	(uint32)irq14, 	0x08, 0x8e);
+	IDTSetGate(47, 	(uint32)irq15, 	0x08, 0x8e);
 
-	IDTSetGate(2, (uint32)isr2, 0x08, 0x8e);
-
-	IDTSetGate(3, (uint32)isr3, 0x08, 0x8e);
-
-	IDTSetGate(4, (uint32)isr4, 0x08, 0x8e);
-
-	IDTSetGate(5, (uint32)isr5, 0x08, 0x8e);
-
-	IDTSetGate(6, (uint32)isr6, 0x08, 0x8e);
-
-	IDTSetGate(7, (uint32)isr7, 0x08, 0x8e);
-
-	IDTSetGate(8, (uint32)isr8, 0x08, 0x8e);
-
-	IDTSetGate(9, (uint32)isr9, 0x08, 0x8e);
-
-	IDTSetGate(10, (uint32)isr10, 0x08, 0x8e);
-
-	IDTSetGate(11, (uint32)isr11, 0x08, 0x8e);
-
-	IDTSetGate(12, (uint32)isr12, 0x08, 0x8e);
-
-	IDTSetGate(13, (uint32)isr13, 0x08, 0x8e);
-
-	IDTSetGate(14, (uint32)isr14, 0x08, 0x8e);
-
-	IDTSetGate(15, (uint32)isr15, 0x08, 0x8e);
-
-	IDTSetGate(16, (uint32)isr16, 0x08, 0x8e);
-
-	IDTSetGate(17, (uint32)isr17, 0x08, 0x8e);
-
-	IDTSetGate(18, (uint32)isr18, 0x08, 0x8e);
-
-	IDTSetGate(19, (uint32)isr19, 0x08, 0x8e);
-
-	IDTSetGate(20, (uint32)isr20, 0x08, 0x8e);
-
-	IDTSetGate(21, (uint32)isr21, 0x08, 0x8e);
-
-	IDTSetGate(22, (uint32)isr22, 0x08, 0x8e);
-
-	IDTSetGate(23, (uint32)isr23, 0x08, 0x8e);
-
-	IDTSetGate(24, (uint32)isr24, 0x08, 0x8e);
-
-	IDTSetGate(25, (uint32)isr25, 0x08, 0x8e);
-
-	IDTSetGate(26, (uint32)isr26, 0x08, 0x8e);
-
-	IDTSetGate(27, (uint32)isr27, 0x08, 0x8e);
-
-	IDTSetGate(28, (uint32)isr28, 0x08, 0x8e);
-
-	IDTSetGate(29, (uint32)isr29, 0x08, 0x8e);
-
-	IDTSetGate(30, (uint32)isr30, 0x08, 0x8e);
-
-	IDTSetGate(31, (uint32)isr31, 0x08, 0x8e);
-
-
-	IDTSetGate(32, (uint32)irq0, 0x08, 0x8e);
-
-	IDTSetGate(33, (uint32)irq1, 0x08, 0x8e);
-
-	IDTSetGate(34, (uint32)irq2, 0x08, 0x8e);
-
-	IDTSetGate(35, (uint32)irq3, 0x08, 0x8e);
-
-	IDTSetGate(36, (uint32)irq4, 0x08, 0x8e);
-
-	IDTSetGate(37, (uint32)irq5, 0x08, 0x8e);
-
-	IDTSetGate(38, (uint32)irq6, 0x08, 0x8e);
-
-	IDTSetGate(39, (uint32)irq7, 0x08, 0x8e);
-
-	IDTSetGate(40, (uint32)irq8, 0x08, 0x8e);
-
-	IDTSetGate(41, (uint32)irq9, 0x08, 0x8e);
-
-	IDTSetGate(42, (uint32)irq10, 0x08, 0x8e);
-
-	IDTSetGate(43, (uint32)irq11, 0x08, 0x8e);
-
-	IDTSetGate(44, (uint32)irq12, 0x08, 0x8e);
-
-	IDTSetGate(45, (uint32)irq13, 0x08, 0x8e);
-
-	IDTSetGate(46, (uint32)irq14, 0x08, 0x8e);
-
-	IDTSetGate(47, (uint32)irq15, 0x08, 0x8e);
-
-	IDTSetGate(128, (uint32)isr128, 0x08, 0x8e);
-
-	IDTSetGate(177, (uint32)isr177, 0x08, 0x8e);
+	IDTSetGate(128,	(uint32)isr128, 0x08, 0x8e);
+	IDTSetGate(177,	(uint32)isr177, 0x08, 0x8e);
 
 	IDTFlush((uint32)&idtPtr);
 
@@ -177,11 +120,7 @@ void IDTISRHandler(struct Registers* regs) {
 		causeFatal(ReservedError);
 }
 
-void* IDTIRQRoutines[16] = {
-	0, 0, 0, 0, 0, 0, 0, 0,
-
-	0, 0, 0, 0, 0, 0, 0, 0,
-};
+void* IDTIRQRoutines[16] = { 0 };
 
 void IDTIRQInstallHandler(int32 irq, void (*handler)(struct Registers* regs)) {
 	IDTIRQRoutines[irq] = handler;
@@ -196,8 +135,7 @@ void IDTIRQHandler(struct Registers* regs) {
 
 	handler = IDTIRQRoutines[regs->int_no - 32];
 
-	if (handler)
-		handler(regs);
+	if (handler) handler(regs);
 
 	if (regs->int_no >= 40)
 		out8(0xa0, 0x20);

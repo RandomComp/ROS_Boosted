@@ -1,4 +1,6 @@
-#include "../headers/quad.h"
+#include "drivers/low-level/base/quad.h"
+
+#include "core/fatal_error.h"
 
 #define	B ((int32)1 << HALF_BITS)
 
@@ -36,6 +38,8 @@ uint64 __qdivrem(uint64 uq, uint64 vq, uint64 *arq) {
 		static volatile const uint32 zero = 0;
 
 		tmp.ul[H] = tmp.ul[L] = 1 / zero;
+
+		causeFatal(DivisionByZeroError);
 
 		if (arq) *arq = uq;
 

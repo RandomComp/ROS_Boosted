@@ -15,9 +15,9 @@ void STDInit(void);
 
 uint32 getStringLength(UGSMGlyphCode str[6]);
 
-void setConsoleCursorPosition(uint8 x, uint8 y);
+void setConsoleCursorPosition(int16 _x, int16 _y);
 
-void hideConsoleCursor(void);
+void setConsoleCursorVisible(bool bVisible);
 
 void setString(uint16 x, uint16 y, UGSMGlyphCode str[6]);
 

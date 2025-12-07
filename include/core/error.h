@@ -3,7 +3,7 @@
 
 #include "core/types.h"
 
-enum ErrorsType {
+typedef enum ErrorsType {
 	VBENotSupportedError,
 
 	VBESetupError,
@@ -55,7 +55,7 @@ enum ErrorsType {
 	ACPINoKnownWayToEnableACPIError,
 
 	MemoryLackError
-};
+} ErrorsType;
 
 int8* getErrorDescription(enum ErrorsType errorType);
 

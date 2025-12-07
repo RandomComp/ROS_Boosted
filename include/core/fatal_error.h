@@ -3,7 +3,7 @@
 
 #include "core/types.h"
 
-enum FatalErrorsType {
+typedef enum FatalErrorsType {
 	DebugError,
 
 	DivisionByZeroError,
@@ -38,8 +38,10 @@ enum FatalErrorsType {
 
 	MachineCheckError,
 
-	ReservedError
-};
+	ReservedError,
+
+	ISRReservedError
+} FatalErrorsType;
 
 int8* getFatalErrorDescription(enum FatalErrorsType errorType);
 

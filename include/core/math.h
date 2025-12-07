@@ -11,11 +11,15 @@ int64 abs(int64 x);
 
 float fabs(float x);
 
+float fmod(float a, float b);
+
 int64 scaleToInteger(float x);
 
 uint8 getCountDecimalPlaces(int64 x);
 
 float trunc(float x);
+
+float frac(float x);
 
 float floor(float x);
 
