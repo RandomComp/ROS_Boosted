@@ -1,4 +1,4 @@
-#include "../headers/std.h"
+#include "core/std.h"
 
 #include "../headers/io.h"
 

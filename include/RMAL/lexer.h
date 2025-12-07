@@ -3,7 +3,7 @@
 
 // Lexer of RMAL ( Random minimal assembly language )
 
-#include "../../headers/types.h"
+#include "../core/types.h"
 
 #include "../../headers/ugsm.h"
 

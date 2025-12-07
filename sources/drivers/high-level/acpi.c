@@ -1,16 +1,16 @@
 #include "../headers/acpi.h"
 
-#include "../headers/types.h"
+#include "core/types.h"
 
-#include "../headers/std.h"
+#include "core/std.h"
 
 #include "../headers/io.h"
 
-#include "../headers/mem.h"
+#include "drivers/low-level/base/mem.h"
 
 #include "../headers/pit.h"
 
-#include "../headers/error.h"
+#include "core/error.h"
 
 bool bACPIInitialized = false;
 

@@ -1,6 +1,6 @@
 #include "../headers/gdt.h"
 
-#include "../headers/types.h"
+#include "core/types.h"
 
 extern void GDTFlush(uint32);
 

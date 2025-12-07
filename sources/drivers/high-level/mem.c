@@ -1,14 +1,14 @@
-#include "../headers/mem.h"
+#include "drivers/low-level/base/mem.h"
 
-#include "../headers/multiboot.h"
+#include "core/multiboot.h"
 
-#include "../headers/types.h"
+#include "core/types.h"
 
-#include "../headers/std.h"
+#include "core/std.h"
 
-#include "../headers/error.h"
+#include "core/error.h"
 
-#include "../headers/math.h"
+#include "core/math.h"
 
 extern struct multibootInfo* bootInfo;
 

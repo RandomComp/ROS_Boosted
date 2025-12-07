@@ -1,8 +1,8 @@
 #include "../headers/warning.h"
 
-#include "../headers/types.h"
+#include "core/types.h"
 
-#include "../headers/std.h"
+#include "core/std.h"
 
 #include "../headers/time.h"
 

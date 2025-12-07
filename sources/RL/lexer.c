@@ -1,6 +1,6 @@
 #include "../../headers/RL/lexer.h"
 
-#include "../../headers/types.h"
+#include "../core/types.h"
 
 #include "../../headers/ugsm.h"
 

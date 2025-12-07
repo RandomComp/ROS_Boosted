@@ -121,7 +121,7 @@ struct multibootInfo {
 	};
 };
 
-struct multibootMMapEntry {
+typedef struct multibootMMapEntry {
 	uint32 size;
 
 	uint32 addr_low;
@@ -134,6 +134,6 @@ struct multibootMMapEntry {
 
 	uint32 type;
 
-} PACKED;
+} multibootMMapEntry PACKED;
 
 #endif

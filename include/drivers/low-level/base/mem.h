@@ -154,15 +154,15 @@ enum MemoryRegionStatus {
 	RESERVED_EXECUTABLE_MEMORY
 };
 
-struct Size {
+typedef struct Size {
 	uint32 gigabytes, megabytes, kilobytes, bytes;
-};
+} Size;
 
-struct MemoryRegionInformation {
+typedef struct MemoryRegionInformation {
 	AbsoluteSize size;
 
 	enum MemoryRegionStatus status;
-};
+} MemoryRegionInformation;
 
 void MEMInit(AbsoluteSize size);
 

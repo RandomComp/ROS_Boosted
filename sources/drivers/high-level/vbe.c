@@ -1,12 +1,12 @@
 #include "../headers/vbe.h"
 
-#include "../headers/std.h"
+#include "core/std.h"
 
 #include "../headers/bios.h"
 
-#include "../headers/mem.h"
+#include "drivers/low-level/base/mem.h"
 
-#include "../headers/error.h"
+#include "core/error.h"
 
 uint32 vidmemaddr = 0;
 

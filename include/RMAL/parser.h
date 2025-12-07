@@ -1,7 +1,7 @@
 #ifndef _RMAL_PARSER_H
 #define _RMAL_PARSER_H
 
-#include "../../headers/types.h"
+#include "../core/types.h"
 
 #include "../../headers/RMAL/lexer.h"
 
