@@ -44,7 +44,6 @@ typedef int32 Day;
 typedef int64 Year;
 
 typedef enum Month {
-	MONTH_UNKNOWN = -1, // Неопределенный месяц
 	MONTH_JANUARY, 		// Январь
 	MONTH_FEBRUARY, 	// Февраль
 	MONTH_MARCH, 		// Март

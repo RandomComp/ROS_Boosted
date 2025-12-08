@@ -3,6 +3,8 @@
 
 #include "core/types.h"
 
+#define EPSILON 1.192092896e-07f
+
 #define PI 3.1415926535
 
 #define E 2.718281828459

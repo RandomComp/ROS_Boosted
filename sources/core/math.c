@@ -41,11 +41,11 @@ float trunc(float x) {
 }
 
 float frac(float x) {
-    return fabs(x - trunc(x));
+    return x - trunc(x);
 }
 
 uint32 getNumberAfterDecimalPoint(float x) {
-    return (uint32)(frac(x) * 10.0f) % 10;
+    return (uint32)(fabs(frac(x)) * 10.0f) % 10;
 }
 
 float floor(float x) {
@@ -69,9 +69,10 @@ float ceil(float x) {
 float round(float x) {
     uint32 number = getNumberAfterDecimalPoint(x);
 
-    if (x < 0) return number >= 5 ? floor(x) : ceil(x);
+    if (x < 0)
+        return number >= 5 ? floor(x) : ceil(x);
 
-    return number >= 5 ? ceil(x) : floor(x);
+    return  number >= 5 ? ceil(x) : floor(x);
 }
 
 int64 pow(int16 a, int16 b) {

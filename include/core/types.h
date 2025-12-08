@@ -41,6 +41,14 @@
 
 #define UINT64_MAX (uint64)(-1)
 
+#define FLOAT_MIN 1.175494351e-38f
+
+#define DOUBLE_MIN 2.2250738585072014e-308
+
+#define FLOAT_MAX 3.402823466e+38f
+
+#define DOUBLE_MAX 1.7976931348623158e+308f
+
 typedef unsigned char uint8;
 
 typedef unsigned short uint16;
@@ -58,5 +66,15 @@ typedef int int32;
 typedef long long int64;
 
 typedef uint8 bool;
+
+typedef struct Decimal {
+    int32 numerator;
+
+    int32 denominator;
+} Decimal;
+
+double doubleFromDecimal(Decimal decimal);
+
+Decimal doubleToDecimal(double x);
 
 #endif

@@ -139,7 +139,7 @@ DayOfWeek getDayOfWeek(Time time) {
 }
 
 Month getMonth(Time time) {
-	Month month = MONTH_UNKNOWN;
+	Month month = MONTH_JANUARY;
 
 	Time msPerCurrentMonth = getDaysPerMonth(getYear(time), month) * MS_PER_DAY;
 
