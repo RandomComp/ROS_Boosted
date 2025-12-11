@@ -12,6 +12,8 @@
 
 #include "charset/rus.h"
 
+#include "drivers/low-level/base/mem.h"
+
 extern UGSMGlyphSetCode ASCIIOffset;
 
 extern UGSMGlyphSetCode RUSOffset;
@@ -40,9 +42,13 @@ UGSMGlyphSetCode UGSMloadGlyphSet(UGSMGlyphSet glyphSet, UGSMGlyphSetSize length
 	for (UGSMGlyphCode i = 0; i < length; i++) {
 		generateGlyphCode();
 
-		for (uint8 j = 0; j < UGSMGlyphHeight; j++) {
-			UGSM[i + glyphSetCode][j] = glyphSet[i][j];
-		}
+		// for (uint8 j = 0; j < UGSMGlyphHeight; j++) {
+		// 	UGSM[i + glyphSetCode][j] = glyphSet[i][j];
+		// }
+
+		// EXPERIMENTAL, MAY BE NOT WORK!!!
+
+		memcpy(UGSM[i + glyphSetCode], glyphSet[i], UGSMGlyphHeight);
 	}
 
 	UGSMSize += length;
@@ -53,22 +59,22 @@ UGSMGlyphSetCode UGSMloadGlyphSet(UGSMGlyphSet glyphSet, UGSMGlyphSetSize length
 UGSMGlyphCode UGSMloadGlyph(UGSMGlyph glyph) {
 	UGSMGlyphCode result = generateGlyphCode();
 
-	for (uint8 i = 0; i < UGSMGlyphHeight; i++) {
-		UGSM[result][i] = glyph[i];
-	}
+	// for (uint8 i = 0; i < UGSMGlyphHeight; i++) {
+	// 	UGSM[result][i] = glyph[i];
+	// }
+
+	// EXPERIMENTAL!!! MAY BE NOT WORK!
+
+	memcpy(UGSM[result], glyph, UGSMGlyphHeight);
 
 	UGSMSize++;
 
 	return result;
 }
 
-void UGSMcheckGlyphCode(UGSMGlyphCode glyphCode) {
+UGSMGlyph* UGSMgetGlyph(UGSMGlyphCode glyphCode) {
 	if (!checkGlyphCodeIsReserved(glyphCode))
 		cause(UGSMGlyphNotReservedButWeTryUse);
-}
-
-UGSMGlyph* UGSMgetGlyph(UGSMGlyphCode glyphCode) {
-	UGSMcheckGlyphCode(glyphCode);
 
 	return &UGSM[glyphCode];
 }

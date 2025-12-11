@@ -2,9 +2,7 @@
 
 bool bASCIIInitialized = false;
 
-UGSMGlyphSetCode ASCIIOffset;
-
-void ASCIIInit(void) {
+void ASCIIInit() {
 	if (bASCIIInitialized) return;
 
 	UGSMGlyphSet ASCII = { 0 };
@@ -1447,5 +1445,5 @@ void ASCIIInit(void) {
 
 	ASCII[98][7] = 0b11001110;
 
-	ASCIIOffset = UGSMloadGlyphSet(ASCII, 98); // upload ASCII to UGSM
+	UGSMloadGlyphSet(ASCII, 98); // upload ASCII to UGSM
 }

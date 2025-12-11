@@ -11,27 +11,27 @@
 
 int64 abs(int64 x);
 
-float fabs(float x);
+double fabs(double x);
 
-float fmod(float a, float b);
+double fmod(double a, double b);
 
-int64 scaleToInteger(float x);
+int64 scaleToInteger(double x);
 
 uint8 getCountDecimalPlaces(int64 x);
 
 uint8 getNumberOfDigits(int64 x);
 
-float trunc(float x);
+double trunc(double x);
 
-float frac(float x);
+double frac(double x);
 
-uint32 getNumberAfterDecimalPoint(float x);
+uint32 getNumberAfterDecimalPoint(double x);
 
-float floor(float x);
+double floor(double x);
 
-float ceil(float x);
+double ceil(double x);
 
-float round(float x);
+double round(double x);
 
 int64 pow(int16 a, int16 b);
 

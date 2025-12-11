@@ -7,167 +7,128 @@
 
 #include "charset/ugsm.h"
 
-typedef uint16 LabelID;
+typedef enum RMALTokenValueType {
+	RMAL_TOKEN_VALUE_TYPE_INSTRUCTION,		// Инструкция для процессора
+	RMAL_TOKEN_VALUE_TYPE_REGISTER,			// Регистр памяти процессора
+	RMAL_TOKEN_VALUE_TYPE_NUMBER,			// Число
+	RMAL_TOKEN_VALUE_TYPE_LABEL_NAME,		// Название метки
+	RMAL_TOKEN_VALUE_TYPE_COMMA, 			// ,
+	RMAL_TOKEN_VALUE_TYPE_COLON, 			// :
+	RMAL_TOKEN_VALUE_TYPE_LEFT_BRACKET, 	// [
+	RMAL_TOKEN_VALUE_TYPE_RIGHT_BRACKET, 	// ]
+	RMAL_TOKEN_VALUE_TYPE_EOF 				// end of file
+} RMALTokenValueType;
 
-enum RMALTokenValueType {
-	INSTRUCTION,
+typedef enum RMALInstructions {
+	RMAL_INSTRUCTION_NOP, // Ничего не делает
+	RMAL_INSTRUCTION_MOV, // Перемещает информацию из регистра/памяти процессора в другой регистр/участок памяти процессораю
+	RMAL_INSTRUCTION_PUSH, // Добавляет в конец стэка указанную информацию из регистра/памяти
+	RMAL_INSTRUCTION_POP, // Вытаскивает из конца стэка информацию в указанный регистр/памяти.
+	RMAL_INSTRUCTION_ADD, // Складывает 
+	RMAL_INSTRUCTION_SUB,
+	RMAL_INSTRUCTION_MUL,
+	RMAL_INSTRUCTION_DIV,
+	RMAL_INSTRUCTION_INC,
+	RMAL_INSTRUCTION_DEC,
+	RMAL_INSTRUCTION_INX8,
+	RMAL_INSTRUCTION_INX16,
+	RMAL_INSTRUCTION_INX32,
+	RMAL_INSTRUCTION_OUTX8,
+	RMAL_INSTRUCTION_OUTX16,
+	RMAL_INSTRUCTION_OUTX32,
+	RMAL_INSTRUCTION_JMP,
+	RMAL_INSTRUCTION_RET,
+	RMAL_INSTRUCTION_LABEL,
+	RMAL_INSTRUCTION_EOF,
 
-	REGISTER,
-	
-	RMALNUMBER,
-	
-	RMALSIGNNUMBER,
+	RMAL_INSTRUCTION_UNKNOWN
+} RMALInstructions;
 
-	LABELNAME,
+typedef enum RMALRegisters {
+	RMAL_REGISTER_EAX, 		// Accumulator
+	RMAL_REGISTER_ECX, 		// Counter
+	RMAL_REGISTER_EDX, 		// Data
+	RMAL_REGISTER_EBX, 		// Base
+	RMAL_REGISTER_ESP, 		// Stack pointer
+	RMAL_REGISTER_EBP, 		// Base pointer
+	RMAL_REGISTER_ESI, 		// Source index
+	RMAL_REGISTER_EDI, 		// Destination index
 
-	RMALCOMMA, // ,
+	RMAL_REGISTER_UNKNOWN 	// Unrecognized register
+} RMALRegisters;
 
-	RMALCOLON, // :
+typedef enum RMALInstructionArgumentType {
+	RMAL_INSTRUCTION_ARGUMENT_TYPE_NULL,
+	RMAL_INSTRUCTION_ARGUMENT_TYPE_REGISTER,
+	RMAL_INSTRUCTION_ARGUMENT_TYPE_NUMBER,
+	RMAL_INSTRUCTION_ARGUMENT_TYPE_SIGN_NUMBER,
+	RMAL_INSTRUCTION_ARGUMENT_TYPE_ADDRESS,
+	RMAL_INSTRUCTION_ARGUMENT_TYPE_LABEL
+} RMALInstructionArgumentType;
 
-	RMALLBRACKET, // [
 
-	RMALRBRACKET, // ]
+typedef union RMALValue {
+	RMALRegisters 		reg;
+	uint32				number;
+	int32				signNumber;
+	RMALInstructions 	instruction;
+} RMALValue;
 
-	RMALEOF // end of file
-};
+typedef struct RMALLabel {
+	UGSMGlyphCode labelName[6]; // Название метки
 
-enum RMALInstructions {
-	NOP,
+	uint8 labelLength; 			// Длина названия метки
+} RMALLabel;
 
-	MOV,
+typedef struct RMALInstructionArgument {
+	RMALInstructionArgumentType type;
 
-	PUSH,
+	RMALValue value;
 
-	POP,
+	bool hasSquareBrackets; // Флаг наличия квадратных скобок ( скобок индекса )
 
-	ADD,
+	RMALLabel label;
+} RMALInstructionArgument;
 
-	SUB,
+typedef struct RMALInstruction {
+	RMALInstructions type;
 
-	MUL,
-
-	DIV,
-
-	INC,
-
-	DEC,
-
-	INX8,
-
-	INX16,
-
-	INX32,
-
-	OUTX8,
-
-	OUTX16,
-
-	OUTX32,
-
-	JMP,
-
-	RET,
-
-	LABEL,
-
-	EOFINSTRUCTION,
-
-	UNKNOWN_INSTRUCTION
-};
-
-enum RMALRegisters {
-	EAX, // Accumulator
-
-	ECX, // Counter
-
-	EDX, // Data
-
-	EBX, // Battery
-
-	ESP, // Stack pointer
-
-	EBP, // Base pointer
-
-	ESI, // Source index
-
-	EDI, // Destination index
-
-	UNKNOWN_REGISTER // Unknown
-};
-
-enum RMALInstructionArgumentType {
-	NULLTYPE,
-
-	REGISTERTYPE,
-
-	NUMBERTYPE,
-
-	SIGNNUMBERTYPE,
-
-	ADDRESSTYPE,
-
-	LABELTYPE
-};
-
-struct RMALInstructionArgument {
-	enum RMALInstructionArgumentType type;
-
-	enum RMALRegisters reg;
-
-	uint32 number;
-
-	int32 signNumber;
-
-	bool hasSquareBrackets; // A flag to check whether an argument has square brackets
-
-	UGSMGlyphCode labelName[6];
-};
-
-struct RMALInstruction {
-	enum RMALInstructions type;
-
-	struct RMALInstructionArgument arguments[2];
+	RMALInstructionArgument arguments[2];
 
 	uint16 argumentsNumber;
 
-	UGSMGlyphCode labelName[6];
-};
+	RMALLabel label;
+} RMALInstruction;
 
-struct RMALToken { // maybe instruction, register or number
-	enum RMALTokenValueType type;
+typedef struct RMALToken { // maybe instruction, register or number
+	RMALTokenValueType type;
 
-	enum RMALInstructions instruction;
+	RMALValue value;
 
-	enum RMALRegisters reg;
-
-	uint32 number;
-
-	int32 signNumber;
-
-	UGSMGlyphCode labelName[6];
-};
+	RMALLabel label;
+} RMALToken;
 
 void RMALTokenize(UGSMGlyphCode argCode[384]);
 
-enum RMALInstructions findInstructionByName(UGSMGlyphCode name[6]);
+RMALInstructions findInstructionByName(UGSMGlyphCode name[6]);
 
-enum RMALRegisters findRegisterByName(UGSMGlyphCode name[6]);
+RMALRegisters findRegisterByName(UGSMGlyphCode name[6]);
 
 bool nameIsInstructionName(UGSMGlyphCode name[6]);
 
 bool nameIsRegisterName(UGSMGlyphCode name[6]);
 
-void RMALTokenizeWord(void);
+void RMALTokenizeWord();
 
-void RMALTokenizeSignNumber(void);
+void RMALTokenizeSignNumber();
 
-void RMALTokenizeNumber(void);
+void RMALTokenizeNumber();
 
-void RMALTokenizeComment(void);
+void RMALTokenizeComment();
 
-UGSMGlyphCode RMALNext(void);
+UGSMGlyphCode RMALNext();
 
-UGSMGlyphCode RMALPeek(int16 relativePosition);
+UGSMGlyphCode RMALPeek(int32 relativePosition);
 
 void RMALTokensView(void);
 

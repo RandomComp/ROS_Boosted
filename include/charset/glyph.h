@@ -5,14 +5,14 @@
 
 typedef uint16 UGSMGlyphCode;
 
-bool checkGlyphCodeIsReserved(UGSMGlyphCode glyphCode);
+bool UGSMcheckGlyphCodeIsReserved(UGSMGlyphCode glyphCode);
 
-void reserveGlyphCode(UGSMGlyphCode glyphCode);
+void UGSMreserveGlyphCode(UGSMGlyphCode glyphCode);
 
-void freeGlyphCode(UGSMGlyphCode glyphCode);
+void UGSMfreeGlyphCode(UGSMGlyphCode glyphCode);
 
-UGSMGlyphCode getFreeSpaceForGlyph(void);
+UGSMGlyphCode UGSMgetFreeSpaceForGlyph();
 
-UGSMGlyphCode generateGlyphCode(void);
+UGSMGlyphCode UGSMgenerateGlyphCode();
 
 #endif

@@ -16,7 +16,7 @@
 
 extern struct RMALToken RMALTokens[128];
 
-extern uint16 RMALTokenPos;
+extern uint16 tokenPos;
 
 extern struct multibootInfo* bootInfo;
 
@@ -39,7 +39,7 @@ void RMALParse(void) {
 
 	uint16 i = 0;
 
-	for (; RMALTokens[i].type != RMALEOF && i < RMALTokenPos; i++) {
+	for (; RMALTokens[i].type != RMALEOF && i < tokenPos; i++) {
 		if (RMALTokens[i].type == LABELNAME && RMALTokens[i + 1].type == RMALCOLON) {
 			instructions[instructionPos].type = LABEL;
 
@@ -55,42 +55,48 @@ void RMALParse(void) {
 
 	instructionPos = 0;
 
-	for (i = 0; RMALTokens[i].type != INSTRUCTION && i < RMALTokenPos; i++);
+	for (i = 0; RMALTokens[i].type != INSTRUCTION && i < tokenPos; i++);
 
-	for (; RMALTokens[i].type != RMALEOF && i < RMALTokenPos; i++) {
+	for (; RMALTokens[i].type != RMALEOF && i < tokenPos; i++) {
 		if (RMALTokens[i].type == LABELNAME || RMALTokens[i].type == RMALCOLON) continue;
 
-		instructions[instructionPos].argumentsNumber = 0;
+		RMALInstruction *instruction = &instructions[instructionPos];
 
-		instructions[instructionPos].type = RMALTokens[i].instruction;
+		instruction->argumentsNumber = 0;
+
+		instruction->type = RMALTokens[i].instruction;
 
 		i++;
 
-		for (; RMALTokens[i].type != INSTRUCTION && i < RMALTokenPos; i++) {
+		for (; RMALTokens[i].type != INSTRUCTION && i < tokenPos; i++) {
 			if (RMALTokens[i].type == REGISTER) {
-				instructions[instructionPos].arguments[instructions[instructionPos].argumentsNumber].type = REGISTERTYPE;
+				instruction->arguments[instruction->argumentsNumber].type = RMAL_INSTRUCTION_ARGUMENT_TYPE_REGISTER;
 
-				instructions[instructionPos].arguments[instructions[instructionPos].argumentsNumber].reg = RMALTokens[i].reg;
+				instruction->arguments[instruction->argumentsNumber].value.reg = RMALTokens[i].value.reg;
 			}
 
 			else if (RMALTokens[i].type == RMALNUMBER) {
-				instructions[instructionPos].arguments[instructions[instructionPos].argumentsNumber].type = NUMBERTYPE;
+				instruction->arguments[instruction->argumentsNumber].type = RMAL_INSTRUCTION_ARGUMENT_TYPE_NUMBER;
 
-				instructions[instructionPos].arguments[instructions[instructionPos].argumentsNumber].number = RMALTokens[i].number;
+				instruction->arguments[instruction->argumentsNumber].value.number = RMALTokens[i].value.number;
 			}
 
 			else if (RMALTokens[i].type == RMALSIGNNUMBER) {
-				instructions[instructionPos].arguments[instructions[instructionPos].argumentsNumber].type = SIGNNUMBERTYPE;
+				instruction->arguments[instruction->argumentsNumber].type = RMAL_INSTRUCTION_ARGUMENT_TYPE_SIGN_NUMBER;
 
-				instructions[instructionPos].arguments[instructions[instructionPos].argumentsNumber].signNumber = RMALTokens[i].signNumber;
+				instruction->arguments[instruction->argumentsNumber].value.signNumber = RMALTokens[i].value.signNumber;
 			}
 
 			else if (RMALTokens[i].type == LABELNAME) {
-				instructions[instructionPos].arguments[instructions[instructionPos].argumentsNumber].type = LABELTYPE;
+				instruction->arguments[instruction->argumentsNumber].type = LABELTYPE;
 
-				for (uint16 j = 0; j < 6; j++) {
-					instructions[instructionPos].arguments[instructions[instructionPos].argumentsNumber].labelName[j] = RMALTokens[i].labelName[j];
-				}
+				// for (uint16 j = 0; j < 6; j++) {
+				// 	instruction->arguments[instruction->argumentsNumber].labelName[j] = RMALTokens[i].labelName[j];
+				// }
+
+				// EXPERIMENTAL!!! MAY BE NOT WORK
+
+				memcpy(instruction->arguments[instruction->argumentsNumber].labelName, RMALTokens[i].labelName, 6);
 			}
 
 			else if (RMALTokens[i].type == RMALLBRACKET) {
@@ -98,7 +104,7 @@ void RMALParse(void) {
 			}
 
 			else if (RMALTokens[i].type == RMALRBRACKET) {
-				instructions[instructionPos].arguments[instructions[instructionPos].argumentsNumber].type = ADDRESSTYPE;
+				instructions[instructionPos].arguments[instructions[instructionPos].argumentsNumber].type = RMAL_INSTRUCTION_ARGUMENT_TYPE_ADDRESS;
 			}
 
 			else if (RMALTokens[i].type == RMALCOMMA) {
@@ -191,94 +197,94 @@ void RMALParse(void) {
 		UGSMASCIIputString(" ");
 
 		for (uint16 j = 0; j < instructions[i].argumentsNumber; j++) {
-			if (instructions[i].arguments[j].type == REGISTERTYPE) {
-				if (instructions[i].arguments[j].reg == EAX) {
+			if (instructions[i].arguments[j].type == RMAL_INSTRUCTION_ARGUMENT_TYPE_REGISTER) {
+				if (instructions[i].arguments[j].value.reg == EAX) {
 					UGSMASCIIputString("EAX");
 				}
 
-				else if (instructions[i].arguments[j].reg == ECX) {
+				else if (instructions[i].arguments[j].value.reg == ECX) {
 					UGSMASCIIputString("ECX");
 				}
 
-				else if (instructions[i].arguments[j].reg == EDX) {
+				else if (instructions[i].arguments[j].value.reg == EDX) {
 					UGSMASCIIputString("EDX");
 				}
 
-				else if (instructions[i].arguments[j].reg == EBX) {
+				else if (instructions[i].arguments[j].value.reg == EBX) {
 					UGSMASCIIputString("EBX");
 				}
 
-				else if (instructions[i].arguments[j].reg == ESP) {
+				else if (instructions[i].arguments[j].value.reg == ESP) {
 					UGSMASCIIputString("ESP");
 				}
 
-				else if (instructions[i].arguments[j].reg == EBP) {
+				else if (instructions[i].arguments[j].value.reg == EBP) {
 					UGSMASCIIputString("EBP");
 				}
 
-				else if (instructions[i].arguments[j].reg == ESI) {
+				else if (instructions[i].arguments[j].value.reg == ESI) {
 					UGSMASCIIputString("ESI");
 				}
 
-				else if (instructions[i].arguments[j].reg == EDI) {
+				else if (instructions[i].arguments[j].value.reg == EDI) {
 					UGSMASCIIputString("EDI");
 				}
 
-				else if (instructions[i].arguments[j].reg == UNKNOWN_REGISTER) {
+				else if (instructions[i].arguments[j].value.reg == UNKNOWN_REGISTER) {
 					UGSMASCIIputString("UNKNOWN_REGISTER");
 				}
 			}
 				
-			else if (instructions[i].arguments[j].type == NUMBERTYPE) {
-				putUX32Integer(instructions[i].arguments[j].number);
+			else if (instructions[i].arguments[j].type == RMAL_INSTRUCTION_ARGUMENT_TYPE_NUMBER) {
+				putUX32Integer(instructions[i].arguments[j].value.number);
 			}
 				
-			else if (instructions[i].arguments[j].type == SIGNNUMBERTYPE) {
-				putX32Integer(instructions[i].arguments[j].signNumber);
+			else if (instructions[i].arguments[j].type == RMAL_INSTRUCTION_ARGUMENT_TYPE_SIGN_NUMBER) {
+				putX32Integer(instructions[i].arguments[j].value.signNumber);
 			}
 
-			else if (instructions[i].arguments[j].type == ADDRESSTYPE) {
+			else if (instructions[i].arguments[j].type == RMAL_INSTRUCTION_ARGUMENT_TYPE_ADDRESS) {
 				UGSMASCIIputString("[ ");
 
-				if (instructions[i].arguments[j].reg == EAX) {
+				if (instructions[i].arguments[j].value.reg == EAX) {
 					UGSMASCIIputString("EAX");
 				}
 
-				else if (instructions[i].arguments[j].reg == ECX) {
+				else if (instructions[i].arguments[j].value.reg == ECX) {
 					UGSMASCIIputString("ECX");
 				}
 
-				else if (instructions[i].arguments[j].reg == EDX) {
+				else if (instructions[i].arguments[j].value.reg == EDX) {
 					UGSMASCIIputString("EDX");
 				}
 
-				else if (instructions[i].arguments[j].reg == EBX) {
+				else if (instructions[i].arguments[j].value.reg == EBX) {
 					UGSMASCIIputString("EBX");
 				}
 
-				else if (instructions[i].arguments[j].reg == ESP) {
+				else if (instructions[i].arguments[j].value.reg == ESP) {
 					UGSMASCIIputString("ESP");
 				}
 
-				else if (instructions[i].arguments[j].reg == EBP) {
+				else if (instructions[i].arguments[j].value.reg == EBP) {
 					UGSMASCIIputString("EBP");
 				}
 
-				else if (instructions[i].arguments[j].reg == ESI) {
+				else if (instructions[i].arguments[j].value.reg == ESI) {
 					UGSMASCIIputString("ESI");
 				}
 
-				else if (instructions[i].arguments[j].reg == EDI) {
+				else if (instructions[i].arguments[j].value.reg == EDI) {
 					UGSMASCIIputString("EDI");
 				}
 
-				else if (instructions[i].arguments[j].reg == UNKNOWN_REGISTER) {
+				else if (instructions[i].arguments[j].value.reg == UNKNOWN_REGISTER) {
 					UGSMASCIIputString("UNKNOWN_REGISTER");
 				}
 
 				UGSMASCIIputString(" ");
 
-				putX32Integer(instructions[i].arguments[j].signNumber);
+				putX32Integer(instructions[i].arguments[j].value.signNumber);
 
 				UGSMASCIIputString(" ]");
 			}
@@ -317,36 +323,32 @@ void RMALCompile(void) { // Compile all instructions
 		opcodes[opcodesLength] = NOPBASE; // nop opcode base
 
 		if (instruction->type == MOV) { // Generate opcode for MOV instruction
-			if (instruction->arguments[0].type == REGISTERTYPE) {
-				if (instruction->arguments[1].type == REGISTERTYPE) {
-					opcodes[opcodesLength] = MOVRRBASEBYTE0;
+			if (instruction->arguments[0].type == RMAL_INSTRUCTION_ARGUMENT_TYPE_REGISTER) {
+				if (instruction->arguments[1].type == RMAL_INSTRUCTION_ARGUMENT_TYPE_REGISTER) {
+					opcodes[opcodesLength++] = MOVRRBASEBYTE0;
 
-					opcodes[opcodesLength + 1] = MOVRRBASEBYTE1;
+					opcodes[opcodesLength++] = MOVRRBASEBYTE1;
 
-					opcodes[opcodesLength + 2] = MOVRRBASEBYTE2;
-
-					opcodes[opcodesLength + 2] += (Opcode)(instruction->arguments[0].reg);
-
-					opcodes[opcodesLength + 2] += ((Opcode)(instruction->arguments[1].reg)) << 3;
-
-					opcodesLength += 3;
+					opcodes[opcodesLength++] = MOVRRBASEBYTE2 +
+												(Opcode)(instruction->arguments[0].value.reg) + 
+												((Opcode)(instruction->arguments[1].value.reg)) << 3; // eax, ebx
 				}
 
-				else if (instruction->arguments[1].type == NUMBERTYPE) {
+				else if (instruction->arguments[1].type == RMAL_INSTRUCTION_ARGUMENT_TYPE_NUMBER) {
 					opcodes[opcodesLength] = MOVRNBASEBYTE0;
 
-					opcodes[opcodesLength] += (Opcode)(instruction->arguments[0].reg);
+					opcodes[opcodesLength] += (Opcode)(instruction->arguments[0].value.reg);
 
 					opcodes[opcodesLength + 1] = MOVRNBASEBYTE1;
 
 					opcodes[opcodesLength + 2] = MOVRNBASEBYTE2;
 
-					if (instruction->arguments[1].number < 256) {
-						opcodes[opcodesLength + 1] += (Opcode)(instruction->arguments[1].number);
+					if (instruction->arguments[1].value.number < 256) {
+						opcodes[opcodesLength + 1] += (Opcode)(instruction->arguments[1].value.number);
 					}
 
-					else if (instruction->arguments[1].number < 65536) {
-						uint32 number = instruction->arguments[1].number;
+					else if (instruction->arguments[1].value.number < 65536) {
+						uint32 number = instruction->arguments[1].value.number;
 
 						opcodes[opcodesLength + 1] = (number & 0xff);
 
@@ -360,31 +362,27 @@ void RMALCompile(void) { // Compile all instructions
 					opcodesLength += 5;
 				}
 
-				else if (instruction->arguments[1].type == ADDRESSTYPE) {
-					if (instruction->arguments[1].signNumber == 0) {
-						opcodes[opcodesLength] = MOVRADDRESSAZBASEBYTE0;
+				else if (instruction->arguments[1].type == RMAL_INSTRUCTION_ARGUMENT_TYPE_ADDRESS) {
+					if (instruction->arguments[1].value.signNumber == 0) {
+						opcodes[opcodesLength++] = MOVRADDRESSAZBASEBYTE0;
 
-						opcodes[opcodesLength + 1] = MOVRADDRESSAZBASEBYTE1;
-
-						opcodes[opcodesLength + 1] += ((Opcode)(instruction->arguments[0].reg)) << 3;
-
-						opcodes[opcodesLength + 1] += (Opcode)(instruction->arguments[1].reg);
-
-						opcodesLength += 2;
+						opcodes[opcodesLength++] = MOVRADDRESSAZBASEBYTE1 + 
+													((Opcode)(instruction->arguments[0].value.reg)) << 3 + 
+													(Opcode)(instruction->arguments[1].value.reg);
 					}
 
 					else {
-						int32 signNumber = instruction->arguments[1].signNumber;
+						int32 signNumber = instruction->arguments[1].value.signNumber;
 
 						signNumber = signNumber < 0 ? 0xff + signNumber : signNumber;
 
-						opcodes[opcodesLength] = MOVRADDRESSBASEBYTE0;
+						opcodes[opcodesLength++] = MOVRADDRESSBASEBYTE0;
 
 						opcodes[opcodesLength + 1] = MOVRADDRESSBASEBYTE1;
 
-						opcodes[opcodesLength + 1] += ((Opcode)(instruction->arguments[0].reg)) << 3;
+						opcodes[opcodesLength + 1] += ((Opcode)(instruction->arguments[0].value.reg)) << 3;
 
-						opcodes[opcodesLength + 1] += (Opcode)(instruction->arguments[1].reg);
+						opcodes[opcodesLength + 1] += (Opcode)(instruction->arguments[1].value.reg);
 
 						opcodes[opcodesLength + 2] = MOVRADDRESSBASEBYTE2;
 
@@ -397,25 +395,25 @@ void RMALCompile(void) { // Compile all instructions
 		}
 
 		else if (instruction->type == PUSH) { // Generate opcode for PUSH instruction
-			if (instruction->arguments[0].type == REGISTERTYPE) {
+			if (instruction->arguments[0].type == RMAL_INSTRUCTION_ARGUMENT_TYPE_REGISTER) {
 				opcodes[opcodesLength] = PUSHRBASE;
 
-				opcodes[opcodesLength] += (Opcode)(instruction->arguments[0].reg);
+				opcodes[opcodesLength] += (Opcode)(instruction->arguments[0].value.reg);
 
 				opcodesLength++;
 			}
 
-			else if (instruction->arguments[0].type == NUMBERTYPE) {
-				if (instruction->arguments[0].number < 128) {
+			else if (instruction->arguments[0].type == RMAL_INSTRUCTION_ARGUMENT_TYPE_NUMBER) {
+				if (instruction->arguments[0].value.number < 128) {
 					opcodes[opcodesLength] = PUSHNLTOTSBASEBYTE0;
 
-					opcodes[opcodesLength + 1] += (Opcode)(instruction->arguments[0].number);
+					opcodes[opcodesLength + 1] += (Opcode)(instruction->arguments[0].value.number);
 
 					opcodesLength += 2;
 				}
 
-				else if (instruction->arguments[0].number < 65536) {
-					uint32 number = instruction->arguments[0].number;
+				else if (instruction->arguments[0].value.number < 65536) {
+					uint32 number = instruction->arguments[0].value.number;
 
 					opcodes[opcodesLength] = PUSHNBTOTSBASEBYTE0;
 
@@ -433,83 +431,59 @@ void RMALCompile(void) { // Compile all instructions
 		}
 
 		else if (instruction->type == POP) { // Generate opcode for POP instruction
-			opcodes[opcodesLength] = POPBASE;
-
-			opcodes[opcodesLength] += (Opcode)(instruction->arguments[0].reg);
-
-			opcodesLength++;
+			opcodes[opcodesLength++] = POPBASE + (Opcode)(instruction->arguments[0].value.reg);
 		}
 
 		else if (instruction->type == ADD) { // Generate opcode for ADD instruction
-			if (instruction->arguments[0].type == REGISTERTYPE) {
-				if (instruction->arguments[1].type == REGISTERTYPE) {
+			if (instruction->arguments[0].type == RMAL_INSTRUCTION_ARGUMENT_TYPE_REGISTER) {
+				if (instruction->arguments[1].type == RMAL_INSTRUCTION_ARGUMENT_TYPE_REGISTER) {
 					opcodes[opcodesLength] = ADDRRBASEBYTE0;
 
 					opcodes[opcodesLength + 1] = ADDRRBASEBYTE1;
 
-					opcodes[opcodesLength + 1] += (Opcode)(instruction->arguments[0].reg);
+					opcodes[opcodesLength + 1] += (Opcode)(instruction->arguments[0].value.reg);
 
-					opcodes[opcodesLength + 1] += ((Opcode)(instruction->arguments[1].reg)) << 3;
+					opcodes[opcodesLength + 1] += ((Opcode)(instruction->arguments[1].value.reg)) << 3;
 
 					opcodesLength += 2;
 				}
 
-				else if (instruction->arguments[1].type == NUMBERTYPE) {
-					if (instruction->arguments[1].number < 128) {
-						opcodes[opcodesLength] = ADDRNNLTOTSBASEBYTE0;
+				else if (instruction->arguments[1].type == RMAL_INSTRUCTION_ARGUMENT_TYPE_NUMBER) {
+					if (instruction->arguments[1].value.number < 128) {
+						opcodes[opcodesLength++] = ADDRNNLTOTSBASEBYTE0;
 
-						opcodes[opcodesLength + 1] = ADDRNNLTOTSBASEBYTE1;
+						opcodes[opcodesLength++] = ADDRNNLTOTSBASEBYTE1 + (Opcode)(instruction->arguments[0].value.reg);
 
-						opcodes[opcodesLength + 1] += (Opcode)(instruction->arguments[0].reg);
-
-						opcodes[opcodesLength + 2] = ADDRNNLTOTSBASEBYTE2;
-
-						opcodes[opcodesLength + 2] += (Opcode)(instruction->arguments[1].number);
-
-						opcodesLength += 3;
+						opcodes[opcodesLength++] = ADDRNNLTOTSBASEBYTE2 + (Opcode)(instruction->arguments[1].value.number);
 					}
 
-					else if (instruction->arguments[1].number < 65536) {
-						uint32 number = instruction->arguments[1].number;
+					else if (instruction->arguments[1].value.number < 65536) {
+						uint32 number = instruction->arguments[1].value.number;
 
-						if (instruction->arguments[0].reg == EAX) {
-							opcodes[opcodesLength] = ADDEAXNNBTOTSBASEBYTE0;
+						if (instruction->arguments[0].value.reg == EAX) {
+							opcodes[opcodesLength++] = ADDEAXNNBTOTSBASEBYTE0;
 
-							opcodes[opcodesLength + 1] = ADDEAXNNBTOTSBASEBYTE1;
+							opcodes[opcodesLength++] = ADDEAXNNBTOTSBASEBYTE1 + (Opcode)(number & 0xff);
 
-							opcodes[opcodesLength + 1] += (Opcode)(number & 0xff);
+							opcodes[opcodesLength++] = ADDEAXNNBTOTSBASEBYTE2 + (Opcode)((number >> 8) & 0xff);
 
-							opcodes[opcodesLength + 2] = ADDEAXNNBTOTSBASEBYTE2;
+							opcodes[opcodesLength++] = ADDEAXNNBTOTSBASEBYTE3;
 
-							opcodes[opcodesLength + 2] += (Opcode)((number >> 8) & 0xff);
-
-							opcodes[opcodesLength + 3] = ADDEAXNNBTOTSBASEBYTE3;
-
-							opcodes[opcodesLength + 4] = ADDEAXNNBTOTSBASEBYTE4;
-
-							opcodesLength += 5;
+							opcodes[opcodesLength++] = ADDEAXNNBTOTSBASEBYTE4;
 						}
 
 						else {
-							opcodes[opcodesLength] = ADDRNEAXNNBTOTSBASEBYTE0;
+							opcodes[opcodesLength++] = ADDRNEAXNNBTOTSBASEBYTE0;
 
-							opcodes[opcodesLength + 1] = ADDRNEAXNNBTOTSBASEBYTE1;
+							opcodes[opcodesLength++] = ADDRNEAXNNBTOTSBASEBYTE1 + instruction->arguments[0].value.reg;
 
-							opcodes[opcodesLength + 1] += instruction->arguments[0].reg;
+							opcodes[opcodesLength++] = ADDRNEAXNNBTOTSBASEBYTE2 + (Opcode)(number & 0xff);
 
-							opcodes[opcodesLength + 2] = ADDRNEAXNNBTOTSBASEBYTE2;
+							opcodes[opcodesLength++] = ADDRNEAXNNBTOTSBASEBYTE3 + (Opcode)((number >> 8) & 0xff);
 
-							opcodes[opcodesLength + 2] += (Opcode)(number & 0xff);
+							opcodes[opcodesLength++] = ADDRNEAXNNBTOTSBASEBYTE4;
 
-							opcodes[opcodesLength + 3] = ADDRNEAXNNBTOTSBASEBYTE3;
-
-							opcodes[opcodesLength + 3] += (Opcode)((number >> 8) & 0xff);
-
-							opcodes[opcodesLength + 4] = ADDRNEAXNNBTOTSBASEBYTE4;
-
-							opcodes[opcodesLength + 5] = ADDRNEAXNNBTOTSBASEBYTE5;
-
-							opcodesLength += 6;
+							opcodes[opcodesLength++] = ADDRNEAXNNBTOTSBASEBYTE5;
 						}
 					}
 				}
@@ -517,38 +491,38 @@ void RMALCompile(void) { // Compile all instructions
 		}
 
 		else if (instruction->type == SUB) { // Generate opcode for SUB instruction
-			if (instruction->arguments[0].type == REGISTERTYPE) {
-				if (instruction->arguments[1].type == REGISTERTYPE) {
+			if (instruction->arguments[0].type == RMAL_INSTRUCTION_ARGUMENT_TYPE_REGISTER) {
+				if (instruction->arguments[1].type == RMAL_INSTRUCTION_ARGUMENT_TYPE_REGISTER) {
 					opcodes[opcodesLength] = SUBRRBASEBYTE0;
 
 					opcodes[opcodesLength + 1] = SUBRRBASEBYTE1;
 
-					opcodes[opcodesLength + 1] += (Opcode)(instruction->arguments[0].reg);
+					opcodes[opcodesLength + 1] += (Opcode)(instruction->arguments[0].value.reg);
 
-					opcodes[opcodesLength + 1] += ((Opcode)(instruction->arguments[1].reg)) << 3;
+					opcodes[opcodesLength + 1] += ((Opcode)(instruction->arguments[1].value.reg)) << 3;
 
 					opcodesLength += 2;
 				}
 
-				else if (instruction->arguments[1].type == NUMBERTYPE) {
-					if (instruction->arguments[1].number < 128) {
+				else if (instruction->arguments[1].type == RMAL_INSTRUCTION_ARGUMENT_TYPE_NUMBER) {
+					if (instruction->arguments[1].value.number < 128) {
 						opcodes[opcodesLength] = SUBRNNLTOTSBASEBYTE0;
 
 						opcodes[opcodesLength + 1] = SUBRNNLTOTSBASEBYTE1;
 
-						opcodes[opcodesLength + 1] += (Opcode)(instruction->arguments[0].reg);
+						opcodes[opcodesLength + 1] += (Opcode)(instruction->arguments[0].value.reg);
 
 						opcodes[opcodesLength + 2] = SUBRNNLTOTSBASEBYTE2;
 
-						opcodes[opcodesLength + 2] += (Opcode)(instruction->arguments[1].number);
+						opcodes[opcodesLength + 2] += (Opcode)(instruction->arguments[1].value.number);
 
 						opcodesLength += 3;
 					}
 
-					else if (instruction->arguments[1].number < 65536) {
-						uint32 number = instruction->arguments[1].number;
+					else if (instruction->arguments[1].value.number < 65536) {
+						uint32 number = instruction->arguments[1].value.number;
 
-						if (instruction->arguments[0].reg == EAX) {
+						if (instruction->arguments[0].value.reg == EAX) {
 							opcodes[opcodesLength] = SUBEAXNNBTOTSBASEBYTE0;
 
 							opcodes[opcodesLength + 1] = SUBEAXNNBTOTSBASEBYTE1;
@@ -571,7 +545,7 @@ void RMALCompile(void) { // Compile all instructions
 
 							opcodes[opcodesLength + 1] = SUBRNEAXNNBTOTSBASEBYTE1;
 
-							opcodes[opcodesLength + 1] += instruction->arguments[0].reg;
+							opcodes[opcodesLength + 1] += instruction->arguments[0].value.reg;
 
 							opcodes[opcodesLength + 2] = SUBRNEAXNNBTOTSBASEBYTE2;
 
@@ -597,7 +571,7 @@ void RMALCompile(void) { // Compile all instructions
 
 			opcodes[opcodesLength + 1] = MULRBASEBYTE1;
 
-			opcodes[opcodesLength + 1] += instruction->arguments[0].reg;
+			opcodes[opcodesLength + 1] += instruction->arguments[0].value.reg;
 
 			opcodesLength += 2;
 		}
@@ -607,7 +581,7 @@ void RMALCompile(void) { // Compile all instructions
 
 			opcodes[opcodesLength + 1] = DIVRBASEBYTE1;
 
-			opcodes[opcodesLength + 1] += instruction->arguments[0].reg;
+			opcodes[opcodesLength + 1] += instruction->arguments[0].value.reg;
 
 			opcodesLength += 2;
 		}
@@ -617,7 +591,7 @@ void RMALCompile(void) { // Compile all instructions
 
 			opcodes[opcodesLength + 1] = INCRBASEBYTE1;
 
-			opcodes[opcodesLength + 1] += instruction->arguments[0].reg;
+			opcodes[opcodesLength + 1] += instruction->arguments[0].value.reg;
 
 			opcodesLength += 2;
 		}
@@ -627,7 +601,7 @@ void RMALCompile(void) { // Compile all instructions
 
 			opcodes[opcodesLength + 1] = DECRBASEBYTE1;
 
-			opcodes[opcodesLength + 1] += instruction->arguments[0].reg;
+			opcodes[opcodesLength + 1] += instruction->arguments[0].value.reg;
 
 			opcodesLength += 2;
 		}
@@ -673,18 +647,18 @@ void RMALCompile(void) { // Compile all instructions
 		}
 
 		else if (instruction->type == JMP) { // Generate opcode for JMP instruction
-			if (instruction->arguments[0].type == REGISTERTYPE) {
+			if (instruction->arguments[0].type == RMAL_INSTRUCTION_ARGUMENT_TYPE_REGISTER) {
 				opcodes[opcodesLength] = JMPRBASEBYTE0;
 
 				opcodes[opcodesLength + 1] = JMPRBASEBYTE1;
 
-				opcodes[opcodesLength + 1] += instruction->arguments[0].reg;
+				opcodes[opcodesLength + 1] += instruction->arguments[0].value.reg;
 
 				opcodesLength += 2;
 			}
 
-			else if (instruction->arguments[0].type == NUMBERTYPE) {
-				int32 number = instruction->arguments[0].number;
+			else if (instruction->arguments[0].type == RMAL_INSTRUCTION_ARGUMENT_TYPE_NUMBER) {
+				int32 number = instruction->arguments[0].value.number;
 
 				if (number < 2) {
 					opcodes[opcodesLength] = JMPNLTTZBASEBYTE0;
@@ -723,8 +697,8 @@ void RMALCompile(void) { // Compile all instructions
 				}
 			}
 
-			else if (instruction->arguments[0].type == SIGNNUMBERTYPE) {
-				int32 signNumber = instruction->arguments[0].signNumber;
+			else if (instruction->arguments[0].type == RMAL_INSTRUCTION_ARGUMENT_TYPE_SIGN_NUMBER) {
+				int32 signNumber = instruction->arguments[0].value.signNumber;
 
 				if (signNumber < 0) {
 					signNumber += 0xebfe;

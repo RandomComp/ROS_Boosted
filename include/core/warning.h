@@ -3,16 +3,18 @@
 
 #include "core/types.h"
 
-typedef enum WarningsType {
+typedef enum WarningType {
 	USBBabbleDetectedWarning,
 
 	AllGlyphsAreReservedWarning,
 
-	RequiredNumberOfArgumentsNotReached
-} WarningsType;
+	RequiredNumberOfArgumentsNotReachedWarning
+} WarningType;
 
-int8* getWarningDescription(WarningsType warningType);
+int8* getIronicWarningDescription(WarningType warningType);
 
-void warn(WarningsType warningType);
+int8* getFormalWarningDescription(WarningType warningType);
+
+void warn(WarningType warningType);
 
 #endif

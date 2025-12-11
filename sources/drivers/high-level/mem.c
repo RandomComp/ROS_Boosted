@@ -6,6 +6,8 @@
 
 #include "core/std.h"
 
+#include "core/format.h"
+
 #include "core/error.h"
 
 #include "core/math.h"
@@ -15,14 +17,6 @@ extern struct multibootInfo* bootInfo;
 Size RAMSize;
 
 AbsoluteSize AbsoluteRAMSizeInBytes = 0;
-
-Address heapStart = 0;
-
-AbsoluteSize AbsoluteHeapSizeInBytes = 0;
-
-Address freeSpaceStart = 0;
-
-Size heapSize;
 
 bool bMEMInitialized = false;
 
@@ -34,86 +28,53 @@ void MEMInit(AbsoluteSize size) {
 	for (uint32 i = 0; i < bootInfo->mmap_length; i += sizeof(struct multibootMMapEntry)) {
 		multibootMMapEntry* mapEntry = (struct multibootMMapEntry*)(bootInfo->mmap_addr + i);
 		
-		if (mapEntry->type != 1) continue;
+		if (mapEntry->type != MULTIBOOT_MEMORY_AVAILABLE) continue;
 
 		AbsoluteRAMSizeInBytes += mapEntry->len_low;
-
-		AbsoluteRAMSizeInBytes += (uint64)(mapEntry->len_high) << 32;
 	}
 
-	AbsoluteHeapSizeInBytes = size;
-
-	if (AbsoluteHeapSizeInBytes * 2 >= AbsoluteRAMSizeInBytes) {
-		cause(MemoryLackError);
-	}
-
-	freeSpaceStart = heapStart;
-
-	RAMSize.bytes = AbsoluteRAMSizeInBytes % 1024;
-
-	RAMSize.kb = (AbsoluteRAMSizeInBytes / 1024) % 1024;
-
-	RAMSize.mb = (AbsoluteRAMSizeInBytes / 1024 / 1024) % 1024;
-
-	RAMSize.gb = (AbsoluteRAMSizeInBytes / 1024 / 1024 / 1024) % 1024;
-
-	heapSize.bytes = AbsoluteHeapSizeInBytes % 1024;
-
-	heapSize.kb = (AbsoluteHeapSizeInBytes / 1024) % 1024;
-
-	heapSize.mb = (AbsoluteHeapSizeInBytes / 1024 / 1024) % 1024;
-
-	heapSize.gb = (AbsoluteHeapSizeInBytes / 1024 / 1024 / 1024) % 1024;
+	RAMSize = sizeFromAbsoluteSize(AbsoluteRAMSizeInBytes);
 }
 
-void* malloc(AbsoluteSize size, MemoryRegionStatus status) {
-	Address addr = freeSpaceStart;
-
-	if ((addr + sizeof(MemoryRegionInformation) + size) >= AbsoluteRAMSizeInBytes - freeSpaceStart) {
-		//cause(MemoryLackError);
-	}
-
-	MemoryRegionInformation* memoryRegionInformation = (MemoryRegionInformation*)(addr);
-
-	memoryRegionInformation->size = size;
-
-	memoryRegionInformation->status = status;
-
-	addr += sizeof(MemoryRegionInformation);
-
-	freeSpaceStart = addr + sizeof(MemoryRegionInformation) + size;
-
-	return (void*)(addr);
+MemoryRegion malloc(AbsoluteSize size, MemoryRegionStatus status) {
+	
 }
 
 AbsoluteSize sizeToAbsoluteSize(Size size) {
-	return 	size.gb * pow(1024, 3) +
-			size.mb * pow(1024, 2) +
-			size.kb * 1024 +
+	return 	size.GB * pow(1024, 3) +
+			size.MB * pow(1024, 2) +
+			size.KB * 1024 +
 			size.bytes;
+}
+
+Size sizeFromAbsoluteSize(AbsoluteSize size) {
+	return (Size){	.bytes 	= size				% ByteBase,
+					.KB		= BytesToKB(size) 	% ByteBase,
+					.MB		= BytesToMB(size) 	% ByteBase,
+					.GB		= BytesToGB(size) 	% ByteBase};
 }
 
 void showSize(Size size) {
 	uint32 tempForegroundColor = foregroundColor;
 
-	if (size.gb != 0) {
-		putUX16Integer(size.gb);
+	if (size.GB != 0) {
+		putUX16Integer(size.GB);
 
 		foregroundColor = 0x00ff00;
 
 		UGSMASCIIputString(" gigabytes\n");
 	}
 
-	if (size.mb != 0) {
-		putUX16Integer(size.mb);
+	if (size.MB != 0) {
+		putUX16Integer(size.MB);
 
 		foregroundColor = 0x00ff00;
 
 		UGSMASCIIputString(" megabytes\n");
 	}
 
-	if (size.kb != 0) {
-		putUX16Integer(size.kb);
+	if (size.KB != 0) {
+		putUX16Integer(size.KB);
 
 		foregroundColor = 0x00ff00;
 
@@ -131,10 +92,6 @@ void showSize(Size size) {
 	foregroundColor = tempForegroundColor;
 }
 
-void free(void* mem, AbsoluteSize size) {
-	size += sizeof(MemoryRegionInformation);
-
-	Address addr = (uint32)(mem) - sizeof(MemoryRegionInformation);
-
-	memset((uint8*)(addr), 0, size);
+void free(MemoryRegion* region) {
+	
 }

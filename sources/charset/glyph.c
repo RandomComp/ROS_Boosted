@@ -4,51 +4,41 @@
 
 #include "core/std.h"
 
+#include "core/format.h"
+
 #include "core/warning.h"
 
 #include "core/error.h"
 
-uint8 reserved[128] = { 0 }; // bitset for check reservations UGSM ( единая память для хранения глифов ) ( unified glyph storage memory )
+uint8 UGSMreserveTable[128] = { 0 }; // bitset for check reservations UGSM ( единая память для хранения глифов ) ( unified glyph storage memory )
 
-bool checkGlyphCodeIsReserved(UGSMGlyphCode glyphCode) {
-	uint16 index = glyphCode / 8;
-
-	uint16 bitIndex = glyphCode % 8;
-
-	return reserved[index] & (1 << bitIndex);
+bool UGSMcheckGlyphCodeIsReserved(UGSMGlyphCode code) {
+	return checkBit(UGSMreserveTable[getByteIndex(code)], getBitIndex(code));
 }
 
-void reserveGlyphCode(UGSMGlyphCode glyphCode) {
-	uint16 index = glyphCode / 8;
+void reserveGlyphCode(UGSMGlyphCode code) {
+	if (UGSMcheckGlyphCodeIsReserved(code)) // check for reserved
+		cause(GlyphCodeReservedError); // if the glyph is reserved, then we issue the corresponding error
 
-	uint16 bitIndex = glyphCode % 8;
-
-	if (reserved[index] & (1 << bitIndex)) // check for reserved
-		cause(GlyphReservedError); // if the glyph is reserved, then we issue the corresponding error
-
-	else reserved[index] |= 1 << bitIndex;
+	else enableBit(&UGSMreserveTable[getByteIndex(code)], getBitIndex(code));
 }
 
-void freeGlyphCode(UGSMGlyphCode glyphCode) {
-	uint16 index = glyphCode / 8;
+void freeGlyphCode(UGSMGlyphCode code) {
+	if (UGSMcheckGlyphCodeIsReserved(code)) // check for reserved
+		disableBit(&UGSMreserveTable[getByteIndex(code)], getBitIndex(code));
 
-	uint16 bitIndex = glyphCode % 8;
-
-	if (reserved[index] & (1 << bitIndex)) // check for reserved
-		reserved[index] ^= 1 << bitIndex;
-
-	else cause(GlyphNotReservedError); // if the glyph is not reserved, then we issue the corresponding error
+	else cause(GlyphCodeNotReservedError); // if the glyph is not reserved, then we issue the corresponding error
 }
 
-UGSMGlyphCode getFreeSpaceForGlyph(void) {
+UGSMGlyphCode getFreeSpaceForGlyph() {
 	uint16 i = 0;
 
-	for (; reserved[i] >= 255; i++);
+	for (; UGSMreserveTable[i] >= 255; i++);
 
 	if (i <= 128) {
 		UGSMGlyphCode bitIndex = 0;
 
-		for (; (reserved[i] & (1 << bitIndex)); bitIndex++);
+		while (UGSMreserveTable[i] & (1 << bitIndex)) bitIndex++;
 
 		return i * 8 + bitIndex;
 	}
@@ -58,7 +48,7 @@ UGSMGlyphCode getFreeSpaceForGlyph(void) {
 	return 0;
 }
 
-UGSMGlyphCode generateGlyphCode(void) {
+UGSMGlyphCode generateGlyphCode() {
 	UGSMGlyphCode glyphCode = getFreeSpaceForGlyph();
 
 	reserveGlyphCode(glyphCode);

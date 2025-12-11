@@ -8,22 +8,19 @@
 
 #include "charset/rus.h"
 
-extern UGSMGlyphSetCode ASCIIOffset;
-
-extern UGSMGlyphSetCode RUSOffset;
-
 bool UGSMGlyphIsControlCharacter(UGSMGlyphCode glyphCode) {
-	return glyphCode >= UGSM_CHAR_SPACE && glyphCode <= UGSM_CHAR_TAB;
+	return glyphCode >= UGSM_CHAR_NULL && glyphCode <= UGSM_CHAR_TAB;
 }
 
 bool UGSMGlyphIsLetter(UGSMGlyphCode _glyphCode) {
 	UGSMGlyphCode glyphCode = UGSMGlyphToLowerCase(_glyphCode);
 
-	return  (glyphCode >= UGSM_CHAR_A) && (glyphCode <= UGSM_CHAR_Z);
+	return 	(glyphCode >= UGSM_CHAR_A) && (glyphCode <= UGSM_CHAR_Z) ||
+			(glyphCode >= UGSM_CHAR_RUS_A) && (glyphCode <= UGSM_CHAR_RUS_YA);
 }
 
 bool UGSMGlyphIsDigit(UGSMGlyphCode glyphCode) {
-	return (glyphCode >= 19) && (glyphCode <= 28);
+	return (glyphCode >= UGSM_CHAR_0) && (glyphCode <= UGSM_CHAR_9);
 }
 
 bool UGSMGlyphIsLetterOrDigit(UGSMGlyphCode glyphCode) {
@@ -31,13 +28,21 @@ bool UGSMGlyphIsLetterOrDigit(UGSMGlyphCode glyphCode) {
 }
 
 UGSMGlyphCode UGSMGlyphToUpperCase(UGSMGlyphCode glyphCode) {
-	return ((glyphCode >= (ASCIIOffset + UGSM_CHAR_A)) && (glyphCode <= (ASCIIOffset + UGSM_CHAR_Z))) ?
-			(glyphCode - ENGLISH_LETTERS_NUMBER) :
-			glyphCode;
+	if ((glyphCode >= UGSM_CHAR_A) && (glyphCode <= UGSM_CHAR_Z))
+		return glyphCode - UGSM_CHAR_A + UGSM_CHAR_BIG_A;
+
+	else if ((glyphCode >= UGSM_CHAR_RUS_A) && (glyphCode <= UGSM_CHAR_RUS_YA))
+		return glyphCode - UGSM_CHAR_RUS_A + UGSM_CHAR_RUS_BIG_A;
+
+	return glyphCode;
 }
 
 UGSMGlyphCode UGSMGlyphToLowerCase(UGSMGlyphCode glyphCode) {
-	return ((glyphCode >= (ASCIIOffset + UGSM_CHAR_BIG_A)) && (glyphCode <= (ASCIIOffset + UGSM_CHAR_BIG_Z))) ?
-			(glyphCode + ENGLISH_LETTERS_NUMBER) :
-			glyphCode;
+	if ((glyphCode >= UGSM_CHAR_BIG_A) && (glyphCode <= UGSM_CHAR_BIG_Z))
+		return glyphCode - UGSM_CHAR_BIG_A + UGSM_CHAR_A;
+
+	else if ((glyphCode >= UGSM_CHAR_RUS_BIG_A) && (glyphCode <= UGSM_CHAR_RUS_BIG_YA))
+		return glyphCode - UGSM_CHAR_RUS_BIG_A + UGSM_CHAR_RUS_A;
+
+	return glyphCode;
 }

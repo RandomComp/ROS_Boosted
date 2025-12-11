@@ -25,13 +25,14 @@ typedef uint16 UGSMGlyphSetSize;
 
 typedef uint16 UGSMGlyphSetCode;
 
-enum UGSMCodes {
+typedef enum UGSMCodes {
     UGSM_CHAR_NULL,                 // \0
     UGSM_CHAR_SPACE,                // SPACE
     UGSM_CHAR_NEW_LINE,             // \n
     UGSM_CHAR_CARRIAGE_RETURN,      // \r
     UGSM_CHAR_BACKSPACE,            // \b
     UGSM_CHAR_TAB,                  // \t
+    UGSM_CHAR_EOF,                  // End Of file
     UGSM_CHAR_EXCLAMATION_MARK,     // !
     UGSM_CHAR_DOUBLE_QUOTES,        // "
     UGSM_CHAR_NUMBER_SIGN,          // \#
@@ -192,9 +193,9 @@ enum UGSMCodes {
     UGSM_CHAR_RUS_BIG_E_K,          // Э
     UGSM_CHAR_RUS_BIG_YU,           // Ю
     UGSM_CHAR_RUS_BIG_YA,           // Я
-};
+} UGSMCodes;
 
-enum ASCIIKeyCodes {
+typedef enum ASCIIKeyCodes {
     ASCII_CHAR_NULL = 0,                // \0
     ASCII_CHAR_SPACE = 32,              // SPACE
     ASCII_CHAR_NEW_LINE = 10,           // \n
@@ -295,13 +296,11 @@ enum ASCIIKeyCodes {
     ASCII_CHAR_VERTICAL_LINE,           // |
     ASCII_CHAR_RIGHT_BRACE,             // }
     ASCII_CHAR_TILDE                    // ~
-};
+} ASCIIKeyCodes;
 
 UGSMGlyphSetCode UGSMloadGlyphSet(UGSMGlyphSet glyphSet, UGSMGlyphSetSize length);
 
 UGSMGlyphCode UGSMloadGlyph(UGSMGlyph glyph);
-
-void UGSMcheckGlyphCode(UGSMGlyphCode glyphCode);
 
 UGSMGlyph* UGSMgetGlyph(UGSMGlyphCode glyphCode);
 

@@ -1,7 +1,7 @@
 #ifndef _ASCII_H
 #define _ASCII_H
 
-#include "ugsm.h"
+#include "charset/ugsm.h"
 
 void ASCIIInit(void);
 

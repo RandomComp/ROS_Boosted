@@ -3,16 +3,13 @@
         {
             "name": "Random OS",
             "includePath": [
-                "${workspaceFolder}/include"
+                "${workspaceFolder}/include/**"
             ],
-            "cStandard": "c11",
+            "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "linux-gcc-x86",
-            "compilerPath": "",
+            "intelliSenseMode": "windows-gcc-x86",
+            "compilerPath": "C:\\msys64\\mingw32\\bin\\gcc.exe",
             "browse": {
-                "path": [
-                    "${workspaceFolder}/include"
-                ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": "${workspaceFolder}/.vscode/browse.vscode-db"
             }

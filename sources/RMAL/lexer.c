@@ -1,82 +1,82 @@
-#include "../../headers/RMAL/lexer.h"
+#include "RMAL/lexer.h"
 
-#include "../core/types.h"
+#include "core/types.h"
 
-#include "../../headers/ugsm.h"
+#include "core/std.h"
 
-#include "../../headers/abc.h"
+#include "charset/ugsm.h"
 
-#include "../../headers/warning.h"
+#include "charset/abc.h"
 
-#include "../../headers/error.h"
+#include "core/warning.h"
+
+#include "core/error.h"
 
 UGSMGlyphCode RMALCode[384];
 
-struct RMALToken RMALTokens[128];
+RMALToken RMALTokens[128];
 
-uint16 RMALTokenPos = 0;
+uint16 tokenPos = 0;
 
 int16 RMALPos = 0, RMALPosx = 1, RMALPosy = 1, RMALLength = 0;
 
-UGSMGlyphCode instructionsName[18][6] = {
-	{ 81, 82, 83, 0, 0, 0 },
+UGSMGlyphCode instructionsName[17][6] = {
+    { UGSM_CHAR_N, UGSM_CHAR_O, UGSM_CHAR_P, 0, 0, 0 },
 
-	{ 80, 82, 89, 0, 0, 0 },
+    { UGSM_CHAR_M, UGSM_CHAR_O, UGSM_CHAR_V, 0, 0, 0 },
 
-	{ 83, 88, 86, 75, 0, 0 },
+    { UGSM_CHAR_P, UGSM_CHAR_U, UGSM_CHAR_S, UGSM_CHAR_H, 0, 0 },
 
-	{ 83, 82, 83, 0, 0, 0 },
+    { UGSM_CHAR_P, UGSM_CHAR_O, UGSM_CHAR_P, 0, 0, 0 },
 
-	{ 68, 71, 71, 0, 0, 0 },
+    { UGSM_CHAR_A, UGSM_CHAR_D, UGSM_CHAR_D, 0, 0, 0 },
 
-	{ 86, 88, 69, 0, 0, 0 },
+    { UGSM_CHAR_S, UGSM_CHAR_U, UGSM_CHAR_B, 0, 0, 0 },
 
-	{ 80, 88, 79, 0, 0, 0 },
+    { UGSM_CHAR_M, UGSM_CHAR_U, UGSM_CHAR_L, 0, 0, 0 },
 
-	{ 71, 76, 89, 0, 0, 0 },
+    { UGSM_CHAR_D, UGSM_CHAR_I, UGSM_CHAR_V, 0, 0, 0 },
 
-	{ 76, 81, 70, 0, 0, 0 },
+    { UGSM_CHAR_I, UGSM_CHAR_N, UGSM_CHAR_C, 0, 0, 0 },
 
-	{ 71, 72, 70, 0, 0, 0 },
+    { UGSM_CHAR_D, UGSM_CHAR_E, UGSM_CHAR_C, 0, 0, 0 },
 
-	{ 76, 81, 91, 27, 0, 0 },
+    { UGSM_CHAR_I, UGSM_CHAR_N, UGSM_CHAR_X, UGSM_CHAR_8, 0, 0 },
 
-	{ 76, 81, 91, 20, 25, 0 },
+    { UGSM_CHAR_I, UGSM_CHAR_N, UGSM_CHAR_X, UGSM_CHAR_1, UGSM_CHAR_6, 0 },
 
-	{ 76, 81, 91, 22, 21, 0 },
+    { UGSM_CHAR_I, UGSM_CHAR_N, UGSM_CHAR_X, UGSM_CHAR_3, UGSM_CHAR_2, 0 },
 
-	{ 82, 88, 87, 91, 27, 0 },
+    { UGSM_CHAR_O, UGSM_CHAR_U, UGSM_CHAR_T, UGSM_CHAR_X, UGSM_CHAR_8, 0 },
 
-	{ 82, 88, 87, 91, 20, 25 },
+    { UGSM_CHAR_O, UGSM_CHAR_U, UGSM_CHAR_T, UGSM_CHAR_X, UGSM_CHAR_1, UGSM_CHAR_6 },
 
-	{ 82, 88, 87, 91, 22, 21 },
+    { UGSM_CHAR_O, UGSM_CHAR_U, UGSM_CHAR_T, UGSM_CHAR_X, UGSM_CHAR_3, UGSM_CHAR_2 },
 
-	{ 77, 80, 83, 0, 0, 0 },
-
-	{ 85, 72, 87, 0, 0, 0 }
+    { UGSM_CHAR_R, UGSM_CHAR_E, UGSM_CHAR_T, 0, 0, 0 }
 };
 
 
-UGSMGlyphCode registersName[8][3] = {
-	{ 72, 68, 91 },
+UGSMGlyphCode registersName[][3] = {
+    { UGSM_CHAR_E, UGSM_CHAR_A, UGSM_CHAR_X },
 
-	{ 72, 70, 91 },
+    { UGSM_CHAR_E, UGSM_CHAR_B, UGSM_CHAR_X },
 
-	{ 72, 71, 91 },
+    { UGSM_CHAR_E, UGSM_CHAR_C, UGSM_CHAR_X },
 
-	{ 72, 69, 91 },
+    { UGSM_CHAR_E, UGSM_CHAR_D, UGSM_CHAR_X },
 
-	{ 72, 86, 83 },
+    { UGSM_CHAR_E, UGSM_CHAR_S, UGSM_CHAR_P },
 
-	{ 72, 69, 83 },
+    { UGSM_CHAR_E, UGSM_CHAR_B, UGSM_CHAR_P },
 
-	{ 72, 86, 76 },
+    { UGSM_CHAR_E, UGSM_CHAR_S, UGSM_CHAR_I },
 
-	{ 72, 71, 76 }
+    { UGSM_CHAR_E, UGSM_CHAR_D, UGSM_CHAR_I }
 };
 
 void RMALTokenize(UGSMGlyphCode argRMALCode[384]) {
-	RMALTokenPos = 0;
+	tokenPos = 0;
 
 	RMALPos = 0;
 
@@ -92,7 +92,7 @@ void RMALTokenize(UGSMGlyphCode argRMALCode[384]) {
 	for (uint16 i = 0; i < 127; i++) {
 		RMALTokens[i].type = INSTRUCTION;
 
-		RMALTokens[i].instruction = NOP;
+		RMALTokens[i].instruction = RMAL_INSTRUCTION_NOP;
 	}
 
 	while (RMALPos < RMALLength) {
@@ -105,33 +105,33 @@ void RMALTokenize(UGSMGlyphCode argRMALCode[384]) {
 		else if (current == 14 || current == 16) RMALTokenizeSignNumber();
 
 		else if (current == 15) {
-			RMALTokens[RMALTokenPos].type = RMALCOMMA;
+			RMALTokens[tokenPos].type = RMALCOMMA;
 
-			RMALTokenPos++;
+			tokenPos++;
 
 			RMALNext();
 		}
 
 		else if (current == 62) {
-			RMALTokens[RMALTokenPos].type = RMALLBRACKET;
+			RMALTokens[tokenPos].type = RMALLBRACKET;
 
-			RMALTokenPos++;
+			tokenPos++;
 
 			RMALNext();
 		}
 
 		else if (current == 64) {
-			RMALTokens[RMALTokenPos].type = RMALRBRACKET;
+			RMALTokens[tokenPos].type = RMALRBRACKET;
 
-			RMALTokenPos++;
+			tokenPos++;
 
 			RMALNext();
 		}
 
 		else if (current == 29) {
-			RMALTokens[RMALTokenPos].type = RMALCOLON;
+			RMALTokens[tokenPos].type = RMALCOLON;
 
-			RMALTokenPos++;
+			tokenPos++;
 
 			RMALNext();
 		}
@@ -143,9 +143,9 @@ void RMALTokenize(UGSMGlyphCode argRMALCode[384]) {
 		else RMALNext(); // We just ignore spaces or other nonsense
 	}
 
-	RMALTokens[RMALTokenPos].type = RMALEOF;
+	RMALTokens[tokenPos].type = RMALEOF;
 
-	RMALTokenPos++;
+	tokenPos++;
 }
 
 enum RMALInstructions findInstructionByName(UGSMGlyphCode name[6]) {
@@ -236,32 +236,32 @@ void RMALTokenizeWord(void) {
 	}
 
 	if (nameIsInstructionName(name)) {
-		RMALTokens[RMALTokenPos].type = INSTRUCTION;
+		RMALTokens[tokenPos].type = INSTRUCTION;
 
-		RMALTokens[RMALTokenPos].instruction = findInstructionByName(name);
+		RMALTokens[tokenPos].instruction = findInstructionByName(name);
 	}
 
 	else if (nameIsRegisterName(name)) {
-		RMALTokens[RMALTokenPos].type = REGISTER;
+		RMALTokens[tokenPos].type = REGISTER;
 
-		RMALTokens[RMALTokenPos].reg = findRegisterByName(name);
+		RMALTokens[tokenPos].value.reg = findRegisterByName(name);
 	}
 
 	else {
-		RMALTokens[RMALTokenPos].type = LABELNAME;
+		RMALTokens[tokenPos].type = RMALLABELNAME;
 
 		for (uint16 i = 0; i < 6; i++) {
-			RMALTokens[RMALTokenPos].labelName[i] = name[i];
+			RMALTokens[tokenPos].labelName[i] = name[i];
 		}
 	}
 
-	RMALTokenPos++;
+	tokenPos++;
 }
 
-void RMALTokenizeSignNumber(void) {
+void RMALTokenizeNumber(void) {
 	int32 number = 0;
 
-	bool bMinus = RMALPeek(0) == 16;
+	bool bMinus = RMALPeek(0) == UGSM_CHAR_MINUS_SIGN;
 
 	UGSMGlyphCode current = RMALNext();
 
@@ -275,31 +275,11 @@ void RMALTokenizeSignNumber(void) {
 
 	if (bMinus) number = -number;
 
-	RMALTokens[RMALTokenPos].type = RMALSIGNNUMBER;
+	RMALTokens[tokenPos].type = RMAL_TOKEN_VALUE_TYPE_NUMBER;
 
-	RMALTokens[RMALTokenPos].signNumber = number;
+	RMALTokens[tokenPos].value.signNumber = number;
 
-	RMALTokenPos++;
-}
-
-void RMALTokenizeNumber(void) {
-	uint32 number = 0;
-
-	UGSMGlyphCode current = RMALPeek(0);
-
-	while (UGSMGlyphIsDigit(current)) {
-		number *= 10;
-
-		number += (uint32)(current - 19);
-
-		current = RMALNext();
-	}
-
-	RMALTokens[RMALTokenPos].type = RMALNUMBER;
-
-	RMALTokens[RMALTokenPos].number = number;
-
-	RMALTokenPos++;
+	tokenPos++;
 }
 
 void RMALTokenizeComment(void) {
@@ -323,15 +303,13 @@ UGSMGlyphCode RMALNext(void) {
 		RMALPosx = 1;
 	}
 
-	else {
-		RMALPosx++;
-	}
+	else RMALPosx++;
 
 	return result;
 }
 
-UGSMGlyphCode RMALPeek(int16 relativePosition) {
-	int16 position = RMALPos + relativePosition;
+UGSMGlyphCode RMALPeek(int32 relativePosition) {
+	int32 position = RMALPos + relativePosition;
 
 	if (position >= RMALLength) return 0;
 
@@ -340,146 +318,48 @@ UGSMGlyphCode RMALPeek(int16 relativePosition) {
 	return RMALCode[position];
 }
 
-void RMALTokensView(void) {
-	for (uint16 i = 0; i < RMALTokenPos; i++) {
-		struct RMALToken* token = &RMALTokens[i];
+void RMALTokensView() {
+	for (uint16 i = 0; i < tokenPos; i++) {
+		RMALToken token = RMALTokens[i];
 
-		if (token->type == INSTRUCTION) {
-			if (token->instruction == NOP) {
-				UGSMASCIIputString("NOP");
-			}
+		switch (token.type) {
+			case RMAL_TOKEN_VALUE_TYPE_INSTRUCTION:
+				putString(instructionsName[token.value.instruction]);
+			break;
 
-			else if (token->instruction == MOV) {
-				UGSMASCIIputString("MOV");
-			}
+			case RMAL_TOKEN_VALUE_TYPE_REGISTER:
+				putString(registersName[token.value.reg]);
+			break;
 
-			else if (token->instruction == PUSH) {
-				UGSMASCIIputString("PUSH");
-			}
+			case RMAL_TOKEN_VALUE_TYPE_NUMBER:
+				putString(token.value.number);
+			break;
 
-			else if (token->instruction == POP) {
-				UGSMASCIIputString("POP");
-			}
+			case RMAL_TOKEN_VALUE_TYPE_SIGN_NUMBER:
+				putX32Integer(token.value.signNumber);
+			break;
 
-			else if (token->instruction == ADD) {
-				UGSMASCIIputString("ADD");
-			}
+			case RMAL_TOKEN_VALUE_TYPE_COMMA:
+				putChar(UGSM_CHAR_COMMA);
+			break;
 
-			else if (token->instruction == SUB) {
-				UGSMASCIIputString("SUB");
-			}
+			case RMAL_TOKEN_VALUE_TYPE_LABEL_NAME:
+				putString(token.label.labelName);
+			break;
 
-			else if (token->instruction == MUL) {
-				UGSMASCIIputString("MUL");
-			}
+			case RMAL_TOKEN_VALUE_TYPE_COLON:
+				putChar(UGSM_CHAR_COLON);
+			break;
 
-			else if (token->instruction == DIV) {
-				UGSMASCIIputString("DIV");
-			}
+			case RMAL_TOKEN_VALUE_TYPE_LEFT_BRACKET:
+				putChar(UGSM_CHAR_LEFT_BRACKET);
+			break;
 
-			else if (token->instruction == INX8) {
-				UGSMASCIIputString("INX8");
-			}
-
-			else if (token->instruction == INX16) {
-				UGSMASCIIputString("INX16");
-			}
-
-			else if (token->instruction == INX32) {
-				UGSMASCIIputString("INX32");
-			}
-
-			else if (token->instruction == OUTX8) {
-				UGSMASCIIputString("OUTX8");
-			}
-
-			else if (token->instruction == OUTX16) {
-				UGSMASCIIputString("OUTX16");
-			}
-
-			else if (token->instruction == OUTX32) {
-				UGSMASCIIputString("OUTX32");
-			}
-
-			else if (token->instruction == JMP) {
-				UGSMASCIIputString("JMP");
-			}
-
-			else if (token->instruction == RET) {
-				UGSMASCIIputString("RET");
-			}
-
-			else if (token->instruction == UNKNOWN_INSTRUCTION) {
-				UGSMASCIIputString("UNKNOWN_INSTRUCTION");
-			}
+			case RMAL_TOKEN_VALUE_TYPE_RIGHT_BRACKET:
+				putChar(UGSM_CHAR_RIGHT_BRACKET);
+			break;
 		}
 
-		else if (token->type == REGISTER) {
-			if (token->reg == EAX) {
-				UGSMASCIIputString("EAX");
-			}
-
-			else if (token->reg == ECX) {
-				UGSMASCIIputString("ECX");
-			}
-
-			else if (token->reg == EDX) {
-				UGSMASCIIputString("EDX");
-			}
-
-			else if (token->reg == EBX) {
-				UGSMASCIIputString("EBX");
-			}
-
-			else if (token->reg == ESP) {
-				UGSMASCIIputString("ESP");
-			}
-
-			else if (token->reg == EBP) {
-				UGSMASCIIputString("EBP");
-			}
-
-			else if (token->reg == ESI) {
-				UGSMASCIIputString("ESI");
-			}
-
-			else if (token->reg == EDI) {
-				UGSMASCIIputString("EDI");
-			}
-
-			else if (token->reg == UNKNOWN_REGISTER) {
-				UGSMASCIIputString("UNKNOWN_REGISTER");
-			}
-		}
-
-		else if (token->type == RMALNUMBER) {
-			putUX32Integer(token->number); // easy
-		}
-
-		else if (token->type == RMALSIGNNUMBER) {
-			putX32Integer(token->signNumber); // easy
-		}
-
-		else if (token->type == RMALCOMMA) {
-			UGSMASCIIputString(","); // easy
-		}
-
-		else if (token->type == LABELNAME) {
-			putString(token->labelName); // easy
-		}
-
-		else if (token->type == RMALCOLON) {
-			UGSMASCIIputString(":"); // easy
-		}
-
-		else if (token->type == RMALLBRACKET) {
-			UGSMASCIIputString("["); // easy
-		}
-
-		else if (token->type == RMALRBRACKET) {
-			UGSMASCIIputString("]"); // easy
-		}
-
-		UGSMASCIIputString(" ");
+		putChar(UGSM_CHAR_SPACE);
 	}
 }

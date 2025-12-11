@@ -5,8 +5,6 @@
 
 #include "charset/ugsm.h"
 
-#define ENGLISH_LETTERS_NUMBER 26
-
 bool UGSMGlyphIsControlCharacter(UGSMGlyphCode glyphCode);
 
 bool UGSMGlyphIsLetter(UGSMGlyphCode glyphCode);

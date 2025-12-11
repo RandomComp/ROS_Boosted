@@ -8,17 +8,17 @@ int64 abs(int64 x) {
     return x < 0 ? -x : x;
 }
 
-float fabs(float x) {
+double fabs(double x) {
     return x < 0.0f ? -x : x;
 }
 
-float fmod(float a, float b) {
+double fmod(double a, double b) {
     if (b == 0.0f) causeFatal(DivisionByZeroError);
 
     return a - (trunc(a / b) * b);
 }
 
-int64 scaleToInteger(float x) {
+int64 scaleToInteger(double x) {
     
 }
 
@@ -36,20 +36,20 @@ uint8 getNumberOfDigits(int64 x) {
     return result;
 }
 
-float trunc(float x) {
-    return (float)((int32)x);
+double trunc(double x) {
+    return (double)((int32)x);
 }
 
-float frac(float x) {
+double frac(double x) {
     return x - trunc(x);
 }
 
-uint32 getNumberAfterDecimalPoint(float x) {
+uint32 getNumberAfterDecimalPoint(double x) {
     return (uint32)(fabs(frac(x)) * 10.0f) % 10;
 }
 
-float floor(float x) {
-    float result = trunc(x);
+double floor(double x) {
+    double result = trunc(x);
 
     if (x < 0 && (getNumberAfterDecimalPoint(x) != 0))
         result -= 1;
@@ -57,8 +57,8 @@ float floor(float x) {
     return result;
 }
 
-float ceil(float x) {
-    float result = trunc(x);
+double ceil(double x) {
+    double result = trunc(x);
 
     if (x > 0 && getNumberAfterDecimalPoint(x) != 0)
         result += 1;
@@ -66,13 +66,13 @@ float ceil(float x) {
     return result;
 }
 
-float round(float x) {
+double round(double x) {
     uint32 number = getNumberAfterDecimalPoint(x);
 
     if (x < 0)
-        return number >= 5 ? floor(x) : ceil(x);
+        return  number >= 5 ? floor(x) : ceil(x);
 
-    return  number >= 5 ? ceil(x) : floor(x);
+    return      number >= 5 ? ceil(x) : floor(x);
 }
 
 int64 pow(int16 a, int16 b) {

@@ -19,7 +19,7 @@
 
 #define MULTIBOOT_MEMORY_BADRAM 5
 
-struct multibootAOutSymbolTable {
+typedef struct multibootAOutSymbolTable {
 	uint32 tabsize;
 
 	uint32 strsize;
@@ -27,9 +27,9 @@ struct multibootAOutSymbolTable {
 	uint32 addr;
 
 	uint32 reserved;
-};
+} multibootAOutSymbolTable;
 
-struct multibootELFSectionHeaderTable {
+typedef struct multibootELFSectionHeaderTable {
 	uint32 num;
 
 	uint32 size;
@@ -37,9 +37,9 @@ struct multibootELFSectionHeaderTable {
 	uint32 addr;
 
 	uint32 shndx;
-};
+} multibootELFSectionHeaderTable;
 
-struct multibootInfo {
+typedef struct multibootInfo {
 	uint32 flags;
 
 	uint32 mem_lower;
@@ -58,7 +58,7 @@ struct multibootInfo {
 		struct multibootAOutSymbolTable aout_sym;
 
 		struct multibootELFSectionHeaderTable elf_sec;
-	} u;
+	};
 
 	uint32 mmap_length;
 	
@@ -119,7 +119,7 @@ struct multibootInfo {
 			uint8 framebuffer_blue_mask_size;
 		};
 	};
-};
+} multibootInfo;
 
 typedef struct multibootMMapEntry {
 	uint32 size;

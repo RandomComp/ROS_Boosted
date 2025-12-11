@@ -3,48 +3,30 @@
 
 #include "core/types.h"
 
-typedef enum FatalErrorsType {
+typedef enum FatalErrorType {
 	DebugError,
-
 	DivisionByZeroError,
-
 	NonMaskableInterruptError,
-
 	BreakPoint,
-
 	StackOverflowError,
-
 	IndexOverpowered,
-
 	InvalidInstruction,
-
 	NoCoprocessorError,
-
 	DoubleFaultError,
-
 	CoprocessorSegmentOverflowError,
-
 	StackError,
-
 	ProtectionError,
-
 	PageError,
-
 	UnknownInterruptError,
-
 	CoprocessorError,
-
 	AlignmentError,
-
 	MachineCheckError,
-
 	ReservedError,
-
 	ISRReservedError
-} FatalErrorsType;
+} FatalErrorType;
 
-int8* getFatalErrorDescription(enum FatalErrorsType errorType);
+int8* getFatalErrorDescription(FatalErrorType errorType);
 
-void causeFatal(enum FatalErrorsType errorType);
+void causeFatalError(FatalErrorType errorType);
 
 #endif

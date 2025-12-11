@@ -155,23 +155,31 @@ typedef enum MemoryRegionStatus {
 } MemoryRegionStatus;
 
 typedef struct Size {
-	uint32 gb, mb, kb, bytes;
+	uint32 GB, MB, KB, bytes;
 } Size;
 
-typedef struct MemoryRegionInformation {
+typedef struct MemoryRegionHeader {
 	AbsoluteSize size;
 
 	MemoryRegionStatus status;
-} MemoryRegionInformation;
+} MemoryRegionHeader;
+
+typedef struct MemoryRegion {
+	MemoryRegionHeader header;
+
+	void* memory;
+} MemoryRegion;
 
 void MEMInit(AbsoluteSize size);
 
-void* malloc(AbsoluteSize size, MemoryRegionStatus status);
+MemoryRegion* malloc(AbsoluteSize size, MemoryRegionStatus status);
 
 AbsoluteSize sizeToAbsoluteSize(Size size);
 
+Size sizeFromAbsoluteSize(AbsoluteSize size);
+
 void showSize(Size size);
 
-void free(void* mem, AbsoluteSize size);
+void free(MemoryRegion* region);
 
 #endif
