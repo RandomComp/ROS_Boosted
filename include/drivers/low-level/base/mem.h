@@ -144,24 +144,26 @@ static inline int32 strncmp_builtin(int8* s1, int8* s2, int32 len) {
 
 #endif
 
-typedef uint32 Address;
+typedef uint32 AbsoluteSize;
 
-typedef uint64 AbsoluteSize;
+typedef uint8 MemoryRegionStatus;
 
-typedef enum MemoryRegionStatus {
-	RESERVED_MEMORY,
+typedef enum MemoryRegionStatusBits {
+	MEMORY_ACCESS_READ,
 
-	RESERVED_EXECUTABLE_MEMORY
-} MemoryRegionStatus;
+	MEMORY_ACCESS_WRITE,
+
+	MEMORY_ACCESS_EXECUTE
+} MemoryRegionStatusBits;
 
 typedef struct Size {
 	uint32 GB, MB, KB, bytes;
 } Size;
 
 typedef struct MemoryRegionHeader {
-	AbsoluteSize size;
+	AbsoluteSize regionSize;
 
-	MemoryRegionStatus status;
+	MemoryRegionStatus regionStatus;
 } MemoryRegionHeader;
 
 typedef struct MemoryRegion {
@@ -174,12 +176,24 @@ void MEMInit(AbsoluteSize size);
 
 MemoryRegion* malloc(AbsoluteSize size, MemoryRegionStatus status);
 
+void free(MemoryRegion* region);
+
+inline void memWriteByte(MemoryRegion* region, uint8 data) {
+	memset(region->memory, data, region->header.regionSize);
+}
+
+inline void memReadByte(MemoryRegion* region, uint32 index, uint8* data) {
+	if (index >= region->header.regionSize); // handle error
+
+	uint8* mem = (uint8*)(region->memory);
+
+	*data = mem[index];
+}
+
 AbsoluteSize sizeToAbsoluteSize(Size size);
 
 Size sizeFromAbsoluteSize(AbsoluteSize size);
 
 void showSize(Size size);
-
-void free(MemoryRegion* region);
 
 #endif

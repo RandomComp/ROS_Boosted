@@ -4,25 +4,25 @@
 #include "core/types.h"
 
 typedef enum FatalErrorType {
-	DebugError,
-	DivisionByZeroError,
-	NonMaskableInterruptError,
-	BreakPoint,
-	StackOverflowError,
-	IndexOverpowered,
-	InvalidInstruction,
-	NoCoprocessorError,
-	DoubleFaultError,
-	CoprocessorSegmentOverflowError,
-	StackError,
-	ProtectionError,
-	PageError,
-	UnknownInterruptError,
-	CoprocessorError,
-	AlignmentError,
-	MachineCheckError,
-	ReservedError,
-	ISRReservedError
+	DIVISION_BY_ZERO_FATAL_ERROR,
+	DEBUG_FATAL_ERROR,
+	NON_MASKABLE_INTERRUPT_FATAL_ERROR,
+	BREAK_POINT_FATAL_ERROR,
+	STACK_OVERFLOW_FATAL_ERROR,
+	INDEX_OVERPOWERED_FATAL_ERROR,
+	INVALID_INSTRUCTION_FATAL_ERROR,
+	NO_COPROCESSOR_FATAL_ERROR,
+	DOUBLE_FAULT_FATAL_ERROR,
+	COPROCESSOR_SEGMENT_OVERFLOW_FATAL_ERROR,
+	STACK_FATAL_ERROR,
+	PROTECTION_FATAL_ERROR,
+	PAGE_FATAL_ERROR,
+	UNKNOWN_INTERRUPT_FATAL_ERROR,
+	COPROCESSOR_FATAL_ERROR,
+	ALIGNMENT_FATAL_ERROR,
+	MACHINE_CHECK_FATAL_ERROR,
+	RESERVED_FATAL_ERROR,
+	ISR_RESERVED_FATAL_ERROR
 } FatalErrorType;
 
 int8* getFatalErrorDescription(FatalErrorType errorType);

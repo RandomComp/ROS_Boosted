@@ -4,26 +4,56 @@
 
 #include "core/fatal_error.h"
 
-int64 abs(int64 x) {
+int32 iabs(int32 x) {
     return x < 0 ? -x : x;
 }
 
-double fabs(double x) {
+int64 i64abs(int64 x) {
+    return x < 0 ? -x : x;
+}
+
+double abs(double x) {
+    return x < 0.0 ? -x : x;
+}
+
+float fabs(float x) {
     return x < 0.0f ? -x : x;
 }
 
-double fmod(double a, double b) {
-    if (b == 0.0f) causeFatal(DivisionByZeroError);
+double mod(double a, double b) {
+    if (b == 0.0) causeFatal(DIVISION_BY_ZERO_FATAL_ERROR);
 
     return a - (trunc(a / b) * b);
 }
 
-int64 scaleToInteger(double x) {
-    
+float fmod(float a, float b) {
+    if (b == 0.0f) causeFatal(DIVISION_BY_ZERO_FATAL_ERROR);
+
+    return a - (ftrunc(a / b) * b);
 }
 
-uint8 getCountDecimalPlaces(int64 x) {
-    
+uint8 getCountDecimalPlaces(double x) {
+    uint8 result = 0;
+
+    while (getFirstNumberAfterDecimalPoint(x) != 0 && result < MAX_DOUBLE_STEPS) {
+        x *= 10;
+        
+        result++;
+    }
+
+    return result;
+}
+
+uint8 getNumberOfDigits(int32 x) {
+    uint8 result = 0;
+
+    while (getFirstNumber(x) != 0) {
+        x /= 10;
+        
+        result++;
+    }
+
+    return result;
 }
 
 uint8 getNumberOfDigits(int64 x) {
@@ -36,22 +66,18 @@ uint8 getNumberOfDigits(int64 x) {
     return result;
 }
 
-double trunc(double x) {
-    return (double)((int32)x);
-}
-
-double frac(double x) {
-    return x - trunc(x);
-}
-
-uint32 getNumberAfterDecimalPoint(double x) {
+uint32 getFirstNumberAfterDecimalPoint(float x) {
     return (uint32)(fabs(frac(x)) * 10.0f) % 10;
+}
+
+uint32 getFirstNumber(uint32 x) {
+    return iabs(x) % 10;
 }
 
 double floor(double x) {
     double result = trunc(x);
 
-    if (x < 0 && (getNumberAfterDecimalPoint(x) != 0))
+    if (x < 0 && (getFirstNumberAfterDecimalPoint(x) != 0))
         result -= 1;
 
     return result;
@@ -60,14 +86,14 @@ double floor(double x) {
 double ceil(double x) {
     double result = trunc(x);
 
-    if (x > 0 && getNumberAfterDecimalPoint(x) != 0)
+    if (x > 0 && (getFirstNumberAfterDecimalPoint(x) != 0))
         result += 1;
 
     return result;
 }
 
 double round(double x) {
-    uint32 number = getNumberAfterDecimalPoint(x);
+    uint32 number = getFirstNumberAfterDecimalPoint(x);
 
     if (x < 0)
         return  number >= 5 ? floor(x) : ceil(x);
@@ -75,10 +101,47 @@ double round(double x) {
     return      number >= 5 ? ceil(x) : floor(x);
 }
 
-int64 pow(int16 a, int16 b) {
+float ffloor(float x) {
+    float result = ftrunc(x);
+
+    if (x < 0 && (getFirstNumberAfterDecimalPoint(x) != 0))
+        result -= 1;
+
+    return result;
+}
+
+float fceil(float x) {
+    float result = ftrunc(x);
+
+    if (x > 0 && (getFirstNumberAfterDecimalPoint(x) != 0))
+        result += 1;
+
+    return result;
+}
+
+float fround(float x) {
+    uint32 number = getFirstNumberAfterDecimalPoint(x);
+
+    if (x < 0)
+        return  number >= 5 ? ffloor(x) : fceil(x);
+
+    return      number >= 5 ? fceil(x) : ffloor(x);
+}
+
+int32 pow(int16 a, int16 b) {
+    int32 result = 1;
+
+    b = i64abs(b);
+
+    while (b--) result *= a;
+
+    return result;
+}
+
+int64 pow64(int16 a, int16 b) {
     int64 result = 1;
 
-    b = abs(b);
+    b = i64abs(b);
 
     while (b--) result *= a;
 

@@ -9,29 +9,51 @@
 
 #define E 2.718281828459
 
-int64 abs(int64 x);
+#define MAX_DOUBLE_STEPS 17
 
-double fabs(double x);
+int64 i64abs(int64 x);
 
-double fmod(double a, double b);
+int32 iabs(int32 x);
 
-int64 scaleToInteger(double x);
+double abs(double x);
 
-uint8 getCountDecimalPlaces(int64 x);
+double mod(double a, double b);
 
-uint8 getNumberOfDigits(int64 x);
+float fabs(float x);
 
-double trunc(double x);
+float fmod(float a, float b);
 
-double frac(double x);
+int32 scaleToInteger(double x);
 
-uint32 getNumberAfterDecimalPoint(double x);
+uint8 getCountDecimalPlaces(double x);
+
+uint8 getNumberOfDigits(int32 x);
+
+inline double trunc(double x) {
+    return (double)((int32)x);
+}
+
+inline double frac(double x) {
+    return x - trunc(x);
+}
+
+inline float ftrunc(float x) {
+    return (float)((int32)x);
+}
+
+inline float ffrac(float x) {
+    return x - ftrunc(x);
+}
+
+uint32 getFirstNumberAfterDecimalPoint(float x);
 
 double floor(double x);
-
 double ceil(double x);
-
 double round(double x);
+
+float ffloor(float x);
+float fceil(float x);
+float fround(float x);
 
 int64 pow(int16 a, int16 b);
 

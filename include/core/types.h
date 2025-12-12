@@ -1,6 +1,12 @@
 #ifndef _TYPES_H
 #define _TYPES_H
 
+#include "charset/ugsm.h"
+
+#include "drivers/low-level/base/mem.h"
+
+#include "core/format.h"
+
 #define true 1
 
 #define false 0
@@ -72,6 +78,155 @@ typedef struct Decimal {
 
     int32 denominator;
 } Decimal;
+
+typedef enum Charset {
+    CHARSET_UGSM,
+    CHARSET_ASCII,
+} Charset;
+
+typedef union CharUnion {
+    UGSMGlyphCode   UGSMChar;
+    
+    int8            ASCIIChar;
+} CharUnion;
+
+typedef struct Char {
+    Charset charset;
+
+    CharUnion ch;
+} Char;
+
+typedef struct String {
+    Charset charset;
+
+    CharUnion* ch;
+} String;
+
+typedef enum TTypes {
+    T_TYPE_INT8,
+    T_TYPE_INT16,
+    T_TYPE_INT32,
+    T_TYPE_INT64,
+    
+    T_TYPE_UINT8,
+    T_TYPE_UINT16,
+    T_TYPE_UINT32,
+    T_TYPE_UINT64,
+
+    T_TYPE_FLOAT,
+    T_TYPE_DOUBLE,
+
+    T_TYPE_CHAR,
+    T_TYPE_STRING,
+} TTypes;
+
+typedef struct T {
+    TTypes type;
+
+    union {
+        int8    numX8;
+        int16   numX16;
+        int32   numX32;
+        int64   numX64;
+
+        uint8   numUX8;
+        uint16  numUX16;
+        uint32  numUX32;
+        uint64  numUX64;
+
+        float   numFloat;
+        double  numDouble;
+
+        Char    ch;
+        String  str;
+    } value;
+} T;
+
+inline T int8ToT(int8 x) {
+	return (T){.type = T_TYPE_INT8, .value.numX8 = x};
+}
+
+inline T int16ToT(int16 x) {
+	return (T){.type = T_TYPE_INT16, .value.numX16 = x};
+}
+
+inline T int32ToT(int32 x) {
+	return (T){.type = T_TYPE_INT32, .value.numX32 = x};
+}
+
+inline T int64ToT(int64 x) {
+	return (T){.type = T_TYPE_INT64, .value.numX64 = x};
+}
+
+inline T uint8ToT(uint8 x) {
+	return (T){.type = T_TYPE_UINT8, .value.numUX8 = x};
+}
+
+inline T uint16ToT(uint16 x) {
+	return (T){.type = T_TYPE_UINT16, .value.numUX16 = x};
+}
+
+inline T uint32ToT(uint32 x) {
+	return (T){.type = T_TYPE_UINT32, .value.numUX32 = x};
+}
+
+inline T uint64ToT(uint64 x) {
+	return (T){.type = T_TYPE_UINT64, .value.numUX64 = x};
+}
+
+inline T FloatToT(float x) {
+	return (T){.type = T_TYPE_FLOAT, .value.numFloat = x};
+}
+
+inline T DoubleToT(double x) {
+	return (T){.type = T_TYPE_DOUBLE, .value.numDouble = x};
+}
+
+inline T charToT(Char ch) {
+	return (T){.type = T_TYPE_CHAR, .value.ch = ch};
+}
+
+inline T stringToT(String str) {
+	return (T){.type = T_TYPE_STRING, .value.str = str};
+}
+
+inline Char ASCIICharToChar(int8 ch) {
+	return (Char){.charset = CHARSET_ASCII, .ch = ch};
+}
+
+inline Char UGSMCharToChar(UGSMGlyphCode ch) {
+	return (Char){.charset = CHARSET_UGSM, .ch = ch};
+}
+
+inline String newString() {
+    MemoryRegion* region = malloc(1, (1 << MEMORY_ACCESS_READ) + (1 << MEMORY_ACCESS_WRITE));
+
+    memWrite(region, UGSM_CHAR_NULL);
+
+    return (String){.charset = CHARSET_UGSM, .ch = UGSM_CHAR_NULL};
+}
+
+void stringConcatenate(String* a, String b); // Конкатенирует две строки, сохраняет результат в a
+
+String stringFromT(T x);
+
+T T_Add(T a, T b); // Складывание a и b.
+
+T T_Sub(T a, T b); // Вычитание a и b.
+
+T T_Mul(T a, T b); // Умножение a и b.
+
+T T_Div(T a, T b); // Деление a и b.
+
+T T_Mod(T a, T b); // Взятие остатка от деления a и b.
+
+T T_Preinc(T a, T b); // Преинкремент, ++i, сначала увеличивает, потом возвращает.
+
+T T_Postinc(T a, T b); // Постинкремент, i++, сначала возвращает, потом увеличивает.
+
+T T_Predec(T a, T b); // Предекремент, --i, сначала уменьшает, потом возвращает.
+
+T T_Postdec(T a, T b); // Постдекремент, i--, сначала возвращает, потом уменьшает.
 
 double doubleFromDecimal(Decimal decimal);
 

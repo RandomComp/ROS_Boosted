@@ -36,7 +36,7 @@ void MEMInit(AbsoluteSize size) {
 	RAMSize = sizeFromAbsoluteSize(AbsoluteRAMSizeInBytes);
 }
 
-MemoryRegion malloc(AbsoluteSize size, MemoryRegionStatus status) {
+MemoryRegion* malloc(AbsoluteSize size, MemoryRegionStatus status) {
 	
 }
 
