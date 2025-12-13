@@ -13,11 +13,19 @@
 
 #define MAX_DOUBLE_STEPS 17
 
+inline int32 iabs32(int32 x) {
+    return x < 0 ? -x : x;
+}
+
 inline int64 iabs64(int64 x) {
     return x < 0 ? -x : x;
 }
 
-inline int32 iabs(int32 x) {
+inline int32 iabsU32(uint32 x) {
+    return x < 0 ? -x : x;
+}
+
+inline int64 iabsU64(uint64 x) {
     return x < 0 ? -x : x;
 }
 
@@ -29,11 +37,27 @@ inline float fabs(float x) {
     return x < 0.0f ? -x : x;
 }
 
-inline uint32 getFirstNumber(uint32 x) {
-    return iabs(x) % 10;
+inline uint8 getFirstNumber32(int32 x) {
+    return iabs32(x) % 10;
 }
 
-inline uint32 getFirstNumberAfterDecimalPoint(float x) {
+inline uint8 getFirstNumber64(int64 x) {
+    return iabs64(x) % 10;
+}
+
+inline uint8 getFirstNumberU32(uint32 x) {
+    return iabsU32(x) % 10;
+}
+
+inline uint8 getFirstNumberU64(uint64 x) {
+    return iabsU64(x) % 10;
+}
+
+inline uint32 fgetFirstNumberAfterDecimalPoint(float x) {
+    return (uint32)(fabs(frac(x)) * 10.0f) % 10;
+}
+
+inline uint32 getFirstNumberAfterDecimalPoint(double x) {
     return (uint32)(fabs(frac(x)) * 10.0f) % 10;
 }
 
@@ -49,9 +73,13 @@ int32 scaleToInteger(double x);
 
 uint8 getCountDecimalPlaces(double x);
 
-uint8 getNumberOfDigits(int32 x);
+uint8 getNumberOfDigits32(int32 x);
 
 uint8 getNumberOfDigits64(int64 x);
+
+uint8 getNumberOfDigitsU32(int32 x);
+
+uint8 getNumberOfDigitsU64(int64 x);
 
 inline double trunc(double x) {
     return (double)((int32)x);

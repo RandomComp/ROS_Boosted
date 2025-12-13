@@ -73,6 +73,8 @@ typedef long long int64;
 
 typedef uint8 bool;
 
+#define null 0
+
 typedef struct Decimal {
     int32 numerator;
 
@@ -99,7 +101,7 @@ typedef struct Char {
 typedef struct String {
     uint32 length;
 
-    Char* ch;
+    MemoryRegion* region;
 } String;
 
 typedef enum TTypes {
@@ -174,11 +176,11 @@ inline T uint64ToT(uint64 x) {
 	return (T){.type = T_TYPE_UINT64, .value.numUX64 = x};
 }
 
-inline T FloatToT(float x) {
+inline T floatToT(float x) {
 	return (T){.type = T_TYPE_FLOAT, .value.numFloat = x};
 }
 
-inline T DoubleToT(double x) {
+inline T doubleToT(double x) {
 	return (T){.type = T_TYPE_DOUBLE, .value.numDouble = x};
 }
 
@@ -190,39 +192,53 @@ inline T stringToT(String str) {
 	return (T){.type = T_TYPE_STRING, .value.str = str};
 }
 
-inline Char newChar(CharUnion ch) {
+inline CharUnion newCharUnionFromASCII(int8 ch) {
+    return (CharUnion){.ASCIIChar = ch};
+}
+
+inline CharUnion newCharUnionFromUGSM(UGSMGlyphCode ch) {
+    return (CharUnion){.UGSMChar = ch};
+}
+
+inline Char newCharFromASCII(int8 ch) {
     return (Char){.charset = CHARSET_UGSM, .ch = ch};
 }
 
-inline String* newString(uint32 length) {
-    MemoryRegion* stringMem = malloc(sizeof(String), (1 << MEMORY_ACCESS_READ) + (1 << MEMORY_ACCESS_WRITE));
-
-    MemoryRegion* charMem = malloc(sizeof(Char) * length, (1 << MEMORY_ACCESS_READ) + (1 << MEMORY_ACCESS_WRITE));
-    
-    String* result = (String*)stringMem->memory;
-
-    result->ch = (Char*)charMem->memory;
-
-    result->length = length;
-
-    return result;
+inline Char newCharFromUGSM(UGSMGlyphCode ch) {
+    return (Char){.charset = CHARSET_UGSM, .ch = ch};
 }
 
-void stringConcatenate(String* a, String b); // Конкатенирует две строки, сохраняет результат в a
+inline String newString(uint32 length) {
+    MemoryRegion* charMem = malloc(sizeof(Char) * length, (1 << MEMORY_ACCESS_READ) + (1 << MEMORY_ACCESS_WRITE));
+    
+    return (String){.length = length, .region = charMem};
+}
+
+inline Char* getCharArrayFromString(String str) {
+    return (Char*)str.region->memory;
+}
+
+inline CharUnion charUnionFromUGSMChar(UGSMGlyphCode code) {
+    return (CharUnion){.UGSMChar = code};
+}
+
+inline CharUnion charUnionFromASCIIChar(int8 code) {
+    return (CharUnion){.ASCIIChar = code};
+}
+
+inline void freeString(String* str) {
+	if (str != null && str->region != null) {
+		free(str->region);
+
+		str->region = null;
+	}
+
+    // TODO: handle error
+}
+
+String stringConcatenate(String a, String b); // Конкатенирует две строки
 
 String stringFromT(T x);
-
-T addInt32WithT(int32 a, T b);
-
-T addUInt32WithT(int32 a, T b);
-
-T addInt64WithT(int32 a, T b);
-
-T addUInt64WithT(int32 a, T b);
-
-T addCharWithT(Char a, T b);
-
-T addStringWithT(String a, T b);
 
 T T_Add(T a, T b); // Складывание a и b.
 

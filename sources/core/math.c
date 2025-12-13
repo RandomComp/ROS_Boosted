@@ -21,7 +21,7 @@ int32 fscaleToInteger(float x) {
 
     uint8 step = 0;
 
-    while (getFirstNumberAfterDecimalPoint(x) != 0 && step < MAX_FLOAT_STEPS) {
+    while (fgetFirstNumberAfterDecimalPoint(x) != 0 && step < MAX_FLOAT_STEPS) {
         x *= 10;
 
         result *= 10;
@@ -33,7 +33,7 @@ int32 fscaleToInteger(float x) {
 uint8 fgetCountDecimalPlaces(float x) {
     uint8 result = 0;
 
-    while (getFirstNumberAfterDecimalPoint(x) != 0 && result < MAX_FLOAT_STEPS) {
+    while (fgetFirstNumberAfterDecimalPoint(x) != 0 && result < MAX_FLOAT_STEPS) {
         x *= 10;
         
         result++;
@@ -47,7 +47,7 @@ int64 scaleToInteger(double x) {
 
     uint8 step = 0;
 
-    while (fgetFirstNumberAfterDecimalPoint(x) != 0 && step < MAX_DOUBLE_STEPS) {
+    while (getFirstNumberAfterDecimalPoint(x) != 0 && step < MAX_DOUBLE_STEPS) {
         x *= 10;
 
         result *= 10;
@@ -59,7 +59,7 @@ int64 scaleToInteger(double x) {
 uint16 getCountDecimalPlaces(double x) {
     uint16 result = 0;
 
-    while (fgetFirstNumberAfterDecimalPoint(x) != 0 && result < MAX_DOUBLE_STEPS) {
+    while (getFirstNumberAfterDecimalPoint(x) != 0 && result < MAX_DOUBLE_STEPS) {
         x *= 10;
         
         result++;
@@ -68,12 +68,12 @@ uint16 getCountDecimalPlaces(double x) {
     return result;
 }
 
-uint8 getNumberOfDigits(int32 x) {
+uint8 getNumberOfDigits32(int32 x) {
     if (x == 0) return 1;
 
     uint8 result = 0;
 
-    while (getFirstNumber(x) != 0) {
+    while (getFirstNumber32(x) != 0) {
         x /= 10;
         
         result++;
@@ -82,12 +82,40 @@ uint8 getNumberOfDigits(int32 x) {
     return result;
 }
 
-uint8 getNumberOfDigits64(int64 x) {
+uint8 getNumberOfDigits64(int64 x) {    
     if (x == 0) return 1;
 
     uint8 result = 0;
 
-    while (getFirstNumber(x) != 0) {
+    while (getFirstNumber64(x) != 0) {
+        x /= 10;
+        
+        result++;
+    }
+
+    return result;
+}
+
+uint8 getNumberOfDigits32(int32 x) {
+    if (x == 0) return 1;
+
+    uint8 result = 0;
+
+    while (getFirstNumberU32(x) != 0) {
+        x /= 10;
+        
+        result++;
+    }
+
+    return result;
+}
+
+uint8 getNumberOfDigitsU64(uint64 x) {    
+    if (x == 0) return 1;
+
+    uint8 result = 0;
+
+    while (getFirstNumberU64(x) != 0) {
         x /= 10;
         
         result++;

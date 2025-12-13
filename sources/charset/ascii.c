@@ -1,9 +1,9 @@
 #include "charset/ugsm.h"
 
-bool bASCIIInitialized = false;
+bool bASCIILoadedInitialized = false;
 
-void ASCIIInit() {
-	if (bASCIIInitialized) return;
+void ASCIIloadToUGSM() {
+	if (bASCIILoadedInitialized) return;
 
 	UGSMGlyphSet ASCII = { 0 };
 
@@ -1445,5 +1445,5 @@ void ASCIIInit() {
 
 	ASCII[98][7] = 0b11001110;
 
-	UGSMloadGlyphSet(ASCII, 98); // upload ASCII to UGSM
+	UGSMloadGlyphSet(ASCII, 98); // loading ASCII to UGSM
 }

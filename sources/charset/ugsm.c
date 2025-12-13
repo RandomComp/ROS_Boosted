@@ -85,10 +85,10 @@ void UGSMASCIIputString(int8* str) {
 }
 
 void UGSMASCIIputChar(int8 c) {
-	putChar(ASCIICharToUGSM(c));
+	putChar(UGSMASCIICharToUGSM(c));
 }
 
-UGSMGlyphCode ASCIICharToUGSM(int8 c) {
+UGSMGlyphCode UGSMASCIICharToUGSM(int8 c) {
 	switch (c) {
 		case ASCII_CHAR_SPACE: 				return UGSM_CHAR_SPACE;
 		case ASCII_CHAR_NEW_LINE: 			return UGSM_CHAR_NEW_LINE;
@@ -110,5 +110,5 @@ void UGSMASCIIsetString(uint16 x, uint16 y, int8* str) {
 
 void UGSMASCIIsetChar(uint16 x, uint16 y, int8 c) {
 	if (c >= ASCII_CHAR_SPACE && c <= ASCII_CHAR_TILDE)
-		setChar(x, y, ASCIICharToUGSM(c));
+		setChar(x, y, UGSMASCIICharToUGSM(c));
 }
