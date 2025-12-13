@@ -3,7 +3,7 @@
 
 #include "core/types.h"
 
-struct IDTEntryStruct {
+typedef struct IDTEntryStruct {
 	uint16 base_low;
 
 	uint16 sel;
@@ -13,15 +13,15 @@ struct IDTEntryStruct {
 	uint8 flags;
 
 	uint16 base_high;
-} PACKED;
+} PACKED IDTEntryStruct;
 
-struct IDTPtrStruct {
+typedef struct IDTPtrStruct {
 	uint16 limit;
 
 	uint32 base;
-} PACKED;
+} PACKED IDTPtrStruct;
 
-struct Registers {
+typedef struct Registers {
 	uint32 cr2;
 
 	uint32 ds;
@@ -31,7 +31,7 @@ struct Registers {
 	uint32 int_no, err_code;
 
 	uint32 eip, csm, eflags, useresp, ss;
-};
+} Registers;
 
 void IDTInit(void);
 

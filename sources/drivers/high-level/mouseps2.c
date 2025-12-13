@@ -1,8 +1,8 @@
 #include "core/types.h"
 
-#include "../headers/mouseps2.h"
+#include "drivers/high-level/mouseps2.h"
 
-#include "../headers/idt.h"
+#include "drivers/low-level/base/idt.h"
 
 bool bMousePS2Initialized = false;
 
@@ -15,5 +15,5 @@ void MousePS2Init(void) {
 }
 
 void MousePS2Event(struct Registers* regs) {
-
+	
 }

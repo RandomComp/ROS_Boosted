@@ -3,16 +3,40 @@
 
 #include "core/types.h"
 
-uint8 in8(uint16 port);
+inline uint8 in8(uint16 port) {
+	uint8 data = 0;
 
-uint16 in16(uint16 port);
+	asm volatile ("inb %%dx, %%al" : "=a" (data) : "d" (port));
 
-uint32 in32(uint16 port);
+	return data;
+}
 
-void out8(uint16 port, uint8 data);
+inline uint16 in16(uint16 port) { 
+	uint16 data = 0;
 
-void out16(uint16 port, uint16 data);
+	asm volatile ("inw %%dx, %%ax" : "=a" (data) : "d" (port));
 
-void out32(uint16 port, uint32 data);
+	return data;
+}
+
+inline uint32 in32(uint16 port) {
+	uint32 data = 0;
+
+	asm volatile ("inl %%dx, %%eax" : "=a" (data) : "d" (port));
+
+	return data;
+}
+
+inline void out8(uint16 port, uint8 data) { 
+	asm volatile ("outb %%al, %%dx" : : "a" (data), "d" (port));
+}
+
+inline void out16(uint16 port, uint16 data) { 
+	asm volatile ("outw %%ax, %%dx" : : "a" (data), "d" (port));
+}
+
+inline void out32(uint16 port, uint32 data) { 
+	asm volatile ("outl %%eax, %%dx" : : "a" (data), "d" (port));
+}
 
 #endif

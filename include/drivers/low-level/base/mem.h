@@ -178,12 +178,20 @@ MemoryRegion* malloc(AbsoluteSize size, MemoryRegionStatus status);
 
 void free(MemoryRegion* region);
 
-inline void memWriteByte(MemoryRegion* region, uint8 data) {
-	memset(region->memory, data, region->header.regionSize);
+inline void memWriteByte(MemoryRegion* region, uint32 index, uint8 data) {
+	if (index >= region->header.regionSize); // TODO: handle error
+
+	if (region->memory == 0); // TODO: handle error
+
+	uint8* mem = (uint8*)(region->memory);
+
+	mem[index] = data;
 }
 
 inline void memReadByte(MemoryRegion* region, uint32 index, uint8* data) {
-	if (index >= region->header.regionSize); // handle error
+	if (index >= region->header.regionSize); // TODO: handle error
+
+	if (region->memory == 0); // TODO: handle error
 
 	uint8* mem = (uint8*)(region->memory);
 

@@ -54,10 +54,8 @@ void PITSetFreq(uint16 freq) {
 	millisecondDelta = (float)standardFreq / (float)freq;
 }
 
-void tick(struct Registers* regs) {
+void tick(Registers* regs) {
 	now += millisecondDelta;
-
-	
 }
 
 // bool sleepHandler() {

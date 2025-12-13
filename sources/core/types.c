@@ -5,7 +5,9 @@
 #define MAX_STEPS 15
 
 String int64ToString(int64 x) {
-    String result = newString();
+    String* result = newString(getNumberOfDigits64(x));
+
+    
 }
 
 String uint64ToString(uint64 x) {
@@ -25,7 +27,7 @@ String charToString(Char x) {
 }
 
 void stringConcatenate(String* a, String b) {
-
+    
 }
 
 String stringFromT(T x) {
@@ -46,6 +48,96 @@ String stringFromT(T x) {
     }
 
     //warn(UNKNOWN_T_TYPE_WARNING);
+}
+
+T addInt32WithT(int32 a, T b) {
+    switch (b.type) {
+        case T_TYPE_INT8: return;
+        case T_TYPE_INT16: return;
+        case T_TYPE_INT32: return;
+        case T_TYPE_INT64: return;
+        case T_TYPE_UINT8: return;
+        case T_TYPE_UINT16: return;
+        case T_TYPE_UINT32: return;
+        case T_TYPE_UINT64: return;
+        case T_TYPE_CHAR: return;
+        case T_TYPE_STRING: return;
+    }
+}
+
+T addUInt32WithT(int32 a, T b) {
+    switch (b.type) {
+        case T_TYPE_INT8: return;
+        case T_TYPE_INT16: return;
+        case T_TYPE_INT32: return;
+        case T_TYPE_INT64: return;
+        case T_TYPE_UINT8: return;
+        case T_TYPE_UINT16: return;
+        case T_TYPE_UINT32: return;
+        case T_TYPE_UINT64: return;
+        case T_TYPE_CHAR: return;
+        case T_TYPE_STRING: return;
+    }
+}
+
+T addInt64WithT(int32 a, T b) {
+    switch (b.type) {
+        case T_TYPE_INT8: return;
+        case T_TYPE_INT16: return;
+        case T_TYPE_INT32: return;
+        case T_TYPE_INT64: return;
+        case T_TYPE_UINT8: return;
+        case T_TYPE_UINT16: return;
+        case T_TYPE_UINT32: return;
+        case T_TYPE_UINT64: return;
+        case T_TYPE_CHAR: return;
+        case T_TYPE_STRING: return;
+    }
+}
+
+T addUInt64WithT(int32 a, T b) {
+    switch (b.type) {
+        case T_TYPE_INT8: return;
+        case T_TYPE_INT16: return;
+        case T_TYPE_INT32: return;
+        case T_TYPE_INT64: return;
+        case T_TYPE_UINT8: return;
+        case T_TYPE_UINT16: return;
+        case T_TYPE_UINT32: return;
+        case T_TYPE_UINT64: return;
+        case T_TYPE_CHAR: return;
+        case T_TYPE_STRING: return;
+    }
+}
+
+T addCharWithT(Char a, T b) {
+    switch (b.type) {
+        case T_TYPE_INT8: return;
+        case T_TYPE_INT16: return;
+        case T_TYPE_INT32: return;
+        case T_TYPE_INT64: return;
+        case T_TYPE_UINT8: return;
+        case T_TYPE_UINT16: return;
+        case T_TYPE_UINT32: return;
+        case T_TYPE_UINT64: return;
+        case T_TYPE_CHAR: return;
+        case T_TYPE_STRING: return;
+    }
+}
+
+T addStringWithT(String a, T b) {
+    switch (b.type) {
+        case T_TYPE_INT8: return;
+        case T_TYPE_INT16: return;
+        case T_TYPE_INT32: return;
+        case T_TYPE_INT64: return;
+        case T_TYPE_UINT8: return;
+        case T_TYPE_UINT16: return;
+        case T_TYPE_UINT32: return;
+        case T_TYPE_UINT64: return;
+        case T_TYPE_CHAR: return;
+        case T_TYPE_STRING: return;
+    }
 }
 
 T T_Add(T a, T b) {
@@ -124,66 +216,6 @@ T T_Mod(T a, T b) {
         case T_TYPE_STRING: return;
     }
 } // Взятие остатка от деления a и b.
-
-T T_Preinc(T a, T b) {
-    switch (a.type) {
-        case T_TYPE_INT8: return;
-        case T_TYPE_INT16: return;
-        case T_TYPE_INT32: return;
-        case T_TYPE_INT64: return;
-        case T_TYPE_UINT8: return;
-        case T_TYPE_UINT16: return;
-        case T_TYPE_UINT32: return;
-        case T_TYPE_UINT64: return;
-        case T_TYPE_CHAR: return;
-        case T_TYPE_STRING: return;
-    }
-} // Преинкремент, ++i, сначала увеличивает, потом возвращает.
-
-T T_Postinc(T a, T b) {
-    switch (a.type) {
-        case T_TYPE_INT8: return;
-        case T_TYPE_INT16: return;
-        case T_TYPE_INT32: return;
-        case T_TYPE_INT64: return;
-        case T_TYPE_UINT8: return;
-        case T_TYPE_UINT16: return;
-        case T_TYPE_UINT32: return;
-        case T_TYPE_UINT64: return;
-        case T_TYPE_CHAR: return;
-        case T_TYPE_STRING: return;
-    }
-} // Постинкремент, i++, сначала возвращает, потом увеличивает.
-
-T T_Predec(T a, T b) {
-    switch (a.type) {
-        case T_TYPE_INT8: return;
-        case T_TYPE_INT16: return;
-        case T_TYPE_INT32: return;
-        case T_TYPE_INT64: return;
-        case T_TYPE_UINT8: return;
-        case T_TYPE_UINT16: return;
-        case T_TYPE_UINT32: return;
-        case T_TYPE_UINT64: return;
-        case T_TYPE_CHAR: return;
-        case T_TYPE_STRING: return;
-    }
-} // Предекремент, --i, сначала уменьшает, потом возвращает.
-
-T T_Postdec(T a, T b) {
-    switch (a.type) {
-        case T_TYPE_INT8: return;
-        case T_TYPE_INT16: return;
-        case T_TYPE_INT32: return;
-        case T_TYPE_INT64: return;
-        case T_TYPE_UINT8: return;
-        case T_TYPE_UINT16: return;
-        case T_TYPE_UINT32: return;
-        case T_TYPE_UINT64: return;
-        case T_TYPE_CHAR: return;
-        case T_TYPE_STRING: return;
-    }
-} // Постдекремент, i--, сначала возвращает, потом уменьшает.
 
 double doubleFromDecimal(Decimal decimal) {
     return (double)decimal.numerator / (double)decimal.denominator;

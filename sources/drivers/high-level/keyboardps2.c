@@ -12,15 +12,11 @@
 
 extern uint32 foregroundColor;
 
-bool bKeyboardPS2Initialized = false;
-
-bool bKeyboardPS2Available = false;
-
-bool bKeyboardPS2Updated = false;
-
-bool bKeyboardPS2CapsLock = false;
-
-bool bKeyboardPS2Shift = false;
+bool 	bKeyboardPS2Initialized = false,
+		bKeyboardPS2Available = false,
+		bKeyboardPS2Updated = false,
+		bKeyboardPS2CapsLock = false,
+		bKeyboardPS2Shift = false;
 
 const UGSMGlyphCode QWERTY[] = {
 	[SCANCODE_1]						= UGSM_CHAR_1,
@@ -169,7 +165,7 @@ void KeyboardPS2Event(struct Registers* regs) {
 			bKeyboardPS2CapsLock = !bKeyboardPS2CapsLock;
 		}
 
-		else if (scancode == SCANCODE_LEFT_SHIFT && (keyStates[scancode] == KEY_PRESSED || keyStates[scancode] == KEY_RELEASED)) {
+		if (scancode == SCANCODE_LEFT_SHIFT && (keyStates[scancode] == KEY_PRESSED || keyStates[scancode] == KEY_RELEASED)) {
 			bKeyboardPS2Shift = !bKeyboardPS2Shift;
 		}
 

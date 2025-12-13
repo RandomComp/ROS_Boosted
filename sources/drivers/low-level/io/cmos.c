@@ -4,30 +4,6 @@
 
 #include "drivers/low-level/io/cmos.h"
 
-void CMOSWrite(UniversalCMOSCode code, uint8 data) {
-	out8(CMOS_ADDRESS_PORT, code);
-
-	out8(CMOS_DATA_PORT, data);
-}
-
-uint8 CMOSRead(UniversalCMOSCode code) {
-	out8(CMOS_ADDRESS_PORT, code);
-
-	return in8(CMOS_DATA_PORT);
-}
-
-void CMOSEnableBit(UniversalCMOSCode code, uint8 bitIndex) {
-	CMOSWrite(code, CMOSRead(code) | (1 << bitIndex));
-}
-
-void CMOSDisableBit(UniversalCMOSCode code, uint8 bitIndex) {
-	CMOSWrite(code, CMOSRead(code) & ~(1 << bitIndex));
-}
-
-bool CMOSCheckBit(UniversalCMOSCode code, uint8 bitIndex) {
-	return (CMOSRead(code) & (1 << bitIndex)) != 0;
-}
-
 void setRTCTime(TimeStruct time) {
 	if (startOnVirtualMachine) time.hours -= 3;
 

@@ -97,9 +97,9 @@ typedef struct Char {
 } Char;
 
 typedef struct String {
-    Charset charset;
+    uint32 length;
 
-    CharUnion* ch;
+    Char* ch;
 } String;
 
 typedef enum TTypes {
@@ -190,25 +190,39 @@ inline T stringToT(String str) {
 	return (T){.type = T_TYPE_STRING, .value.str = str};
 }
 
-inline Char ASCIICharToChar(int8 ch) {
-	return (Char){.charset = CHARSET_ASCII, .ch = ch};
+inline Char newChar(CharUnion ch) {
+    return (Char){.charset = CHARSET_UGSM, .ch = ch};
 }
 
-inline Char UGSMCharToChar(UGSMGlyphCode ch) {
-	return (Char){.charset = CHARSET_UGSM, .ch = ch};
-}
+inline String* newString(uint32 length) {
+    MemoryRegion* stringMem = malloc(sizeof(String), (1 << MEMORY_ACCESS_READ) + (1 << MEMORY_ACCESS_WRITE));
 
-inline String newString() {
-    MemoryRegion* region = malloc(1, (1 << MEMORY_ACCESS_READ) + (1 << MEMORY_ACCESS_WRITE));
+    MemoryRegion* charMem = malloc(sizeof(Char) * length, (1 << MEMORY_ACCESS_READ) + (1 << MEMORY_ACCESS_WRITE));
+    
+    String* result = (String*)stringMem->memory;
 
-    memWrite(region, UGSM_CHAR_NULL);
+    result->ch = (Char*)charMem->memory;
 
-    return (String){.charset = CHARSET_UGSM, .ch = UGSM_CHAR_NULL};
+    result->length = length;
+
+    return result;
 }
 
 void stringConcatenate(String* a, String b); // Конкатенирует две строки, сохраняет результат в a
 
 String stringFromT(T x);
+
+T addInt32WithT(int32 a, T b);
+
+T addUInt32WithT(int32 a, T b);
+
+T addInt64WithT(int32 a, T b);
+
+T addUInt64WithT(int32 a, T b);
+
+T addCharWithT(Char a, T b);
+
+T addStringWithT(String a, T b);
 
 T T_Add(T a, T b); // Складывание a и b.
 
@@ -219,14 +233,6 @@ T T_Mul(T a, T b); // Умножение a и b.
 T T_Div(T a, T b); // Деление a и b.
 
 T T_Mod(T a, T b); // Взятие остатка от деления a и b.
-
-T T_Preinc(T a, T b); // Преинкремент, ++i, сначала увеличивает, потом возвращает.
-
-T T_Postinc(T a, T b); // Постинкремент, i++, сначала возвращает, потом увеличивает.
-
-T T_Predec(T a, T b); // Предекремент, --i, сначала уменьшает, потом возвращает.
-
-T T_Postdec(T a, T b); // Постдекремент, i--, сначала возвращает, потом уменьшает.
 
 double doubleFromDecimal(Decimal decimal);
 

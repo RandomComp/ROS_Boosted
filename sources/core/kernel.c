@@ -137,19 +137,9 @@ void main(uint32 magic, struct multibootInfo* bootInfoArg) {
 
 	backgroundColor = 0x000000;
 
+	clear(0);
+
 	while (true) {
-		if (bKeyboardPS2Updated) {
-			clear(0x000000);
-
-			putChar(UGSM_CHAR_DOUBLE_QUOTES);
-
-			putChar(scancodeToUGSM(updatedKey));
-			
-			putChar(UGSM_CHAR_DOUBLE_QUOTES);
-
-			bKeyboardPS2Updated = false;
-
-			swap();
-		}
+		
 	}
 }

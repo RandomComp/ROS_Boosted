@@ -9,25 +9,49 @@
 
 #define E 2.718281828459
 
+#define MAX_FLOAT_STEPS 7
+
 #define MAX_DOUBLE_STEPS 17
 
-int64 i64abs(int64 x);
+inline int64 iabs64(int64 x) {
+    return x < 0 ? -x : x;
+}
 
-int32 iabs(int32 x);
+inline int32 iabs(int32 x) {
+    return x < 0 ? -x : x;
+}
 
-double abs(double x);
+inline double abs(double x) {
+    return x < 0.0 ? -x : x;
+}
+
+inline float fabs(float x) {
+    return x < 0.0f ? -x : x;
+}
+
+inline uint32 getFirstNumber(uint32 x) {
+    return iabs(x) % 10;
+}
+
+inline uint32 getFirstNumberAfterDecimalPoint(float x) {
+    return (uint32)(fabs(frac(x)) * 10.0f) % 10;
+}
 
 double mod(double a, double b);
 
-float fabs(float x);
-
 float fmod(float a, float b);
+
+int32 fscaleToInteger(float x);
+
+uint8 fgetCountDecimalPlaces(float x);
 
 int32 scaleToInteger(double x);
 
 uint8 getCountDecimalPlaces(double x);
 
 uint8 getNumberOfDigits(int32 x);
+
+uint8 getNumberOfDigits64(int64 x);
 
 inline double trunc(double x) {
     return (double)((int32)x);
@@ -45,8 +69,6 @@ inline float ffrac(float x) {
     return x - ftrunc(x);
 }
 
-uint32 getFirstNumberAfterDecimalPoint(float x);
-
 double floor(double x);
 double ceil(double x);
 double round(double x);
@@ -55,6 +77,8 @@ float ffloor(float x);
 float fceil(float x);
 float fround(float x);
 
-int64 pow(int16 a, int16 b);
+int32 pow(int16 a, int16 b);
+
+int64 pow64(int16 a, int16 b);
 
 #endif
