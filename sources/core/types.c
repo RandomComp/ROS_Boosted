@@ -25,12 +25,12 @@ Char getCharFromString(String* str, uint32 index) {
 String int64ToString(int64 x) {
 	String result = newString(getNumberOfDigits64(x));
 
-	setCharToString(&result, 0, newChar(charUnionFromUGSMChar(UGSM_CHAR_0)));
+	setCharToString(&result, 0, newCharFromUGSM(UGSM_CHAR_0));
 
 	uint32 index = 0;
 
 	while (x != 0) {
-		Char ch = newChar(charUnionFromUGSMChar(UGSMASCIICharToUGSM(getFirstNumber64(x))));
+		Char ch = digitToChar(getFirstNumber64(x));
 
 		setCharToString(&result, result.length - index, ch);
 
@@ -45,12 +45,12 @@ String int64ToString(int64 x) {
 String uint64ToString(uint64 x) {
 	String result = newString(getNumberOfDigitsU64(x));
 
-	setCharToString(&result, 0, newChar(charUnionFromUGSMChar(UGSM_CHAR_0)));
+	setCharToString(&result, 0, newCharFromUGSM(UGSM_CHAR_0));
 
 	uint32 index = 0;
 
 	while (x != 0) {
-		Char ch = newChar(charUnionFromUGSMChar(UGSMASCIICharToUGSM(getFirstNumberU64(x))));
+		Char ch = digitToChar(getFirstNumberU64(x));
 
 		setCharToString(&result, result.length - index, ch);
 
@@ -63,15 +63,43 @@ String uint64ToString(uint64 x) {
 }
 
 String int32ToString(int32 x) {
+	String result = newString(getNumberOfDigits32(x));
 
+	setCharToString(&result, 0, newCharFromUGSM(UGSM_CHAR_0));
+
+	uint32 index = 0;
+
+	while (x != 0) {
+		Char ch = digitToChar(getFirstNumber32(x));
+
+		setCharToString(&result, result.length - index, ch);
+
+		x /= 10;
+
+		index++;
+	}
+
+	return result;
 }
 
 String uint32ToString(uint32 x) {
+	String result = newString(getNumberOfDigitsU32(x));
 
-}
+	setCharToString(&result, 0, newCharFromUGSM(UGSM_CHAR_0));
 
-String charToString(Char x) {
+	uint32 index = 0;
 
+	while (x != 0) {
+		Char ch = digitToChar(getFirstNumberU32(x));
+
+		setCharToString(&result, result.length - index, ch);
+
+		x /= 10;
+
+		index++;
+	}
+
+	return result;
 }
 
 String stringConcatenate(String a, String b) {
@@ -105,7 +133,7 @@ String stringFromT(T x) {
 
 	String defaultResult = newString(1);
 
-	setCharToString(&defaultResult, 0, )
+	setCharToString(&defaultResult, 0, newCharFromUGSM(UGSM_CHAR_NULL));
 
 	return defaultResult;
 }
@@ -140,6 +168,22 @@ T addUInt32WithChar(uint32 a, Char b) {
 
 T addUInt32WithString(uint32 a, String b) {
 	return stringToT(stringConcatenate(uint32ToString(a), b));
+}
+
+T addInt64WithChar(int32 a, Char b) {
+
+}
+
+T addInt64WithString(int32 a, String b) {
+
+}
+
+T addUInt64WithChar(uint32 a, Char b) {
+
+}
+
+T addUInt64WithString(uint32 a, String b) {
+	
 }
 
 T addInt32WithT(int32 a, T b) {

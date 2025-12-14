@@ -207,6 +207,8 @@ void UGSMASCIIputChar(int8 c);
 
 UGSMGlyphCode UGSMASCIICharToUGSM(int8 c);
 
+UGSMGlyphCode UGSMdigitToUGSM(uint8 digit);
+
 void UGSMASCIIsetString(uint16 x, uint16 y, int8* str);
 
 void UGSMASCIIsetChar(uint16 x, uint16 y, int8 c);

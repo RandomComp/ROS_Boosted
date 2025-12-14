@@ -3,6 +3,8 @@
 
 #include "charset/ugsm.h"
 
+#include "charset/ascii.h"
+
 #include "drivers/low-level/base/mem.h"
 
 #include "core/format.h"
@@ -76,72 +78,72 @@ typedef uint8 bool;
 #define null 0
 
 typedef struct Decimal {
-    int32 numerator;
+	int32 numerator;
 
-    int32 denominator;
+	int32 denominator;
 } Decimal;
 
 typedef enum Charset {
-    CHARSET_UGSM,
-    CHARSET_ASCII,
+	CHARSET_UGSM,
+	CHARSET_ASCII,
 } Charset;
 
 typedef union CharUnion {
-    UGSMGlyphCode   UGSMChar;
-    
-    int8            ASCIIChar;
+	UGSMGlyphCode   UGSMChar;
+	
+	int8            ASCIIChar;
 } CharUnion;
 
 typedef struct Char {
-    Charset charset;
+	Charset charset;
 
-    CharUnion ch;
+	CharUnion ch;
 } Char;
 
 typedef struct String {
-    uint32 length;
+	uint32 length;
 
-    MemoryRegion* region;
+	MemoryRegion* region;
 } String;
 
 typedef enum TTypes {
-    T_TYPE_INT8,
-    T_TYPE_INT16,
-    T_TYPE_INT32,
-    T_TYPE_INT64,
-    
-    T_TYPE_UINT8,
-    T_TYPE_UINT16,
-    T_TYPE_UINT32,
-    T_TYPE_UINT64,
+	T_TYPE_INT8,
+	T_TYPE_INT16,
+	T_TYPE_INT32,
+	T_TYPE_INT64,
+	
+	T_TYPE_UINT8,
+	T_TYPE_UINT16,
+	T_TYPE_UINT32,
+	T_TYPE_UINT64,
 
-    T_TYPE_FLOAT,
-    T_TYPE_DOUBLE,
+	T_TYPE_FLOAT,
+	T_TYPE_DOUBLE,
 
-    T_TYPE_CHAR,
-    T_TYPE_STRING,
+	T_TYPE_CHAR,
+	T_TYPE_STRING,
 } TTypes;
 
 typedef struct T {
-    TTypes type;
+	TTypes type;
 
-    union {
-        int8    numX8;
-        int16   numX16;
-        int32   numX32;
-        int64   numX64;
+	union {
+		int8    numX8;
+		int16   numX16;
+		int32   numX32;
+		int64   numX64;
 
-        uint8   numUX8;
-        uint16  numUX16;
-        uint32  numUX32;
-        uint64  numUX64;
+		uint8   numUX8;
+		uint16  numUX16;
+		uint32  numUX32;
+		uint64  numUX64;
 
-        float   numFloat;
-        double  numDouble;
+		float   numFloat;
+		double  numDouble;
 
-        Char    ch;
-        String  str;
-    } value;
+		Char    ch;
+		String  str;
+	} value;
 } T;
 
 inline T int8ToT(int8 x) {
@@ -193,37 +195,93 @@ inline T stringToT(String str) {
 }
 
 inline CharUnion newCharUnionFromASCII(int8 ch) {
-    return (CharUnion){.ASCIIChar = ch};
+	return (CharUnion){.ASCIIChar = ch};
 }
 
 inline CharUnion newCharUnionFromUGSM(UGSMGlyphCode ch) {
-    return (CharUnion){.UGSMChar = ch};
+	return (CharUnion){.UGSMChar = ch};
 }
 
 inline Char newCharFromASCII(int8 ch) {
-    return (Char){.charset = CHARSET_UGSM, .ch = ch};
+	return (Char){.charset = CHARSET_ASCII, .ch = newCharUnionFromASCII(ch)};
 }
 
 inline Char newCharFromUGSM(UGSMGlyphCode ch) {
-    return (Char){.charset = CHARSET_UGSM, .ch = ch};
+	return (Char){.charset = CHARSET_UGSM, .ch = newCharUnionFromUGSM(ch)};
 }
 
 inline String newString(uint32 length) {
-    MemoryRegion* charMem = malloc(sizeof(Char) * length, (1 << MEMORY_ACCESS_READ) + (1 << MEMORY_ACCESS_WRITE));
-    
-    return (String){.length = length, .region = charMem};
+	MemoryRegion* charMem = malloc(sizeof(Char) * length, MEMORY_ACCESS_READ | MEMORY_ACCESS_WRITE);
+	
+	return (String){.length = length, .region = charMem};
+}
+
+inline String newStringFromASCII(ASCIIGlyphCode* str) {
+	uint32 length = ASCIIgetLength(str);
+
+	String result = newString(length);
+
+	memcpy(result.region->memory, str, length);
+	
+	return result;
+}
+
+inline String newStringFromUGSM(UGSMGlyphCode* str) {
+	uint32 length = UGSMgetLength(str);
+
+	String result = newString(length);
+
+	memcpy(result.region->memory, str, length);
+	
+	return result;
 }
 
 inline Char* getCharArrayFromString(String str) {
-    return (Char*)str.region->memory;
+	return (Char*)str.region->memory;
 }
 
 inline CharUnion charUnionFromUGSMChar(UGSMGlyphCode code) {
-    return (CharUnion){.UGSMChar = code};
+	return (CharUnion){.UGSMChar = code};
 }
 
 inline CharUnion charUnionFromASCIIChar(int8 code) {
-    return (CharUnion){.ASCIIChar = code};
+	return (CharUnion){.ASCIIChar = code};
+}
+
+inline Char charCharsetToASCII(Char ch) {
+	ASCIIGlyphCode result = ASCII_CHAR_NULL;
+
+	if (ch.charset == CHARSET_ASCII)
+		result = ch.ch.ASCIIChar;
+
+	else if (ch.charset == CHARSET_UGSM)
+		result = ASCIIUGSMCharToASCII(ch.ch.UGSMChar);
+
+	return newCharFromASCII(result);
+}
+
+inline Char charCharsetToUGSM(Char ch) {
+	UGSMGlyphCode result = UGSM_CHAR_NULL;
+
+	if (ch.charset == CHARSET_ASCII)
+		result = UGSMASCIICharToUGSM(ch.ch.ASCIIChar);
+
+	else if (ch.charset == CHARSET_UGSM)
+		result = ch.ch.UGSMChar;
+
+	return newCharFromUGSM(result);
+}
+
+inline Char digitToChar(uint8 digit) {
+	return newCharFromUGSM(UGSMdigitToUGSM(digit));
+}
+
+inline String charToString(Char ch) {
+	String result = newString(1);
+
+	setCharToString(&result, 0, ch);
+
+	return result;
 }
 
 inline void freeString(String* str) {
@@ -233,12 +291,52 @@ inline void freeString(String* str) {
 		str->region = null;
 	}
 
-    // TODO: handle error
+	// TODO: handle error
 }
+
+void setCharToString(String* str, uint32 index, Char ch);
+
+Char getCharFromString(String* str, uint32 index);
+
+String int64ToString(int64 x);
+
+String uint64ToString(uint64 x);
+
+String int32ToString(int32 x);
+
+String uint32ToString(uint32 x);
 
 String stringConcatenate(String a, String b); // Конкатенирует две строки
 
 String stringFromT(T x);
+
+T addInt32WithChar(int32 a, Char b);
+
+T addInt32WithString(int32 a, String b);
+
+T addUInt32WithChar(uint32 a, Char b);
+
+T addUInt32WithString(uint32 a, String b);
+
+T addInt64WithChar(int32 a, Char b);
+
+T addInt64WithString(int32 a, String b);
+
+T addUInt64WithChar(uint32 a, Char b);
+
+T addUInt64WithString(uint32 a, String b);
+
+T addInt32WithT(int32 a, T b);
+
+T addUInt32WithT(int32 a, T b);
+
+T addInt64WithT(int32 a, T b);
+
+T addUInt64WithT(int32 a, T b);
+
+T addCharWithT(Char a, T b);
+
+T addStringWithT(String a, T b);
 
 T T_Add(T a, T b); // Складывание a и b.
 

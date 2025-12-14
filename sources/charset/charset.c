@@ -6,7 +6,7 @@
 
 #include "charset/ascii.h"
 
-#include "charset/rus.h"
+#include "charset/ugsm_rus.h"
 
 bool UGSMGlyphIsControlCharacter(UGSMGlyphCode glyphCode) {
 	return glyphCode >= UGSM_CHAR_NULL && glyphCode <= UGSM_CHAR_TAB;

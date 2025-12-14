@@ -1,8 +1,8 @@
 #include "drivers/low-level/base/mem.h"
 
-#include "core/multiboot.h"
-
 #include "core/types.h"
+
+#include "core/multiboot.h"
 
 #include "core/std.h"
 
@@ -82,7 +82,7 @@ void showSize(Size size) {
 	}
 
 	if (size.bytes != 0) {
-		putUX16Integer(size.bytes);
+		uint32To(size.bytes);
 
 		foregroundColor = 0x00ff00;
 

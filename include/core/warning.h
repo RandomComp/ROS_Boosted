@@ -1,14 +1,16 @@
-#ifndef _WARNING_H
-#define _WARNING_H
+#ifndef _RANDOM_OS_WARNING_H
+#define _RANDOM_OS_WARNING_H
 
 #include "core/types.h"
 
 typedef enum WarningType {
-	USBBabbleDetectedWarning,
+	USB_BABBLE_DETECTED_WARNING,
 
-	AllGlyphsAreReservedWarning,
+	ALL_GLYPHS_ARE_RESERVED_WARNING,
 
-	RequiredNumberOfArgumentsNotReachedWarning
+	REQUIRED_NUMBER_OF_ARGUMENTS_NOT_REACHED_WARNING,
+
+	UNKNOWN_T_TYPE_WARNING
 } WarningType;
 
 int8* getIronicWarningDescription(WarningType warningType);

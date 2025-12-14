@@ -10,7 +10,7 @@
 
 #include "charset/ascii.h"
 
-#include "charset/rus.h"
+#include "charset/ugsm_rus.h"
 
 #include "drivers/low-level/base/mem.h"
 
@@ -100,7 +100,11 @@ UGSMGlyphCode UGSMASCIICharToUGSM(int8 c) {
 	if (c < ASCII_CHAR_SPACE || c > ASCII_CHAR_TILDE)
 		return UGSM_CHAR_NULL;
 
-	return ASCIIOffset + (UGSMGlyphCode)(c) - ASCII_CHAR_EXCLAMATION_MARK + UGSM_CHAR_EXCLAMATION_MARK;
+	return (UGSMGlyphCode)(c) - ASCII_CHAR_EXCLAMATION_MARK + UGSM_CHAR_EXCLAMATION_MARK;
+}
+
+UGSMGlyphCode UGSMdigitToUGSM(uint8 digit) {
+	return (digit % 10) + UGSM_CHAR_0;
 }
 
 void UGSMASCIIsetString(uint16 x, uint16 y, int8* str) {

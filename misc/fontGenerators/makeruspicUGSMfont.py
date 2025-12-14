@@ -2,49 +2,88 @@ from PIL import Image, ImageDraw
 
 from pyperclip import copy
 
-img = Image.open("rus.gif").convert("RGB")
+rus_img = Image.open("rus.gif").convert("RGB")
 
-width, height = img.size
+rus_big_img = Image.open("rusbig.gif").convert("RGB")
 
-pixs = list(img.getdata())
+width, height = rus_img.size
 
-draw = ImageDraw.Draw(img)
+rus_img_pixs = list(rus_img.getdata())
 
-result = ""
+rus_big_img_pixs = list(rus_img.getdata())
+
+rus_draw = ImageDraw.Draw(rus_img)
+
+rus_big_draw = ImageDraw.Draw(rus_big_img)
+
+result_rus = ""
+
+result_rus_big = ""
 
 num = 0
 
 for sx in range(0, width, 9):
+	result_rus += "{ "
+
+	result_rus_big += "{ "
+
 	for y in range(16):
-		num2 = 0
+		result_rus += "0b"
+
+		result_rus_big += "0b"
 
 		for x in range(8):
-			if (pixs[sx + x + (y * width)] != (0, 0, 0)):
-				num2 += 1
+			if (rus_img_pixs[sx + x + (y * width)] == (0, 0, 0)):
+				result_rus += "1"
 
-		if (num2 == 8): continue
+			else: result_rus += "0"
 
-		result += f"\tRUS[{num}][{y}] = 0b"
+			if (rus_big_img_pixs[sx + x + (y * width)] == (0, 0, 0)):
+				result_rus_big += "1"
 
-		for x in range(8):
-			if (pixs[sx + x + (y * width)] == (0, 0, 0)):
-				result += "1"
+			else: result_rus_big += "0"
 
-			else: result += "0"
+		if (y != 15):
+			result_rus += ","
 
-		result += ";\n\n"
+			result_rus_big += ","
+
+		result_rus += "\n"
+
+		result_rus_big += "\n"
+
+	result_rus += " }"
+
+	result_rus_big += " }"
+
+	if (num < 33):
+		result_rus += ","
+
+		result_rus_big += ","
+
+	result_rus += "\n"
+
+	result_rus_big += "\n"
 
 	if (num >= 33):
 		break
 
 	num += 1
 
-	draw.point((sx, 0), (255, 0, 0))
+	rus_draw.point((sx, 0), (255, 0, 0))
 
-	draw.point((sx + 8, 15), (0, 255, 0))
+	rus_draw.point((sx + 8, 15), (0, 255, 0))
 
-copy(result)
+	rus_big_draw.point((sx, 0), (255, 0, 0))
 
-img.show()
+	rus_big_draw.point((sx + 8, 15), (0, 255, 0))
 
-img.save("rus.gif")
+with open("rus.charset", mode="w") as f:
+	f.write(result_rus)
+
+with open("rus_big.charset", mode="w") as f:
+	f.write(result_rus_big)
+
+rus_img.show()
+
+rus_big_img.show()

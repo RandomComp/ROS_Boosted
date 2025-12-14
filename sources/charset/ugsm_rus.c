@@ -1,3 +1,5 @@
+#include "charset/ugsm_rus.h"
+
 #include "charset/ugsm.h"
 
 bool bRUSInitialized = false;

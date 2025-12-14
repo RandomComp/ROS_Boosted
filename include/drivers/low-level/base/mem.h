@@ -146,15 +146,13 @@ static inline int32 strncmp_builtin(int8* s1, int8* s2, int32 len) {
 
 typedef uint32 AbsoluteSize;
 
-typedef uint8 MemoryRegionStatus;
+typedef enum MemoryRegionStatus {
+	MEMORY_ACCESS_READ = 0x00,
 
-typedef enum MemoryRegionStatusBits {
-	MEMORY_ACCESS_READ,
+	MEMORY_ACCESS_WRITE = 0x02,
 
-	MEMORY_ACCESS_WRITE,
-
-	MEMORY_ACCESS_EXECUTE
-} MemoryRegionStatusBits;
+	MEMORY_ACCESS_EXECUTE = 0x04
+} MemoryRegionStatus;
 
 typedef struct Size {
 	uint32 GB, MB, KB, bytes;

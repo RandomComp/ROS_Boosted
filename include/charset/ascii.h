@@ -1,7 +1,9 @@
-#ifndef _ASCII_H
-#define _ASCII_H
+#ifndef _RANDOM_OS_ASCII_H
+#define _RANDOM_OS_ASCII_H
 
 #include "charset/ugsm.h"
+
+typedef int8 ASCIIGlyphCode;
 
 typedef enum ASCIIKeyCodes {
     ASCII_CHAR_NULL = 0,                // \0
@@ -25,16 +27,16 @@ typedef enum ASCIIKeyCodes {
     ASCII_CHAR_MINUS_SIGN,              // -
     ASCII_CHAR_DOT,                     // .
     ASCII_CHAR_SLASH,                   // /
-    ASCII_CHAR_ZERO,                    // 0
-    ASCII_CHAR_ONE,                     // 1
-    ASCII_CHAR_TWO,                     // 2
-    ASCII_CHAR_THREE,                   // 3
-    ASCII_CHAR_FOUR,                    // 4
-    ASCII_CHAR_FIVE,                    // 5
-    ASCII_CHAR_SIX,                     // 6
-    ASCII_CHAR_SEVEN,                   // 7
-    ASCII_CHAR_EIGHT,                   // 8
-    ASCII_CHAR_NINE,                    // 9
+    ASCII_CHAR_0,                       // 0
+    ASCII_CHAR_1,                       // 1
+    ASCII_CHAR_2,                       // 2
+    ASCII_CHAR_3,                       // 3
+    ASCII_CHAR_4,                       // 4
+    ASCII_CHAR_5,                       // 5
+    ASCII_CHAR_6,                       // 6
+    ASCII_CHAR_7,                       // 7
+    ASCII_CHAR_8,                       // 8
+    ASCII_CHAR_9,                       // 9
     ASCII_CHAR_COLON,                   // :
     ASCII_CHAR_SEMICOLON,               // ;
     ASCII_CHAR_LESS_SIGN,               // <
@@ -107,5 +109,9 @@ typedef enum ASCIIKeyCodes {
 } ASCIIKeyCodes;
 
 void ASCIIloadToUGSM();
+
+ASCIIGlyphCode ASCIIUGSMCharToASCII(UGSMGlyphCode c);
+
+ASCIIGlyphCode ASCIIdigitToUGSM(uint8 digit);
 
 #endif
