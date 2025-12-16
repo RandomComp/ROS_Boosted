@@ -8,8 +8,6 @@
 
 #include "charset/ugsm.h"
 
-#include "charset/abc.h"
-
 // VBE variables
 
 extern uint32 vidmemaddr; // Адрес видеопамяти выбранного видеорежима VBE.

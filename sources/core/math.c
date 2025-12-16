@@ -4,28 +4,12 @@
 
 #include "core/fatal_error.h"
 
-double mod(double a, double b) {
-    if (b == 0.0) causeFatal(DIVISION_BY_ZERO_FATAL_ERROR);
+static bool overflowFlag = false;
 
-    return a - (trunc(a / b) * b);
-}
+bool getOverflowFlag() {
+    bool result = overflowFlag;
 
-float fmod(float a, float b) {
-    if (b == 0.0f) causeFatal(DIVISION_BY_ZERO_FATAL_ERROR);
-
-    return a - (ftrunc(a / b) * b);
-}
-
-int32 fscaleToInteger(float x) {
-    int32 result = x;
-
-    uint8 step = 0;
-
-    while (fgetFirstNumberAfterDecimalPoint(x) != 0 && step < MAX_FLOAT_STEPS) {
-        x *= 10;
-
-        result *= 10;
-    }
+    overflowFlag = false;
 
     return result;
 }
@@ -34,23 +18,13 @@ uint8 fgetCountDecimalPlaces(float x) {
     uint8 result = 0;
 
     while (fgetFirstNumberAfterDecimalPoint(x) != 0 && result < MAX_FLOAT_STEPS) {
+        float oldX = x;
+
         x *= 10;
+
+        if (x < oldX && !overflowFlag) overflowFlag = true;
         
         result++;
-    }
-
-    return result;
-}
-
-int64 scaleToInteger(double x) {
-    int64 result = 1;
-
-    uint8 step = 0;
-
-    while (getFirstNumberAfterDecimalPoint(x) != 0 && step < MAX_DOUBLE_STEPS) {
-        x *= 10;
-
-        result *= 10;
     }
 
     return result;
@@ -60,7 +34,11 @@ uint16 getCountDecimalPlaces(double x) {
     uint16 result = 0;
 
     while (getFirstNumberAfterDecimalPoint(x) != 0 && result < MAX_DOUBLE_STEPS) {
+        double oldX = x;
+
         x *= 10;
+
+        if (x < oldX && !overflowFlag) overflowFlag = true;
         
         result++;
     }
@@ -73,7 +51,7 @@ uint8 getNumberOfDigits32(int32 x) {
 
     uint8 result = 0;
 
-    while (getFirstNumber32(x) != 0) {
+    while (getFirstDigit32(x) != 0) {
         x /= 10;
         
         result++;
@@ -82,12 +60,12 @@ uint8 getNumberOfDigits32(int32 x) {
     return result;
 }
 
-uint8 getNumberOfDigits64(int64 x) {    
+uint8 getNumberOfDigits64(int64 x) {
     if (x == 0) return 1;
 
     uint8 result = 0;
 
-    while (getFirstNumber64(x) != 0) {
+    while (getFirstDigit64(x) != 0) {
         x /= 10;
         
         result++;
@@ -96,12 +74,16 @@ uint8 getNumberOfDigits64(int64 x) {
     return result;
 }
 
-uint8 getNumberOfDigits32(int32 x) {
+uint8 getNumberOfDigits128(uint128 x) {
+    
+}
+
+uint8 getNumberOfDigitsU32(uint32 x) {
     if (x == 0) return 1;
 
     uint8 result = 0;
 
-    while (getFirstNumberU32(x) != 0) {
+    while (getFirstDigitU32(x) != 0) {
         x /= 10;
         
         result++;
@@ -115,13 +97,17 @@ uint8 getNumberOfDigitsU64(uint64 x) {
 
     uint8 result = 0;
 
-    while (getFirstNumberU64(x) != 0) {
+    while (getFirstDigitU64(x) != 0) {
         x /= 10;
         
         result++;
     }
 
     return result;
+}
+
+uint8 getNumberOfDigitsU128(uint128 x) {
+    
 }
 
 double floor(double x) {
@@ -174,12 +160,18 @@ float fround(float x) {
     return      ffrac(x) >= 0.5f ? fceil(x) : ffloor(x);
 }
 
-int32 pow(int16 a, int16 b) {
+int32 pow32(int16 a, int16 b) {
     int32 result = 1;
 
     b = iabs(b);
 
-    while (b--) result *= a;
+    while (b--) {
+        int32 oldResult = result;
+
+        result *= a;
+
+        if (result < oldResult && !overflowFlag) overflowFlag = true;
+    }
 
     return result;
 }
@@ -189,7 +181,41 @@ int64 pow64(int16 a, int16 b) {
 
     b = iabs64(b);
 
-    while (b--) result *= a;
+    while (b--) {
+        int64 oldResult = result;
+
+        result *= a;
+
+        if (result < oldResult && !overflowFlag) overflowFlag = true;
+    }
+
+    return result;
+}
+
+uint32 powU32(uint16 a, uint16 b) {
+    uint32 result = 1;
+
+    while (b--) {
+        uint32 oldResult = result;
+
+        result *= a;
+
+        if (result < oldResult && !overflowFlag) overflowFlag = true;
+    }
+
+    return result;
+}
+
+uint64 powU64(uint16 a, uint16 b) {
+    uint64 result = 1;
+
+    while (b--) {
+        uint64 oldResult = result;
+
+        result *= a;
+
+        if (result < oldResult && !overflowFlag) overflowFlag = true;
+    }
 
     return result;
 }

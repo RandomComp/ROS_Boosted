@@ -6,8 +6,6 @@
 
 #include "charset/ugsm.h"
 
-#include "charset/colors.h"
-
 extern uint16 y;
 
 extern uint32 foregroundColor;
@@ -43,7 +41,7 @@ int8* getIronicFatalErrorDescription(FatalErrorType errorType) {
 
 int8* getFormalFatalErrorDescription(FatalErrorType errorType) {
 	int8* errorMessages[] = {
-		[DIVISION_BY_ZERO_FATAL_ERROR] = 				"You has divided any number by zero, you get infinity and error to gift :).\n\n",
+		[DIVISION_BY_ZERO_FATAL_ERROR] = 				"You has divided any number by zero, you get infinity and error to gift :).",
 		[DEBUG_FATAL_ERROR] = 							"The kernel was stopped because a Debug label was set at the code execution point.",
 		[NON_MASKABLE_INTERRUPT_FATAL_ERROR] = 			"Hello non maskable interrupt, i've been looking for you!\n\n",
 		[BREAK_POINT_FATAL_ERROR] = 					"Let's break everything, we're rich!\n\n",

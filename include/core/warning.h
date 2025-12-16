@@ -10,12 +10,16 @@ typedef enum WarningType {
 
 	REQUIRED_NUMBER_OF_ARGUMENTS_NOT_REACHED_WARNING,
 
-	UNKNOWN_T_TYPE_WARNING
+	UNKNOWN_T_TYPE_WARNING,
+
+	FUNCTION_NOT_IMPLEMENTED_WARNING
 } WarningType;
 
-int8* getIronicWarningDescription(WarningType warningType);
+ASCIIGlyphCode* getWarningName(WarningType warningType);
 
-int8* getFormalWarningDescription(WarningType warningType);
+ASCIIGlyphCode* getIronicWarningDescription(WarningType warningType);
+
+ASCIIGlyphCode* getFormalWarningDescription(WarningType warningType);
 
 void warn(WarningType warningType);
 

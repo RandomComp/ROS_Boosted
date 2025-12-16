@@ -65,26 +65,68 @@ Hour hourToBCD(Hour hour);
 
 Hour hourFromBCD(Hour hour);
 
-inline uint32 bitIndexToMask(uint8 bitIndex) {
-    return 1U << bitIndex;
+inline uint32 bitIndexToMaskU32(uint8 bitIndex) {
+    return 1U << (uint32)bitIndex;
 }
 
-inline void enableBit(uint32* value, uint8 bitIndex) {
-    if (bitIndex >= 32); // TODO: Handle error
-
-    *value |= bitIndexToMask(bitIndex);
+inline uint64 bitIndexToMaskU64(uint8 bitIndex) {
+    return 1ULL << (uint64)bitIndex;
 }
 
-inline void disableBit(uint32* value, uint8 bitIndex) {
+inline void enableBitU32(uint32* value, uint8 bitIndex) {
     if (bitIndex >= 32); // TODO: Handle error
 
-    *value &= ~bitIndexToMask(bitIndex);
+    *value |= bitIndexToMaskU32(bitIndex);
 }
 
-inline uint32 checkBit(uint32 value, uint8 bitIndex) {
+inline void disableBitU32(uint32* value, uint8 bitIndex) {
     if (bitIndex >= 32); // TODO: Handle error
 
-    return value & bitIndexToMask(bitIndex);
+    *value &= ~bitIndexToMaskU32(bitIndex);
+}
+
+inline uint32 checkBitU32(uint32 value, uint8 bitIndex) {
+    if (bitIndex >= 32); // TODO: Handle error
+
+    return (value >> bitIndex) & 1;
+}
+
+inline void enableBitU64(uint64* value, uint8 bitIndex) {
+    if (bitIndex >= 64); // TODO: Handle error
+
+    *value |= bitIndexToMaskU64(bitIndex);
+}
+
+inline void disableBitU64(uint64* value, uint8 bitIndex) {
+    if (bitIndex >= 64); // TODO: Handle error
+
+    *value &= ~bitIndexToMaskU64(bitIndex);
+}
+
+inline bool checkBitU64(uint64 value, uint8 bitIndex) {
+    if (bitIndex >= 64); // TODO: Handle error
+
+    return (value >> bitIndex) & 1;
+}
+
+inline void enableBitU128(uint128* value, uint8 bitIndex) {
+    if (bitIndex >= 128); // TODO: Handle error
+
+    if (bitIndex >= 64) value->hi &= ~bitIndexToMaskU64(bitIndex - 64);
+
+    else                value->lo &= ~bitIndexToMaskU64(bitIndex);
+}
+
+inline void disableBitU128(uint128* value, uint8 bitIndex) {
+    if (bitIndex >= 128); // TODO: Handle error
+
+    *value &= ~bitIndexToMaskU64(bitIndex); // hi = 0000000000000000000000000000000000000000000000000000000001111011 lo = 0000000000000000000000000000000000000000000000000000000111001000
+}
+
+inline bool checkBitU128(uint128 value, uint8 bitIndex) {
+    if (bitIndex >= 128); // TODO: Handle error
+
+    return rshUInt128(value, bitIndex) & 1;
 }
 
 inline uint8 getByteIndex(uint32 value) {

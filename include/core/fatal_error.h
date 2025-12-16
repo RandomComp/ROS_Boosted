@@ -1,5 +1,5 @@
-#ifndef _ERROR_H
-#define _ERROR_H
+#ifndef _RANDOM_OS_FATAL_ERROR_H
+#define _RANDOM_OS_FATAL_ERROR_H
 
 #include "core/types.h"
 

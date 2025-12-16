@@ -10,8 +10,6 @@
 
 #include "drivers/high-level/speaker.h"
 
-#include "charset/colors.h"
-
 extern uint32 foregroundColor;
 
 ASCIIGlyphCode* getWarningName(WarningType warningType) {
@@ -19,7 +17,8 @@ ASCIIGlyphCode* getWarningName(WarningType warningType) {
 		[USB_BABBLE_DETECTED_WARNING] = 						"USB Babble detected warning.",
 		[ALL_GLYPHS_ARE_RESERVED_WARNING] = 					"All Glyphs are reserved warning.",
 		[REQUIRED_NUMBER_OF_ARGUMENTS_NOT_REACHED_WARNING] = 	"Required number of arguments not reached warning.",
-		[UNKNOWN_T_TYPE_WARNING] = 								"Unknown T type warning."
+		[UNKNOWN_T_TYPE_WARNING] = 								"Unknown T type warning.",
+		[FUNCTION_NOT_IMPLEMENTED_WARNING] = 					"Function not implemented warning."
 	};
 
 	if (warningType >= 0 && warningType < sizeof(warningNames) / sizeof(int8*))
@@ -34,6 +33,7 @@ ASCIIGlyphCode* getIronicWarningDescription(WarningType warningType) {
 		[ALL_GLYPHS_ARE_RESERVED_WARNING] = 					"Dude, everything is booked, what can we do, we'll come tomorrow :(",
 		[REQUIRED_NUMBER_OF_ARGUMENTS_NOT_REACHED_WARNING] = 	"So wait, where's everything else?!",
 		[UNKNOWN_T_TYPE_WARNING] = 								"Fuck, man, what kind of type is this in T? I don't know shit!"
+		[FUNCTION_NOT_IMPLEMENTED_WARNING] = 					"Dude, what the fuck are you trying to call function? I don't have that function, so don't call it again until you get your head knocked off!"
 	};
 
 	if (warningType >= 0 && warningType < sizeof(ironicWarningMessages) / sizeof(int8*))
@@ -47,13 +47,14 @@ ASCIIGlyphCode* getFormalWarningDescription(WarningType warningType) {
 		[USB_BABBLE_DETECTED_WARNING] = 						"An unwanted USB device mumbling has been detected.",
 		[ALL_GLYPHS_ARE_RESERVED_WARNING] = 					"The UGSM encoding is full, so it cannot add the requested glyph.",
 		[REQUIRED_NUMBER_OF_ARGUMENTS_NOT_REACHED_WARNING] = 	"The required number of arguments in the function was not reached.",
-		[UNKNOWN_T_TYPE_WARNING] = 								"Unknown type T, code execution will continue, but pay attention to this. Data corruption is possible."
+		[UNKNOWN_T_TYPE_WARNING] = 								"Unknown type T, code execution will continue, but pay attention to this. Data corruption is possible.",
+		[FUNCTION_NOT_IMPLEMENTED_WARNING] = 					"The function you are trying to call is not implemented."
 	};
 
 	if (warningType >= 0 && warningType < sizeof(formalWarningMessages) / sizeof(int8*))
 		return formalWarningMessages[warningType];
 
-	return "There are no words. ( Unknown warning type )";
+	return "There are no words.";
 }
 
 void warn(WarningType warningType) {
@@ -71,7 +72,7 @@ void warn(WarningType warningType) {
 
 	UGSMASCIIputString("\n\n");
 
-	putString(newStringFromASCII("\n\n"));
+	UGSMASCIIputString(getWarningName(warningType));
 
 	foregroundColor = tempForegroundColor;
 
