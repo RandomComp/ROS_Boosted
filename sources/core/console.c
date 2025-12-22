@@ -1,5 +1,9 @@
 #include "core/console.h"
 
+#include "charset/ugsm.h"
+
+#include "core/char.h"
+
 #include "core/screen.h"
 
 #include "core/types.h"

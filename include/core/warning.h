@@ -3,6 +3,8 @@
 
 #include "core/types.h"
 
+#include "charset/ascii.h"
+
 typedef enum WarningType {
 	USB_BABBLE_DETECTED_WARNING,
 

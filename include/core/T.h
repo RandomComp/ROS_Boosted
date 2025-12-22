@@ -3,6 +3,12 @@
 
 #include "core/types.h"
 
+#include "core/int128.h"
+
+#include "core/char.h"
+
+#include "core/string.h"
+
 typedef enum TTypes {
 	T_TYPE_INT8,
 	T_TYPE_INT16,

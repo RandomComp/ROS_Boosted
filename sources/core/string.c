@@ -1,5 +1,7 @@
 #include "core/string.h"
 
+#include "core/char.h"
+
 #include "core/types.h"
 
 #include "core/warning.h"

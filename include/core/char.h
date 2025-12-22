@@ -47,7 +47,7 @@ inline Char newChar(Charset charset, CharUnion ch) {
 }
 
 inline Char* getCharArrayFromString(String str) {
-	return (Char*)str.region->memory;
+	return (Char*)(str.region->memory);
 }
 
 inline CharUnion charUnionFromUGSMChar(UGSMGlyphCode code) {

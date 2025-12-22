@@ -43,7 +43,7 @@ UGSMGlyphCode getFreeSpaceForGlyph() {
 		return i * 8 + bitIndex;
 	}
 
-	warn(AllGlyphsAreReservedWarning);
+	warn(ALL_GLYPHS_ARE_RESERVED_WARNING);
 
 	return 0;
 }

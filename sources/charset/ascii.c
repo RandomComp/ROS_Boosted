@@ -1,3 +1,5 @@
+#include "charset/ascii.h"
+
 #include "charset/ugsm.h"
 
 bool bASCIILoadedInitialized = false;
@@ -10,6 +12,10 @@ void ASCIIloadToUGSM() {
 	};
 
 	UGSMloadGlyphSet(ASCII, 107); // loading ASCII to UGSM
+}
+
+uint32 ASCIIgetLength(ASCIIGlyphCode* str) {
+	
 }
 
 ASCIIGlyphCode ASCIIUGSMCharToASCII(UGSMGlyphCode c) {

@@ -9,45 +9,45 @@
 
 #define PACKED __attribute__((packed))
 
-#define INT8_MIN (int8)(1 << (8 - 1))
+#define INT8_MIN (int8)(0x80)
 
-#define INT16_MIN (int16)(1 << (16 - 1))
+#define INT16_MIN (int16)(0x8000)
 
-#define INT32_MIN (int32)(1 << (32 - 1))
+#define INT32_MIN (int32)(0x80000000)
 
-#define INT64_MIN (int64)(1 << (64 - 1))
+#define INT64_MIN (int64)(0x8000000000000000)
 
-#define UINT8_MIN 0
+#define UINT8_MIN (uint8)(0)
 
-#define UINT16_MIN 0
+#define UINT16_MIN (uint16)(0)
 
-#define UINT32_MIN 0
+#define UINT32_MIN (uint32)(0)
 
-#define UINT64_MIN 0
+#define UINT64_MIN (uint64)(0)
 
-#define INT8_MAX 0xFFL
+#define INT8_MAX (int8)(0x7F)
 
-#define INT16_MAX 0xFFFFL
+#define INT16_MAX (int16)(0x7FFF)
 
-#define INT32_MAX 0xFFFFFFFFL
+#define INT32_MAX (int32)(0x7FFFFFFF)
 
-#define INT64_MAX 0xFFFFFFFFFFFFFFFFLL
+#define INT64_MAX (int64)(0x7FFFFFFFFFFFFFFF)
 
-#define UINT8_MAX 0xFFU
+#define UINT8_MAX (uint8)(0xFF)
 
-#define UINT16_MAX 0xFFFFU
+#define UINT16_MAX (uint16)(0xFFFF)
 
-#define UINT32_MAX 0xFFFFFFFFU
+#define UINT32_MAX (uint32)(0xFFFFFFFF)
 
-#define UINT64_MAX 0xFFFFFFFFFFFFFFFFULL
+#define UINT64_MAX (uint64)(0xFFFFFFFFFFFFFFFF)
 
-#define FLOAT_MIN 1.175494351e-38f
+#define FLOAT_MIN (double)(1.175494351e-38)
 
-#define DOUBLE_MIN 2.2250738585072014e-308
+#define DOUBLE_MIN (double)(2.2250738585072014e-308)
 
-#define FLOAT_MAX 3.402823466e+38f
+#define FLOAT_MAX (double)(3.402823466e+38)
 
-#define DOUBLE_MAX 1.7976931348623158e+308f
+#define DOUBLE_MAX (double)(1.7976931348623158e+308)
 
 #define MAX_FLOAT_STEPS 7
 

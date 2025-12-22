@@ -2,6 +2,12 @@
 
 #include "core/types.h"
 
+#include "core/int128.h"
+
+#include "core/char.h"
+
+#include "core/string.h"
+
 T addInt32WithChar(int32 a, Char b) {
 	CharUnion result = b.ch;
 

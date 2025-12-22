@@ -110,6 +110,8 @@ typedef enum ASCIIKeyCodes {
 
 void ASCIIloadToUGSM();
 
+uint32 ASCIIgetLength(ASCIIGlyphCode* str);
+
 ASCIIGlyphCode ASCIIUGSMCharToASCII(UGSMGlyphCode c);
 
 ASCIIGlyphCode ASCIIdigitToUGSM(uint8 digit);

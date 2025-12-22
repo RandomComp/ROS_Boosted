@@ -195,6 +195,8 @@ typedef enum UGSMCodes {
     UGSM_CHAR_RUS_BIG_YA,           // Я
 } UGSMCodes;
 
+uint32 UGSMgetLength(UGSMGlyphCode* str);
+
 UGSMGlyphSetCode UGSMloadGlyphSet(UGSMGlyphSet glyphSet, UGSMGlyphSetSize length);
 
 UGSMGlyphCode UGSMloadGlyph(UGSMGlyph glyph);

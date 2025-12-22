@@ -3,6 +3,10 @@
 
 #include "core/types.h"
 
+#include "core/T.h"
+
+#include "drivers/low-level/base/mem.h"
+
 typedef struct String {
 	uint32 length;
 

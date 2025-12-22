@@ -3,13 +3,13 @@
 
 #include "core/types.h"
 
-const uint128 UINT128_ZERO = (uint128){.hi = 0, .lo = 0 };
-
-const uint128 UINT128_ONE = (uint128){.hi = 0, .lo = 1 };
-
 typedef struct uint128 {
 	uint64 hi, lo;
 } uint128;
+
+const uint128 UINT128_ZERO = (uint128){.hi = 0, .lo = 0 };
+
+const uint128 UINT128_ONE = (uint128){.hi = 0, .lo = 1 };
 
 inline uint128 newUInt128(uint64 hi, uint64 lo) {
 	return (uint128){.hi = hi, .lo = lo };
