@@ -152,11 +152,11 @@ inline int64 scaleToInteger(double x) {
 }
 
 inline bool isPowerOfTwoU128(uint128 x) {
-	return x.lo > 0 && x.lo & (x.lo - 1);
+	return x.lo > 0 && (x.lo & (x.lo - 1) == 0);
 }
 
 inline uint32 getNumberExponentU128(uint128 number, uint32 base) {
-
+	
 }
 
 uint8 fgetCountDecimalPlaces(float x);

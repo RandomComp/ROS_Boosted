@@ -4,18 +4,18 @@
 
 #include "core/math.h"
 
-uint128 addUInt128(uint128 a, uint128 b) {
-	uint128 result = newUInt128(a.hi, a.lo);
+uint128 addUInt128(uint128 a, uint128 b) { // 0111 1011, 0100 1110
+	uint128 result = a;
 
 	result.lo += b.lo;
 
-	result.hi += b.hi + (result.lo < b.lo);
+	result.hi += b.hi + (result.lo < b.lo); // hi = 1011, lo = 0001 1001, 1100 1001
 	
 	return result;
 }
 
 uint128 subUInt128(uint128 a, uint128 b) {
-	uint128 result = newUInt128(a.hi, a.lo);
+	uint128 result = a;
 
 	result.lo -= b.lo;
 
@@ -24,63 +24,71 @@ uint128 subUInt128(uint128 a, uint128 b) {
 	return result;
 }
 
+
 uint128 mulUInt128(uint128 a, uint128 b) {
-	if (isPowerOfTwoU128(b)) {
-		return lshUInt128(a, getNumberExponentU128(b, 2));
-	}
+	uint128 result = UINT128_ZERO;
 
-	uint8 	bLoDigitCount = getNumberOfDigitsU64(b.lo),
-			bHiDigitCount = getNumberOfDigitsU64(b.hi);
+	result = addUInt128(result, newUInt128(0, a.lo * b.lo));
 
-	uint64 loResult = 0, hiResult = 0;
+	result = addUInt128(result, lshUInt128(newUInt128(0, a.hi * b.lo), 64));
 
-	for (uint8 i = 0; i < bLoDigitCount; i++) {
-		uint64 digitsProductResult = a.lo * getDigitU64(b.lo, i);
+	result = addUInt128(result, newUInt128(0, a.lo * b.hi));
 
-		uint64 digitsCount = getNumberOfDigitsU64(digitsProductResult) + i;
+	result = addUInt128(result, lshUInt128(newUInt128(0, a.hi * b.hi), 64));
 
-		if (digitsCount > 19) {
-			hiResult += digitsProductResult * powU64(10, i - 19);
-		}
+	// 11111111111111111111111111111111111111111111111111111111111111100000000000000000000000000000000000000000000000000000000000000001
+	
+	// 11111111111111111111111111111111111111111111111111111111111111010000000000000000000000000000000000000000000000000000000000000001
 
-		else loResult += digitsProductResult * powU64(10, i);
-	}
+	// for (uint8 i = 0; i < 128; i++) {
+	// 	if (checkBitU128(b, i)) {
+	// 		result = addUInt128(result, lshUInt128(a, i));
+	// 	}
+	// }
 
-	for (uint8 i = 0; i < bHiDigitCount; i++) {
-		uint64 digitsProductResult = a.hi * getDigitU64(b.lo, i);
-
-		uint64 digitsCount = getNumberOfDigitsU64(digitsProductResult) + i;
-
-		hiResult += digitsProductResult * powU64(10, i);
-	}
-
-	return newUInt128(hiResult, loResult);
+	return result;
 }
 
 uint128 divUInt128(uint128 a, uint128 b) {
 	uint8 bLoDigitCount = getNumberOfDigitsU64(b.lo);
 
-	uint64 	loResult = 0, hiResult = 0,
-			loProduct = a.lo, hiProduct = a.hi;
+	uint128 result = rshUInt128(mulUInt128(a, newUInt128(0, 0x1000ULL / b.lo)), 12);
 
-	uint64 productDigitsCount = getNumberOfDigitsU128(a);
+	return result;
+}
 
-	uint64 digitsProductResult = powU64(2, productDigitsCount);
+uint128 lshUInt128(uint128 x, uint8 shift) {
+	if (shift >= 128) return UINT128_ZERO;
+
+	if (shift <= 64) {
+		x.hi <<= shift; // Сдвиг ненулевых битов для получения свободного пространства для сдвига из lo 0...(shift - 1)
+
+		x.hi |= (x.lo >> (63 - shift)); // Установка битов 64...(64 - shift) из lo в hi часть.
 	
-	for (uint8 i = 0; i < productDigitsCount; i++) {
-		
-
+		x.lo <<= shift; // Сдвиг и удаление битов из lo 64...(64 - shift).
 	}
 
-	return newUInt128(hiResult, loResult);
+	else if (shift < 128) {
+		x = lshUInt128(lshUInt128(x, 64), shift - 64);
+	}
+	
+	return x;
 }
 
-uint128 bitAndUInt128(uint128 a, uint128 b) {
-	uint128 result = newUInt128(0, 0);
+uint128 rshUInt128(uint128 x, uint8 shift) {
+	if (shift >= 128) return UINT128_ZERO;
 
+	if (shift <= 64) {
+		x.lo >>= shift; // Сдвиг ненулевых битов для получения свободного пространства для сдвига из lo (shift - 1)...0
+		
+		x.lo |= (x.hi & makeIdentityMaskForU64(shift)) << (63 - shift); // Установка битов (shift - 1)...0 из hi в lo часть 64...(64 - shift).
+		
+		x.hi >>= shift; // Сдвиг и удаление битов из hi (shift - 1)...0.
+	}
 
-}
-
-uint128 bitOrUInt128(uint128 a, uint128 b) {
-
+	else if (shift < 128) {
+		x = rshUInt128(rshUInt128(x, 64), shift - 64);
+	}
+	
+	return x;
 }
