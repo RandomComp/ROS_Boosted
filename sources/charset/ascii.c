@@ -12,10 +12,20 @@ void ASCIIloadToUGSM() {
 	};
 
 	UGSMloadGlyphSet(ASCII, 107); // loading ASCII to UGSM
+
+	bASCIILoadedInitialized = true;
 }
 
 uint32 ASCIIgetLength(ASCIIGlyphCode* str) {
-	
+	uint32 result = 0;
+
+	while (*str != ASCII_CHAR_NULL) {
+		str++;
+
+		result++;
+	}
+
+	return result;
 }
 
 ASCIIGlyphCode ASCIIUGSMCharToASCII(UGSMGlyphCode c) {

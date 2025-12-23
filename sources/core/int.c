@@ -1,21 +1,23 @@
-#include "core/int128.h"
+#include "core/int.h"
 
 #include "core/types.h"
 
 #include "core/math.h"
 
-uint128 addUInt128(uint128 a, uint128 b) { // 0111 1011, 0100 1110
-	uint128 result = a;
+uint addUInt(uint a, uint b) { // 0111 1011, 0100 1110
+	uint result = a;
 
 	result.lo += b.lo;
 
 	result.hi += b.hi + (result.lo < b.lo); // hi = 1011, lo = 0001 1001, 1100 1001
+
+	
 	
 	return result;
 }
 
-uint128 subUInt128(uint128 a, uint128 b) {
-	uint128 result = a;
+uint subUInt(uint a, uint b) {
+	uint result = a;
 
 	result.lo -= b.lo;
 
@@ -25,16 +27,18 @@ uint128 subUInt128(uint128 a, uint128 b) {
 }
 
 
-uint128 mulUInt128(uint128 a, uint128 b) {
-	uint128 result = UINT128_ZERO;
+uint mulUInt(uint a, uint b) {
+	uint result = getUIntZero();
 
-	result = addUInt128(result, newUInt128(0, a.lo * b.lo));
+	
 
-	result = addUInt128(result, lshUInt128(newUInt128(0, a.hi * b.lo), 64));
+	result = addUInt(result, newUInt(0, a.lo * b.lo));
 
-	result = addUInt128(result, newUInt128(0, a.lo * b.hi));
+	result = addUInt(result, lshUInt(newUInt128(0, a.hi * b.lo), 64));
 
-	result = addUInt128(result, lshUInt128(newUInt128(0, a.hi * b.hi), 64));
+	result = addUInt(result, newUInt(0, a.lo * b.hi));
+
+	result = addUInt(result, lshUInt(newUInt128(0, a.hi * b.hi), 64));
 
 	// 11111111111111111111111111111111111111111111111111111111111111100000000000000000000000000000000000000000000000000000000000000001
 	
@@ -49,16 +53,16 @@ uint128 mulUInt128(uint128 a, uint128 b) {
 	return result;
 }
 
-uint128 divUInt128(uint128 a, uint128 b) {
+uint divUInt(uint a, uint b) {
 	uint8 bLoDigitCount = getNumberOfDigitsU64(b.lo);
 
-	uint128 result = rshUInt128(mulUInt128(a, newUInt128(0, 0x1000ULL / b.lo)), 12);
+	uint result = rshUInt(mulUInt(a, newUInt128(0, 0x1000ULL / b.lo)), 12);
 
 	return result;
 }
 
-uint128 lshUInt128(uint128 x, uint8 shift) {
-	if (shift >= 128) return UINT128_ZERO;
+uint lshUInt(uint x, uint8 shift) {
+	if (shift >= 128) return getUIntZero();
 
 	if (shift <= 64) {
 		x.hi <<= shift; // Сдвиг ненулевых битов для получения свободного пространства для сдвига из lo 0...(shift - 1)
@@ -69,14 +73,14 @@ uint128 lshUInt128(uint128 x, uint8 shift) {
 	}
 
 	else if (shift < 128) {
-		x = lshUInt128(lshUInt128(x, 64), shift - 64);
+		x = lshUInt(lshUInt(x, 64), shift - 64);
 	}
 	
 	return x;
 }
 
-uint128 rshUInt128(uint128 x, uint8 shift) {
-	if (shift >= 128) return UINT128_ZERO;
+uint rshUInt(uint x, uint8 shift) {
+	if (shift >= 128) return getUIntZero();
 
 	if (shift <= 64) {
 		x.lo >>= shift; // Сдвиг ненулевых битов для получения свободного пространства для сдвига из lo (shift - 1)...0
@@ -87,7 +91,7 @@ uint128 rshUInt128(uint128 x, uint8 shift) {
 	}
 
 	else if (shift < 128) {
-		x = rshUInt128(rshUInt128(x, 64), shift - 64);
+		x = rshUInt(rshUInt(x, 64), shift - 64);
 	}
 	
 	return x;

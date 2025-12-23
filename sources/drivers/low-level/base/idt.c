@@ -101,9 +101,9 @@ void IDTInit(void) {
 }
 
 void IDTSetGate(uint8 num, uint32 base, uint16 sel, uint8 flags) {
-	idtEntries[num].base_low = base & 0xffff;
+	idtEntries[num].base_low = base & 0xFFFF;
 
-	idtEntries[num].base_high = (base >> 16) & 0xffff;
+	idtEntries[num].base_high = (base >> 16) & 0xFFFF;
 
 	idtEntries[num].sel = sel;
 
@@ -114,10 +114,10 @@ void IDTSetGate(uint8 num, uint32 base, uint16 sel, uint8 flags) {
 
 void IDTISRHandler(struct Registers* regs) {
 	if (regs->int_no < 20)
-		causeFatal(regs->int_no + 1);
+		causeFatalError(regs->int_no);
 
 	else if (regs->int_no < 32) 
-		causeFatal(ReservedError);
+		causeFatalError(ISR_RESERVED_FATAL_ERROR);
 }
 
 void* IDTIRQRoutines[16] = { 0 };

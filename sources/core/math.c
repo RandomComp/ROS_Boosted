@@ -74,10 +74,6 @@ uint8 getNumberOfDigits64(int64 x) {
     return result;
 }
 
-uint8 getNumberOfDigits128(uint128 x) {
-    
-}
-
 uint8 getNumberOfDigitsU32(uint32 x) {
     if (x == 0) return 1;
 
@@ -106,7 +102,27 @@ uint8 getNumberOfDigitsU64(uint64 x) {
     return result;
 }
 
-uint8 getNumberOfDigitsU128(uint128 x) {
+uint8 getNumberOfDigitsUInt(uint x) {
+    
+}
+
+uint32 ifloorU32(uint32 x, uint32 align) {
+    if (x % align == 0) return x;
+
+    if (align == 0) causeFatalError(DIVISION_BY_ZERO_FATAL_ERROR);
+    
+    return ((x / align) - 1) * align;
+}
+
+uint32 iceilU32(uint32 x, uint32 align) {
+    if (x % align == 0) return x;
+
+    if (align == 0) causeFatalError(DIVISION_BY_ZERO_FATAL_ERROR);
+
+    return ((x / align) + 1) * align;
+}
+
+uint32 iroundU32(uint32 x, uint32 align) {
     
 }
 
@@ -161,6 +177,10 @@ float fround(float x) {
 }
 
 int32 pow32(int16 a, int16 b) {
+    if (isPowerOfTwoU32(a)) {
+
+    }
+
     int32 result = 1;
 
     b = iabs(b);

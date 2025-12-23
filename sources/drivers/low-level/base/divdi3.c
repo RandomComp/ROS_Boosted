@@ -1,6 +1,6 @@
 #include "core/types.h"
 
-#include "../headers/quad.h"
+#include "drivers/low-level/base/quad.h"
 
 int64 __divdi3(int64 a, int64 b) {
 	uint64 ua, ub, uq;

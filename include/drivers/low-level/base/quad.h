@@ -78,8 +78,8 @@ int64 __subdi3(int64, int64);
 
 int32 __ucmpdi2(uint64, uint64);
 
-uint64 __udivdi3(uint64, uint64 );
+uint64 __udivdi3(uint64, uint64);
 
-uint64 __umoddi3(uint64, uint64 );
+uint64 __umoddi3(uint64, uint64);
 
 int64 __xordi3(int64, int64);

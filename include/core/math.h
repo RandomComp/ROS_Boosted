@@ -5,7 +5,7 @@
 
 #include "core/format.h"
 
-#include "core/int128.h"
+#include "core/int.h"
 
 #include "core/fatal_error.h"
 
@@ -151,11 +151,15 @@ inline int64 scaleToInteger(double x) {
     return x * pow64(10, getCountDecimalPlaces(x));
 }
 
-inline bool isPowerOfTwoU128(uint128 x) {
-	return x.lo > 0 && (x.lo & (x.lo - 1) == 0);
+inline bool isPowerOfTwoU32(uint32 x) {
+	return x > 0 && (x & (x - 1) == 0);
 }
 
-inline uint32 getNumberExponentU128(uint128 number, uint32 base) {
+inline bool isPowerOfTwoUInt(uint x) {
+	return bigThanUInt(x, getUIntZero()) && equalUInt(bitAndUInt(x, subUInt(x, getUIntOne())), getUIntZero());
+}
+
+inline uint32 logUInt(uint number, uint32 base) {
 	
 }
 
@@ -167,13 +171,17 @@ uint8 getNumberOfDigits32(int32 x);
 
 uint8 getNumberOfDigits64(int64 x);
 
-uint8 getNumberOfDigits128(uint128 x);
-
 uint8 getNumberOfDigitsU32(uint32 x);
 
 uint8 getNumberOfDigitsU64(uint64 x);
 
-uint8 getNumberOfDigitsU128(uint128 x);
+uint8 getNumberOfDigitsUInt(uint x);
+
+uint32 ifloorU32(uint32 x, uint32 align);
+
+uint32 iceilU32(uint32 x, uint32 align);
+
+uint32 iroundU32(uint32 x, uint32 align);
 
 inline double trunc(double x) {
 	return TRUNC(x);

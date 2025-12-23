@@ -7,8 +7,8 @@
             ],
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "windows-gcc-x86",
-            "compilerPath": "C:\\msys64\\mingw32\\bin\\gcc.exe",
+            "intelliSenseMode": "gcc-x86",
+            "compilerPath": "",
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": "${workspaceFolder}/.vscode/browse.vscode-db"

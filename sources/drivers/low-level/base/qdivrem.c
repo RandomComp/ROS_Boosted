@@ -35,11 +35,7 @@ uint64 __qdivrem(uint64 uq, uint64 vq, uint64 *arq) {
 	uint32 uspace[5], vspace[5], qspace[5];
 	
 	if (vq == 0) {
-		static volatile const uint32 zero = 0;
-
-		tmp.ul[H] = tmp.ul[L] = 1 / zero;
-
-		causeFatal(DivisionByZeroError);
+		causeFatal(DIVISION_BY_ZERO_FATAL_ERROR);
 
 		if (arq) *arq = uq;
 
@@ -111,7 +107,7 @@ uint64 __qdivrem(uint64 uq, uint64 vq, uint64 *arq) {
 	for (m = 4 - n; u[1] == 0; u++)
 		m--;
 
-	for (i = 4 - m; --i >= 0;)
+	for (i = 4 - m; i >= 0; --i)
 		q[i] = 0;
 
 	q += 4 - m;

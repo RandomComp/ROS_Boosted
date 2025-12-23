@@ -29,7 +29,15 @@ IUGSM UGSM = { 0 }; // UGSM itself ( единая память для хране
 IUGSMSize UGSMSize = 0;
 
 uint32 UGSMgetLength(UGSMGlyphCode* str) {
-	
+	uint32 result = 0;
+
+	while (*str != UGSM_CHAR_NULL) {
+		str++;
+
+		result++;
+	}
+
+	return result;
 }
 
 UGSMGlyphSetCode UGSMloadGlyphSet(UGSMGlyphSet glyphSet, UGSMGlyphSetSize length) {
