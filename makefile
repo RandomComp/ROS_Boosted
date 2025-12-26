@@ -1,4 +1,4 @@
-CFLAGS  = -m32 -ffreestanding -fno-builtin -nostdinc -nostdlib
+CFLAGS  = -m32 -ffreestanding
 
 GASFLAGS = --32
 

@@ -16,13 +16,23 @@ extern uint32 vidmode; // Выбранный видеорежим VBE.
 
 extern uint8 vidchannels; // Кол-во каналов выбранного видеорежима VBE.
 
-const uint32 screenResolutionSizeInbytes = width * height * 4; // Вычисление размера в байтах разрешения экрана.
+const static uint32 screenResolutionSizeInbytes = width * height * 4; // Вычисление размера в байтах разрешения экрана.
 
 static bool bScreenInitialized = false; // Флаг инициализации экрана.
 
-uint32 framebuffer[screenResolutionSizeInbytes] = { 0 };
+static uint32 firstBuffer[screenResolutionSizeInbytes] = { 0 };
 
-uint32 viewbuffer[screenResolutionSizeInbytes] = { 0 };
+static uint32 secondBuffer[screenResolutionSizeInbytes] = { 0 };
+
+static uint32* framebufferPtr = &firstBuffer;
+
+static uint32* viewbufferPtr = &secondBuffer;
+
+static bool bFirstBufferIsFrameBuffer = true;
+
+uint32* getFrameBufferPtr() {
+	return framebufferPtr;
+}
 
 void ScreenInit() {
 	if (bScreenInitialized) return;
@@ -34,17 +44,23 @@ void ScreenInit() {
 }
 
 void fastClear(uint8 backgroundColor) {
-	memset(framebuffer, backgroundColor, screenResolutionSizeInbytes);
+	memset(framebufferPtr, backgroundColor, screenResolutionSizeInbytes);
 }
 
 void clear(uint32 backgroundColor) {
 	for (uint32 i = 0; i < screenResolutionSizeInbytes; i++) {
-		framebuffer[i] = backgroundColor;
+		framebufferPtr[i] = backgroundColor;
 	}
 }
 
 void swap() {
-	memcpy((uint8*)vidmemaddr, viewbuffer, screenResolutionSizeInbytes);
+	// TODO: Вызов VSYNC
 
-	memcpy(viewbuffer, framebuffer, screenResolutionSizeInbytes);
+	memcpy((uint8*)vidmemaddr, viewbufferPtr, screenResolutionSizeInbytes);
+
+	framebufferPtr = bFirstBufferIsFrameBuffer ? secondBuffer : firstBuffer;
+
+	viewbufferPtr = bFirstBufferIsFrameBuffer ? firstBuffer : secondBuffer;
+
+	bFirstBufferIsFrameBuffer = !bFirstBufferIsFrameBuffer;
 }

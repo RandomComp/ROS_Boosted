@@ -1,5 +1,7 @@
 #include "charset/ugsm.h"
 
+#include "charset/ugsm_types.h"
+
 #include "core/std.h"
 
 #include "core/types.h"
@@ -8,25 +10,13 @@
 
 #include "charset/glyph.h"
 
-#include "charset/ascii.h"
+#include "charset/ascii_types.h"
 
-#include "charset/ugsm_rus.h"
+#include "drivers/low-level/base/ram.h"
 
-#include "drivers/low-level/base/mem.h"
+byte UGSM[UGSM_MAX_SIZE][UGSM_GLYPH_HEIGHT] = { 0 }; // UGSM itself ( единая память для хранения глифов ) ( unified glyph storage memory )
 
-extern UGSMGlyphSetCode ASCIIOffset;
-
-extern UGSMGlyphSetCode RUSOffset;
-
-extern const uint32 columns;
-
-extern int16 x;
-
-extern int16 y;
-
-IUGSM UGSM = { 0 }; // UGSM itself ( единая память для хранения глифов ) ( unified glyph storage memory )
-
-IUGSMSize UGSMSize = 0;
+AbsoluteSize UGSMSize = 0;
 
 uint32 UGSMgetLength(UGSMGlyphCode* str) {
 	uint32 result = 0;
@@ -49,16 +39,10 @@ UGSMGlyphSetCode UGSMloadGlyphSet(UGSMGlyphSet glyphSet, UGSMGlyphSetSize length
 	UGSMGlyphSetSize glyphSetEnd = glyphSetCode + length;
 
 	if (glyphSetEnd >= UGSMMaxSize)
-		cause(UGSMIncorrectGlyphSetSizeError);
+		ERROR_throw(UGSM_INCORRECT_GLYPH_SET_SIZE_ERROR);
 
 	for (UGSMGlyphCode i = 0; i < length; i++) {
 		generateGlyphCode();
-
-		// for (uint8 j = 0; j < UGSMGlyphHeight; j++) {
-		// 	UGSM[i + glyphSetCode][j] = glyphSet[i][j];
-		// }
-
-		// EXPERIMENTAL, MAY BE NOT WORK!!!
 
 		memcpy(UGSM[i + glyphSetCode], glyphSet[i], UGSMGlyphHeight);
 	}
@@ -71,12 +55,6 @@ UGSMGlyphSetCode UGSMloadGlyphSet(UGSMGlyphSet glyphSet, UGSMGlyphSetSize length
 UGSMGlyphCode UGSMloadGlyph(UGSMGlyph glyph) {
 	UGSMGlyphCode result = generateGlyphCode();
 
-	// for (uint8 i = 0; i < UGSMGlyphHeight; i++) {
-	// 	UGSM[result][i] = glyph[i];
-	// }
-
-	// EXPERIMENTAL!!! MAY BE NOT WORK!
-
 	memcpy(UGSM[result], glyph, UGSMGlyphHeight);
 
 	UGSMSize++;
@@ -86,7 +64,7 @@ UGSMGlyphCode UGSMloadGlyph(UGSMGlyph glyph) {
 
 UGSMGlyph* UGSMgetGlyph(UGSMGlyphCode glyphCode) {
 	if (!checkGlyphCodeIsReserved(glyphCode))
-		cause(UGSMGlyphNotReservedButWeTryUse);
+		ERROR_throw(UGSM_GLYPH_NOT_RESERVED_BUT_WE_TRY_USE);
 
 	return &UGSM[glyphCode];
 }
@@ -102,17 +80,17 @@ void UGSMASCIIputChar(int8 c) {
 
 UGSMGlyphCode UGSMASCIICharToUGSM(int8 c) {
 	switch (c) {
-		case ASCII_CHAR_SPACE: 				return UGSM_CHAR_SPACE;
-		case ASCII_CHAR_NEW_LINE: 			return UGSM_CHAR_NEW_LINE;
-		case ASCII_CHAR_CARRIAGE_RETURN: 	return UGSM_CHAR_CARRIAGE_RETURN;
-		case ASCII_CHAR_BACKSPACE: 			return UGSM_CHAR_BACKSPACE;
-		case ASCII_CHAR_TAB:  				return UGSM_CHAR_TAB;
+		case CP437_CHAR_SPACE: 				return UGSM_CHAR_SPACE;
+		case CP437_CHAR_NEW_LINE: 			return UGSM_CHAR_NEW_LINE;
+		case CP437_CHAR_CARRIAGE_RETURN: 	return UGSM_CHAR_CARRIAGE_RETURN;
+		case CP437_CHAR_BACKSPACE: 			return UGSM_CHAR_BACKSPACE;
+		case CP437_CHAR_TAB:  				return UGSM_CHAR_TAB;
 	}
 
-	if (c < ASCII_CHAR_SPACE || c > ASCII_CHAR_TILDE)
+	if (c < CP437_CHAR_SPACE || c > CP437_CHAR_TILDE)
 		return UGSM_CHAR_NULL;
 
-	return (UGSMGlyphCode)(c) - ASCII_CHAR_EXCLAMATION_MARK + UGSM_CHAR_EXCLAMATION_MARK;
+	return (UGSMGlyphCode)(c) - CP437_CHAR_EXCLAMATION_MARK + UGSM_CHAR_EXCLAMATION_MARK;
 }
 
 UGSMGlyphCode UGSMdigitToUGSM(uint8 digit) {
@@ -125,6 +103,6 @@ void UGSMASCIIsetString(uint16 x, uint16 y, int8* str) {
 }
 
 void UGSMASCIIsetChar(uint16 x, uint16 y, int8 c) {
-	if (c >= ASCII_CHAR_SPACE && c <= ASCII_CHAR_TILDE)
+	if (c >= CP437_CHAR_SPACE && c <= CP437_CHAR_TILDE)
 		setChar(x, y, UGSMASCIICharToUGSM(c));
 }

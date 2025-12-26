@@ -11,7 +11,7 @@ void PITInit();
 
 void PITSetFreq(uint16 freq);
 
-void tick(struct Registers* regs);
+void tick(Registers* regs);
 
 void sleepTime(Time delay);
 

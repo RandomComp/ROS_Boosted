@@ -134,11 +134,11 @@ static inline int32 memcmp_builtin(void* p1, void* p2, int32 len) {
 	return __builtin_memcmp(p1, p2, len);
 }
 
-static inline int32 strlen_builtin(int8* p) {
+static inline int32 strlen_builtin(byte* p) {
 	return __builtin_strlen(p);
 }
 
-static inline int32 strncmp_builtin(int8* s1, int8* s2, int32 len) {
+static inline int32 strncmp_builtin(byte* s1, byte* s2, int32 len) {
 	return __builtin_strncmp(s1, s2, len);
 }
 
@@ -147,11 +147,12 @@ static inline int32 strncmp_builtin(int8* s1, int8* s2, int32 len) {
 typedef uint32 AbsoluteSize;
 
 typedef enum MemoryRegionStatus {
-	MEMORY_ACCESS_READ = 0x00,
-
-	MEMORY_ACCESS_WRITE = 0x02,
-
-	MEMORY_ACCESS_EXECUTE = 0x04
+	MEMORY_STATUS_FREE = 		0b00000001,
+	MEMORY_STATUS_ACTIVE = 		0b00000010,
+	MEMORY_STATUS_READABLE = 	0b00000100,
+	MEMORY_STATUS_WRITABLE = 	0b00001000,
+	MEMORY_STATUS_EXECUTABLE = 	0b00010000,
+	MEMORY_STATUS_ENCRYPTED = 	0b00100000
 } MemoryRegionStatus;
 
 typedef struct Size {
@@ -176,25 +177,7 @@ MemoryRegion* malloc(AbsoluteSize size, MemoryRegionStatus status);
 
 void free(MemoryRegion* region);
 
-inline void memWriteByte(MemoryRegion* region, uint32 index, uint8 data) {
-	if (index >= region->header.regionSize); // TODO: handle error
-
-	if (region->memory == 0); // TODO: handle error
-
-	uint8* mem = (uint8*)(region->memory);
-
-	mem[index] = data;
-}
-
-inline void memReadByte(MemoryRegion* region, uint32 index, uint8* data) {
-	if (index >= region->header.regionSize); // TODO: handle error
-
-	if (region->memory == 0); // TODO: handle error
-
-	uint8* mem = (uint8*)(region->memory);
-
-	*data = mem[index];
-}
+bool isValidAndActiveMemoryRegion(MemoryRegion* region);
 
 AbsoluteSize sizeToAbsoluteSize(Size size);
 

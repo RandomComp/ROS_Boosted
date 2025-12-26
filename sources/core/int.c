@@ -4,7 +4,7 @@
 
 #include "core/math.h"
 
-uint addUInt(uint a, uint b) { // 0111 1011, 0100 1110
+uint INT_addUInt(uint a, uint b) { // 0111 1011, 0100 1110
 	uint result = a;
 
 	result.lo += b.lo;
@@ -16,7 +16,7 @@ uint addUInt(uint a, uint b) { // 0111 1011, 0100 1110
 	return result;
 }
 
-uint subUInt(uint a, uint b) {
+uint INT_subUInt(uint a, uint b) {
 	uint result = a;
 
 	result.lo -= b.lo;
@@ -27,22 +27,8 @@ uint subUInt(uint a, uint b) {
 }
 
 
-uint mulUInt(uint a, uint b) {
-	uint result = getUIntZero();
-
-	
-
-	result = addUInt(result, newUInt(0, a.lo * b.lo));
-
-	result = addUInt(result, lshUInt(newUInt128(0, a.hi * b.lo), 64));
-
-	result = addUInt(result, newUInt(0, a.lo * b.hi));
-
-	result = addUInt(result, lshUInt(newUInt128(0, a.hi * b.hi), 64));
-
-	// 11111111111111111111111111111111111111111111111111111111111111100000000000000000000000000000000000000000000000000000000000000001
-	
-	// 11111111111111111111111111111111111111111111111111111111111111010000000000000000000000000000000000000000000000000000000000000001
+uint INT_mulUInt(uint a, uint b) {
+	uint result = INT_getUIntZero();
 
 	// for (uint8 i = 0; i < 128; i++) {
 	// 	if (checkBitU128(b, i)) {
@@ -53,16 +39,16 @@ uint mulUInt(uint a, uint b) {
 	return result;
 }
 
-uint divUInt(uint a, uint b) {
-	uint8 bLoDigitCount = getNumberOfDigitsU64(b.lo);
+uint INT_divUInt(uint a, uint b) {
+	// uint8 bLoDigitCount = getNumberOfDigitsU64(b.lo);
 
-	uint result = rshUInt(mulUInt(a, newUInt128(0, 0x1000ULL / b.lo)), 12);
+	// uint result = INT_rshUInt(INT_mulUInt(a, INT_UIntFromUInt32(0, 0x1000 / b.lo)), 12);
 
-	return result;
+	// return result;
 }
 
-uint lshUInt(uint x, uint8 shift) {
-	if (shift >= 128) return getUIntZero();
+void INT_lshUInt(uint* x, uint32 shift) {
+	if (shift >= x.bitDepth) return new();
 
 	if (shift <= 64) {
 		x.hi <<= shift; // Сдвиг ненулевых битов для получения свободного пространства для сдвига из lo 0...(shift - 1)
@@ -73,14 +59,17 @@ uint lshUInt(uint x, uint8 shift) {
 	}
 
 	else if (shift < 128) {
-		x = lshUInt(lshUInt(x, 64), shift - 64);
+		INT_lshUInt(x, 64);
+
+		INT_lshUInt(x, shift - 64);
 	}
 	
 	return x;
 }
 
-uint rshUInt(uint x, uint8 shift) {
-	if (shift >= 128) return getUIntZero();
+void INT_rshUInt(uint* x, uint32 shift) {
+	if (shift >= x->bitDepth)
+		return INT_convertUIntBitDepthTo(x, iceilU32(shift, 32));
 
 	if (shift <= 64) {
 		x.lo >>= shift; // Сдвиг ненулевых битов для получения свободного пространства для сдвига из lo (shift - 1)...0
@@ -91,7 +80,9 @@ uint rshUInt(uint x, uint8 shift) {
 	}
 
 	else if (shift < 128) {
-		x = rshUInt(rshUInt(x, 64), shift - 64);
+		INT_rshUInt(x, 64);
+
+		INT_rshUInt(x, shift - 64);
 	}
 	
 	return x;

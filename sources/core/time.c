@@ -2,7 +2,7 @@
 
 #include "core/std.h"
 
-#include "charset/format.h"
+#include "core/format.h"
 
 #include "drivers/high-level/pit.h"
 
@@ -12,11 +12,11 @@
 
 #include "drivers/low-level/io/cmos.h"
 
-Time now;
+static Time now;
 
-bool bTimeInitialized = false;
+static bool bTimeInitialized = false;
 
-const Day numberDaysOfMonthes[12] = {
+const static Day numberDaysOfMonthes[12] = {
 	31, 28, 31, // January, February? ( The question mark means 28 - 29 february day ( leap year ) ), March
 
 	30, 31, 30, // April, May, June
@@ -258,4 +258,12 @@ TimeStruct binaryTimeFromRTCFormatedIfNecessary(TimeStruct time) {
 	}
 
 	return time;
+}
+
+void setTime(Time time) {
+	now = time;
+}
+
+Time getTime() {
+	return now;
 }

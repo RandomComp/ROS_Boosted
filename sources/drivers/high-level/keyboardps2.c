@@ -4,8 +4,6 @@
 
 #include "charset/ugsm.h"
 
-#include "charset/abc.h"
-
 #include "core/std.h"
 
 #include "drivers/low-level/io/io.h"

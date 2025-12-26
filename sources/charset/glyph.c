@@ -18,7 +18,7 @@ bool UGSMcheckGlyphCodeIsReserved(UGSMGlyphCode code) {
 
 void reserveGlyphCode(UGSMGlyphCode code) {
 	if (UGSMcheckGlyphCodeIsReserved(code)) // check for reserved
-		cause(GlyphCodeReservedError); // if the glyph is reserved, then we issue the corresponding error
+		ERROR_throw(GLYPH_CODE_RESERVED_ERROR); // if the glyph is reserved, then we issue the corresponding error
 
 	else enableBit(&UGSMreserveTable[getByteIndex(code)], getBitIndex(code));
 }
@@ -27,7 +27,7 @@ void freeGlyphCode(UGSMGlyphCode code) {
 	if (UGSMcheckGlyphCodeIsReserved(code)) // check for reserved
 		disableBit(&UGSMreserveTable[getByteIndex(code)], getBitIndex(code));
 
-	else cause(GlyphCodeNotReservedError); // if the glyph is not reserved, then we issue the corresponding error
+	else ERROR_throw(GLYPH_CODE_NOT_RESERVED_ERROR); // if the glyph is not reserved, then we issue the corresponding error
 }
 
 UGSMGlyphCode getFreeSpaceForGlyph() {

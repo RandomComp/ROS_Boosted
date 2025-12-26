@@ -5,7 +5,7 @@
 
 #include "charset/ugsm.h"
 
-#include "charset/ascii.h"
+#include "charset/cp437.h"
 
 #include "core/string.h"
 
@@ -59,7 +59,7 @@ inline CharUnion charUnionFromASCIIChar(int8 code) {
 }
 
 inline Char charCharsetToASCII(Char ch) {
-	ASCIIGlyphCode result = ASCII_CHAR_NULL;
+	CP437_CharacterCode result = CP437_CHAR_NULL;
 
 	if (ch.charset == CHARSET_ASCII)
 		result = ch.ch.ASCIIChar;

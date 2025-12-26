@@ -3,26 +3,18 @@
 
 #include "core/types.h"
 
-#include "charset/ascii.h"
+#include "charset/cp437.h"
 
-typedef enum WarningType {
+typedef enum Warning {
 	USB_BABBLE_DETECTED_WARNING,
-
 	ALL_GLYPHS_ARE_RESERVED_WARNING,
-
 	REQUIRED_NUMBER_OF_ARGUMENTS_NOT_REACHED_WARNING,
-
 	UNKNOWN_T_TYPE_WARNING,
+	FUNCTION_NOT_IMPLEMENTED_WARNING,
+	INVALID_ARGUMENT_WARNING,
+	UNKNOWN_WARNING
+} Warning;
 
-	FUNCTION_NOT_IMPLEMENTED_WARNING
-} WarningType;
-
-ASCIIGlyphCode* getWarningName(WarningType warningType);
-
-ASCIIGlyphCode* getIronicWarningDescription(WarningType warningType);
-
-ASCIIGlyphCode* getFormalWarningDescription(WarningType warningType);
-
-void warn(WarningType warningType);
+void Warning_warn(Warning warningType, ExceptionMessage message);
 
 #endif

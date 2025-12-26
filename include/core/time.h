@@ -155,4 +155,8 @@ TimeStruct binaryTimeToRTCFormatedIfNecessary(TimeStruct time);
 
 TimeStruct binaryTimeFromRTCFormatedIfNecessary(TimeStruct time);
 
+void setTime(Time time);
+
+Time getTime();
+
 #endif

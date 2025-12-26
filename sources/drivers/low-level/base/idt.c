@@ -92,7 +92,9 @@ void IDTInit(void) {
 	IDTSetGate(46, 	(uint32)irq14, 	0x08, 0x8e);
 	IDTSetGate(47, 	(uint32)irq15, 	0x08, 0x8e);
 
-	IDTSetGate(128,	(uint32)isr128, 0x08, 0x8e);
+	// TODO: Настроить прерывание 0x80
+
+	IDTSetGate(0x80, (uint32)isr128, 0x08, 0x8e);
 	IDTSetGate(177,	(uint32)isr177, 0x08, 0x8e);
 
 	IDTFlush((uint32)&idtPtr);
@@ -114,10 +116,10 @@ void IDTSetGate(uint8 num, uint32 base, uint16 sel, uint8 flags) {
 
 void IDTISRHandler(struct Registers* regs) {
 	if (regs->int_no < 20)
-		causeFatalError(regs->int_no);
+		FATAL_ERROR_throw(regs->int_no);
 
-	else if (regs->int_no < 32) 
-		causeFatalError(ISR_RESERVED_FATAL_ERROR);
+	else if (regs->int_no < 32)
+		FATAL_ERROR_throw(ISR_KERNEL_UNUSED_FATAL_ERROR);
 }
 
 void* IDTIRQRoutines[16] = { 0 };

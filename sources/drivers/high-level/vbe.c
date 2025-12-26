@@ -4,7 +4,7 @@
 
 #include "drivers/low-level/x86emu/bios.h"
 
-#include "drivers/low-level/base/mem.h"
+#include "drivers/low-level/base/ram.h"
 
 #include "core/error.h"
 
@@ -91,7 +91,7 @@ bool VBESetup(uint16 w, uint16 h) {
 
 	bool vbeSupport = p_info != 0;
 
-	if (!vbeSupport) cause(VBENotSupportedError);
+	assert(!vbeSupport, Exception_fromError(VBE_NOT_SUPPORTED_ERROR, Exception_newMessage(moduleName, __LINE__, )));
 	
 	vbeSupport = p_info->VbeVersion >= 0x200;
 
@@ -102,8 +102,6 @@ bool VBESetup(uint16 w, uint16 h) {
 	vbeSupport = vbeSupport && (p_info->VbeSignature.SigChr[2] == 'S');
 	
 	vbeSupport = vbeSupport && (p_info->VbeSignature.SigChr[3] == 'A');
-
-	if (!vbeSupport) cause(VBENotSupportedError);
 
 	bool found = false;
 

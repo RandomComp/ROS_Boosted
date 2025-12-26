@@ -1,6 +1,7 @@
 {
     "files.associations": {
-        "*.h": "c"
+        "*.h": "c",
+        "*.rmal": "asm-intel-x86-generic"
     },
     
     "C_Cpp.errorSquiggles": "enabled",

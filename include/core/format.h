@@ -66,37 +66,55 @@ inline uint64 makeIdentityMaskForU64(uint8 bitIndex) {
 }
 
 inline uint32 bitIndexToMaskU32(uint8 bitIndex) {
-	if (bitIndex >= 32); // TODO: Handle error
+	if (bitIndex >= 32) {
+		Error_throw(INVALID_ARGUMENT_ERROR);
+
+		return;
+	}
 
 	return 1U << (uint32)bitIndex;
 }
 
 inline uint64 bitIndexToMaskU64(uint8 bitIndex) {
-	if (bitIndex >= 64); // TODO: Handle error
+	if (bitIndex >= 64) {
+		Error_throw(INVALID_ARGUMENT_ERROR);
+
+		return;
+	}
 
 	return 1ULL << (uint64)bitIndex;
 }
 
-inline uint128 bitIndexToMaskU128(uint8 bitIndex) {
-	if (bitIndex >= 128); // TODO: Handle error
-	
-	return lshUInt128(UINT128_ONE, bitIndex);
+inline uint bitIndexToMaskUInt(uint32 bitIndex) {
+	return lshUInt(getUIntOne(), bitIndex);
 }
 
 inline void enableBitU32(uint32* value, uint8 bitIndex) {
-	if (bitIndex >= 32); // TODO: Handle error
+	if (bitIndex >= 32) {
+		Error_throw(INVALID_ARGUMENT_ERROR);
+
+		return;
+	}
 
 	*value |= bitIndexToMaskU32(bitIndex);
 }
 
 inline void disableBitU32(uint32* value, uint8 bitIndex) {
-	if (bitIndex >= 32); // TODO: Handle error
+	if (bitIndex >= 32) {
+		Error_throw(INVALID_ARGUMENT_ERROR);
+
+		return;
+	}
 
 	*value &= ~bitIndexToMaskU32(bitIndex);
 }
 
 inline uint32 checkBitU32(uint32 value, uint8 bitIndex) {
-	if (bitIndex >= 32); // TODO: Handle error
+	if (bitIndex >= 32) {
+		Error_throw(INVALID_ARGUMENT_ERROR);
+
+		return;
+	}
 
 	return (value >> bitIndex) & 1;
 }
@@ -114,29 +132,45 @@ inline void disableBitU64(uint64* value, uint8 bitIndex) {
 }
 
 inline bool checkBitU64(uint64 value, uint8 bitIndex) {
-	if (bitIndex >= 64); // TODO: Handle error
+	if (bitIndex >= 64) {
+		Error_throw(INVALID_ARGUMENT_ERROR);
+
+		return;
+	}
 
 	return (value >> bitIndex) & 1;
 }
 
-inline void enableBitU128(uint128* value, uint8 bitIndex) {
-	if (bitIndex >= 128); // TODO: Handle error
+inline void enableBitUint(uint *value, uint8 bitIndex) {
+	if (bitIndex >= value->data) {
+		Error_throw(INVALID_ARGUMENT_ERROR);
 
-	*value = bitOrUInt128(*value, bitIndexToMaskU128(bitIndex));
+		return;
+	}
+
+	*value = bitOrUInt(*value, bitIndexToMaskUInt(bitIndex));
 }
 
-inline void disableBitU128(uint128* value, uint8 bitIndex) {
-	if (bitIndex >= 128); // TODO: Handle error
+inline void disableBitU128(uint* value, uint8 bitIndex) {
+	if (bitIndex >= value->data) {
+		Error_throw(INVALID_ARGUMENT_ERROR);
 
-	*value = bitAndUInt128(*value, bitNotUInt128(bitIndexToMaskU128(bitIndex)));
+		return;
+	}
+
+	*value = bitAndUInt(*value, bitNotUInt(bitIndexToMaskUInt(bitIndex)));
 }
 
-inline bool checkBitU128(uint128 value, uint8 bitIndex) {
-	if (bitIndex >= 128); // TODO: Handle error
+inline bool checkBitUInt(uint value, uint8 bitIndex) {
+	if (bitIndex >= value.); // TODO: Handle error
 
-	uint64* part = getU64BitPartFromUInt128(&value, bitIndex);
+	assert(bitIndex >= value.bitDepth, UETFromWarning(INVALID_ARGUMENT_WARNING), "Warning while calling checkBitUInt: Incorrect ");
 
-	return checkBitU64(*part, bitIndex % 64);
+	uint32* part = nullptr;
+
+
+
+	return checkBitU32(*part, bitIndex % 32);
 }
 
 inline uint8 getByteIndex(uint32 value) {

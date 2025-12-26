@@ -3,5 +3,7 @@
 #include "charset/ugsm.h"
 
 void ControlCharsInit() {
-    UGSMloadGlyphSet((UGSMGlyphSet){ 0 }, 4);
+    UGSMloadGlyphSet((UGSM_Font){ 0 }, 4);
+
+    
 }

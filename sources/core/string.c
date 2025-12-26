@@ -100,18 +100,12 @@ String stringConcatenate(String a, String b) {
 
 String stringFromT(T x) {
 	switch (x.type) {
-		case T_TYPE_INT8:   return int32ToString((int32)x.value.numX8);
-		case T_TYPE_INT16:  return int32ToString((int32)x.value.numX16);
-		case T_TYPE_INT32:  return int32ToString(x.value.numX32);
+		case T_TYPE_SINT:   return intToString(x.value.signedNum);
 		
-		case T_TYPE_UINT8:  return uint32ToString((uint32)x.value.numUX8);
-		case T_TYPE_UINT16: return uint32ToString((uint32)x.value.numUX16);
-		case T_TYPE_UINT32: return uint32ToString(x.value.numUX32);
-
-		case T_TYPE_INT64:  return int64ToString(x.value.numX64);
-		case T_TYPE_UINT64: return uint64ToString(x.value.numUX64);
+		case T_TYPE_UINT:  return uintToString(x.value.unsignedNum);
 
 		case T_TYPE_CHAR:   return charToString(x.value.ch);
+		
 		case T_TYPE_STRING: return x.value.str;
 	}
 

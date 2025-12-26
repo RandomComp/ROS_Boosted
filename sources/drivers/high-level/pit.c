@@ -4,29 +4,17 @@
 
 #include "core/time.h"
 
-#include "core/std.h"
-
-#include "charset/colors.h"
-
 #include "drivers/low-level/io/io.h"
 
 #include "drivers/low-level/base/idt.h"
 
-extern Time now;
+static uint32 currentFreq = 0;
 
-extern const Day numberDaysOfMonthes[12];
+static float millisecondDelta = 1;
 
-extern const Season seasonsOfMonthes[12];
+static bool bPITInitialized = false;
 
-extern uint16 foregroundColor;
-
-uint32 currentFreq = 0;
-
-float millisecondDelta = 1;
-
-bool bPITInitialized = false;
-
-void (*everyMillisecond)() = 0;
+static Time now;
 
 void PITInit(void) {
 	if (bPITInitialized) return;
@@ -56,14 +44,6 @@ void PITSetFreq(uint16 freq) {
 
 void tick(Registers* regs) {
 	now += millisecondDelta;
-}
 
-// bool sleepHandler() {
-// 	return (now - past) < delay;
-// }
-
-void sleepTime(Time delay) {
-	//while () await();
-
-	return;
+	setTime(now);
 }

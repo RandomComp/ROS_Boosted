@@ -2,7 +2,7 @@
 
 #include "core/types.h"
 
-#include "core/fatal_error.h"
+#include "core/exception.h"
 
 static bool overflowFlag = false;
 
@@ -107,17 +107,17 @@ uint8 getNumberOfDigitsUInt(uint x) {
 }
 
 uint32 ifloorU32(uint32 x, uint32 align) {
+    assert(align != 0, Exception_fromError(DIVISION_BY_ZERO_FATAL_ERROR, Exception_newMessage(__FILE__, __LINE__, "Cannot floor align x with 0.")));
+
     if (x % align == 0) return x;
 
-    if (align == 0) causeFatalError(DIVISION_BY_ZERO_FATAL_ERROR);
-    
     return ((x / align) - 1) * align;
 }
 
 uint32 iceilU32(uint32 x, uint32 align) {
-    if (x % align == 0) return x;
+    assert(align != 0, Exception_fromError(DIVISION_BY_ZERO_FATAL_ERROR, Exception_newMessage(__FILE__, __LINE__, "Cannot ceil align x with 0.")));
 
-    if (align == 0) causeFatalError(DIVISION_BY_ZERO_FATAL_ERROR);
+    if (x % align == 0) return x;
 
     return ((x / align) + 1) * align;
 }

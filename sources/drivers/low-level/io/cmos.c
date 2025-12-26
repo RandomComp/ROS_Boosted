@@ -31,7 +31,7 @@ void setRTCTime(TimeStruct time) {
 TimeStruct getRTCTime(void) {
 	TimeStruct result = { 0 };
 
-	while (CMOSRead(CMOS_REGISTER_A) & (1 << REGISTER_A_UPDATE_IN_PROGRESS));
+	while (CMOSCheckBit(CMOS_REGISTER_A, REGISTER_A_UPDATE_IN_PROGRESS)); // TODO: Используя await дождаться установки флага REGISTER_A_UPDATE_IN_PROGRESS
 
 	result.seconds = CMOSRead(CMOS_RTC_SECONDS);
 

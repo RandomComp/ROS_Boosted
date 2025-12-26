@@ -49,28 +49,56 @@
 
 #define DOUBLE_MAX (double)(1.7976931348623158e+308)
 
+#define FLT_EPSILON 1.192092896e-07f
+
+#define FLT_MIN (FLOAT_MIN)
+
+#define DBL_MIN (DOUBLE_MIN)
+
+#define FLT_MAX (FLOAT_MAX)
+
+#define DBL_MAX (DOUBLE_MAX)
+
 #define MAX_FLOAT_STEPS 7
 
 #define MAX_DOUBLE_STEPS 17
 
+#define null 0
+
+#define nullptr 0
+
+#define DEBUG
+
+// Реализация вариативного списка взятого из стэка
+typedef struct va_list {
+	
+} va_list;
+
 typedef unsigned char uint8;
-
 typedef unsigned short uint16;
-
 typedef unsigned int uint32;
-
 typedef unsigned long long uint64;
 
 typedef char int8;
-
 typedef short int16;
-
 typedef int int32;
-
 typedef long long int64;
+
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int uint32_t;
+typedef unsigned long long uint64_t;
+
+typedef char int8_t;
+typedef short int16_t;
+typedef int int32_t;
+typedef long long int64_t;
 
 typedef uint8 bool;
 
-#define null 0
+typedef unsigned char byte;
+typedef unsigned short word;
+typedef unsigned int dword;
+typedef unsigned long long qword;
 
 #endif

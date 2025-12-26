@@ -2,13 +2,13 @@
 
 #include "core/types.h"
 
-#include "core/int128.h"
+#include "core/int.h"
 
 #include "core/char.h"
 
 #include "core/string.h"
 
-T addInt32WithChar(int32 a, Char b) {
+T addIntWithChar(sint a, Char b) {
 	CharUnion result = b.ch;
 
 	if (b.charset == CHARSET_ASCII)
@@ -17,14 +17,14 @@ T addInt32WithChar(int32 a, Char b) {
 	else if (b.charset == CHARSET_UGSM)
 		result.UGSMChar = (result.UGSMChar + a) % UINT16_MAX;
 	
-	return charToT(newChar(b.charset, result));
+	return T_charToT(newChar(b.charset, result));
 }
 
-T addInt32WithString(int32 a, String b) {
-	return stringToT(stringConcatenate(int32ToString(a), b));
+T addIntWithString(sint a, String b) {
+	return T_stringToT(stringConcatenate(sintToString(a), b));
 }
 
-T addUInt32WithChar(uint32 a, Char b) {
+T addUIntWithChar(uint a, Char b) {
 	CharUnion result = b.ch;
 
 	if (b.charset == CHARSET_ASCII)
@@ -33,50 +33,22 @@ T addUInt32WithChar(uint32 a, Char b) {
 	else if (b.charset == CHARSET_UGSM)
 		result.UGSMChar = (result.UGSMChar + a) % UINT16_MAX;
 	
-	return charToT(newChar(b.charset, result));
+	return T_charToT(newChar(b.charset, result));
 }
 
-T addUInt32WithString(uint32 a, String b) {
-	return stringToT(stringConcatenate(uint32ToString(a), b));
+T addUIntWithString(uint a, String b) {
+	return T_stringToT(stringConcatenate(uint32ToString(a), b));
 }
 
-T addInt64WithChar(int64 a, Char b) {
-	CharUnion result = b.ch;
-
-	if (b.charset == CHARSET_ASCII)
-		result.ASCIIChar = (result.ASCIIChar + a) % UINT8_MAX;
-
-	else if (b.charset == CHARSET_UGSM)
-		result.UGSMChar = (result.UGSMChar + a) % UINT16_MAX;
-	
-	return charToT(newChar(b.charset, result));
-}
-
-T addInt64WithString(int64 a, String b) {
-	return stringToT(stringConcatenate(int64ToString(a), b));
-}
-
-T addUInt64WithChar(uint64 a, Char b) {
-
-}
-
-T addUInt64WithString(uint64 a, String b) {
-	
-}
-
-T addInt32WithT(int32 a, T b) {
+T addIntWithT(sint a, T b) {
 	switch (b.type) {
-		case T_TYPE_INT8: return int32ToT(a + (int32)b.value.numX8);
-		case T_TYPE_INT16: return int32ToT(a + (int32)b.value.numX16);
-		case T_TYPE_INT32: return int32ToT(a + b.value.numX32);
-		case T_TYPE_INT64: return int32ToT((int64)a + b.value.numX64);
-		case T_TYPE_UINT8: return int32ToT(a + (uint32)b.value.numUX8);
-		case T_TYPE_UINT16: return int32ToT(a + (uint32)b.value.numUX16);
-		case T_TYPE_UINT32: return int32ToT(a + (uint32)b.value.numUX32);
-		case T_TYPE_UINT64: return int32ToT((int64)a + (int64)b.value.numUX64); // TODO: Добавить uint128/int128, и использовать вместо приведения uint64 к int64 ( возможно переполнение )
-		case T_TYPE_CHAR: return addInt32WithChar(a, b.value.ch);
-		case T_TYPE_STRING: return addInt32WithString(a, b.value.str);
+		case T_TYPE_SINT: return T_sintToT(a + b.value.signedNum);
+		case T_TYPE_UINT: return T_sintToT(a + b.value.unsignedNum);
+		case T_TYPE_CHAR: return addIntWithChar(a, b.value.ch);
+		case T_TYPE_STRING: return addIntWithString(a, b.value.str);
 	}
+
+	return 
 }
 
 T addUInt32WithT(uint32 a, T b) {

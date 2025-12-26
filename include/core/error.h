@@ -1,41 +1,12 @@
-#ifndef _ERROR_H
-#define _ERROR_H
+#ifndef _RANDOM_OS_ERROR_H
+#define _RANDOM_OS_ERROR_H
 
 #include "core/types.h"
 
-typedef enum ErrorType {
-	VBENotSupportedError,
-	VBESetupError,
-	USBTDBitstuffError,
-	USBTDTimeoutError,
-	USBTDBabbleError,
-	USBTDDataBufferError,
-	USBTDStalledError,
-	USBTDNAKError,
-	USBAllocQHError,
-	USBAllocTDError,
-	USBMissedMicroFrameError,
-	USBTransactionError,
-	USBUnexpectedEHCIQHSize,
-	GlyphCodeNotReservedError,
-	GlyphCodeReservedError,
-	UGSMIncorrectGlyphSetSizeError,
-	UGSMGlyphNotReservedButWeTryUse,
-	X16BitEmulatorError,
-	ACPIS5ParseError,
-	ACPIS5NotPresentError,
-	ACPIDSDTError,
-	ACPINoValidFACPPresentError,
-	ACPINoACPIError,
-	ACPICannotBeEnabledError,
-	ACPINoKnownWayToEnableACPIError,
-	ACPIShutdownError,
-	ACPIUnableToShutdownError,
-	MemoryLackError
-} ErrorType;
+#include "core/exception_types.h"
 
-int8* getErrorDescription(enum ErrorType errorType);
+#include "core/error_types.h"
 
-void cause(enum ErrorType errorType);
+void Error_throw(Error errorType, ExceptionMessage message);
 
 #endif

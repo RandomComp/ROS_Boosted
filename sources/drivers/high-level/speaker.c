@@ -1,8 +1,8 @@
-#include "../headers/speaker.h"
+#include "drivers/high-level/speaker.h"
 
 #include "core/types.h"
 
-#include "../headers/io.h"
+#include "drivers/low-level/io/io.h"
 
 bool bSoundIsPlaying = false;
 
@@ -23,7 +23,7 @@ void makeSound(uint32 sample) {
  
 	uint8 temp = 0;
 
-	in8(0x61, &temp);
+	temp = in8(0x61);
 
 	if (temp != (temp | 3)) {
 		out8(0x61, temp | 3);
@@ -33,7 +33,7 @@ void makeSound(uint32 sample) {
 void stopSound(void) {
 	uint8 temp = 0;
 
-	in8(0x61, &temp);
+	temp = in8(0x61);
 
 	out8(0x61, temp & 0xfc);
 

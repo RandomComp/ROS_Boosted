@@ -2,27 +2,19 @@
 #define _RANDOM_OS_T_H
 
 #include "core/types.h"
-
-#include "core/int128.h"
-
+#include "core/int.h"
 #include "core/char.h"
-
 #include "core/string.h"
+#include "core/decimal.h"
 
 typedef enum TTypes {
-	T_TYPE_INT8,
-	T_TYPE_INT16,
-	T_TYPE_INT32,
-	T_TYPE_INT64,
+	T_TYPE_SINT,
 	
-	T_TYPE_UINT8,
-	T_TYPE_UINT16,
-	T_TYPE_UINT32,
-	T_TYPE_UINT64,
-	T_TYPE_UINT128,
+	T_TYPE_UINT,
 
 	T_TYPE_FLOAT,
 	T_TYPE_DOUBLE,
+	T_TYPE_DECIMAL,
 
 	T_TYPE_CHAR,
 	T_TYPE_STRING,
@@ -32,105 +24,70 @@ typedef struct T {
 	TTypes type;
 
 	union {
-		int8    numX8;
-		int16   numX16;
-		int32   numX32;
-		int64   numX64;
+		sint	signedNum;
 
-		uint8   numUX8;
-		uint16  numUX16;
-		uint32  numUX32;
-		uint64  numUX64;
-		uint128 numUX128;
+		uint	unsignedNum;
 
-		float   numFloat;
-		double  numDouble;
+		float	floatNum;
+		double	doubleNum;
+		Decimal	decimalNum;
 
-		Char    ch;
-		String  str;
+		Char	ch;
+		String	str;
 	} value;
 } T;
 
-inline T int8ToT(int8 x) {
-	return (T){.type = T_TYPE_INT8, .value.numX8 = x};
+inline T T_sintToT(sint x) {
+	return (T){.type = T_TYPE_SINT, .value.signedNum = x};
 }
 
-inline T int16ToT(int16 x) {
-	return (T){.type = T_TYPE_INT16, .value.numX16 = x};
+inline T T_uintToT(uint x) {
+	return (T){.type = T_TYPE_UINT, .value.unsignedNum = x};
 }
 
-inline T int32ToT(int32 x) {
-	return (T){.type = T_TYPE_INT32, .value.numX32 = x};
+inline T T_floatToT(float x) {
+	return (T){.type = T_TYPE_FLOAT, .value.floatNum = x};
 }
 
-inline T int64ToT(int64 x) {
-	return (T){.type = T_TYPE_INT64, .value.numX64 = x};
+inline T T_doubleToT(double x) {
+	return (T){.type = T_TYPE_DOUBLE, .value.doubleNum = x};
 }
 
-inline T uint8ToT(uint8 x) {
-	return (T){.type = T_TYPE_UINT8, .value.numUX8 = x};
+inline T T_decimalToT(Decimal x) {
+	return (T){.type = T_TYPE_DOUBLE, .value.decimalNum = x};
 }
 
-inline T uint16ToT(uint16 x) {
-	return (T){.type = T_TYPE_UINT16, .value.numUX16 = x};
-}
-
-inline T uint32ToT(uint32 x) {
-	return (T){.type = T_TYPE_UINT32, .value.numUX32 = x};
-}
-
-inline T uint64ToT(uint64 x) {
-	return (T){.type = T_TYPE_UINT64, .value.numUX64 = x};
-}
-
-inline T uint128ToT(uint128 x) {
-	return (T){.type = T_TYPE_UINT128, .value.numUX128 = x};
-}
-
-inline T floatToT(float x) {
-	return (T){.type = T_TYPE_FLOAT, .value.numFloat = x};
-}
-
-inline T doubleToT(double x) {
-	return (T){.type = T_TYPE_DOUBLE, .value.numDouble = x};
-}
-
-inline T charToT(Char ch) {
+inline T T_charToT(Char ch) {
 	return (T){.type = T_TYPE_CHAR, .value.ch = ch};
 }
 
-inline T stringToT(String str) {
+inline T T_stringToT(String str) {
 	return (T){.type = T_TYPE_STRING, .value.str = str};
 }
 
-T addInt32WithChar(int32 a, Char b);
-T addInt32WithString(int32 a, String b);
+/*
+Возвращает T типа uint разрядностью 32 бита
+*/
+inline T T_new() {
+	return T_uintToT(INT_newUInt(32));
+}
 
-T addInt64WithChar(int64 a, Char b);
-T addInt64WithString(int64 a, String b);
+T addIntWithChar(sint a, Char b);
+T addIntWithString(sint a, String b);
 
-T addUInt32WithChar(uint32 a, Char b);
-T addUInt64WithChar(uint64 a, Char b);
-T addUInt32WithString(uint32 a, String b);
-T addUInt64WithString(uint64 a, String b);
+T addUIntWithChar(uint a, Char b);
+T addUIntWithString(uint a, String b);
 
-T addInt32WithT(int32 a, T b);
-T addInt64WithT(int64 a, T b);
-
-T addUInt32WithT(uint32 a, T b);
-T addUInt64WithT(uint64 a, T b);
+T addIntWithT(sint a, T b);
+T addUInt32WithT(uint a, T b);
 
 T addCharWithT(Char a, T b);
 T addStringWithT(String a, T b);
 
 T T_Add(T a, T b); // Складывание a и b.
-
 T T_Sub(T a, T b); // Вычитание a и b.
-
 T T_Mul(T a, T b); // Умножение a и b.
-
 T T_Div(T a, T b); // Деление a и b.
-
 T T_Mod(T a, T b); // Взятие остатка от деления a и b.
 
 #endif

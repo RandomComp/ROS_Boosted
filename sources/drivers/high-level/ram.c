@@ -1,4 +1,4 @@
-#include "drivers/low-level/base/mem.h"
+#include "drivers/low-level/base/ram.h"
 
 #include "core/types.h"
 
@@ -14,16 +14,16 @@
 
 extern struct multibootInfo* bootInfo;
 
-Size RAMSize;
+static Size RAM_Size;
 
-AbsoluteSize AbsoluteRAMSizeInBytes = 0;
+static AbsoluteSize RAM_absoluteSizeInBytes = 0;
 
-bool bMEMInitialized = false;
+static bool bMEM_initialized = false;
 
 extern uint32 foregroundColor;
 
-void MEMInit(AbsoluteSize size) {
-	if (bMEMInitialized) return;
+void MEM_Init(AbsoluteSize size) {
+	if (bMEM_initialized) return;
 
 	for (uint32 i = 0; i < bootInfo->mmap_length; i += sizeof(struct multibootMMapEntry)) {
 		multibootMMapEntry* mapEntry = (struct multibootMMapEntry*)(bootInfo->mmap_addr + i);
@@ -36,25 +36,29 @@ void MEMInit(AbsoluteSize size) {
 	RAMSize = sizeFromAbsoluteSize(AbsoluteRAMSizeInBytes);
 }
 
-MemoryRegion* malloc(AbsoluteSize size, MemoryRegionStatus status) {
+MemoryRegion* MEM_malloc(AbsoluteSize size, MemoryRegionStatus status) {
 	
 }
 
-AbsoluteSize sizeToAbsoluteSize(Size size) {
+AbsoluteSize getAbsoluteRAMSize() {
+	return abs
+}
+
+AbsoluteSize MEM_sizeToAbsoluteSize(Size size) {
 	return 	size.GB * pow(1024, 3) +
 			size.MB * pow(1024, 2) +
 			size.KB * 1024 +
 			size.bytes;
 }
 
-Size sizeFromAbsoluteSize(AbsoluteSize size) {
+Size MEM_sizeFromAbsoluteSize(AbsoluteSize size) {
 	return (Size){	.bytes 	= size				% ByteBase,
 					.KB		= BytesToKB(size) 	% ByteBase,
 					.MB		= BytesToMB(size) 	% ByteBase,
 					.GB		= BytesToGB(size) 	% ByteBase};
 }
 
-void showSize(Size size) {
+void MEM_showSize(Size size) {
 	uint32 tempForegroundColor = foregroundColor;
 
 	if (size.GB != 0) {
@@ -92,6 +96,12 @@ void showSize(Size size) {
 	foregroundColor = tempForegroundColor;
 }
 
-void free(MemoryRegion* region) {
+void MEM_free(MemoryRegion* region) {
 	
+}
+
+bool MEM_isValidAndActiveMemoryRegion(MemoryRegion* region) {
+	MemoryRegionHeader header = region->header;
+
+	return region != 0 && header.regionSize > 0 && header.regionStatus == ;
 }

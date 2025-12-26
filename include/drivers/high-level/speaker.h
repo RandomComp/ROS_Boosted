@@ -3,8 +3,8 @@
 
 #include "core/types.h"
 
-void makeSound(uint32 freq);
+void makeSound(uint32 sample);
 
-void stopSound(void);
+void stopSound();
 
 #endif
