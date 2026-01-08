@@ -1,7 +1,7 @@
 #ifndef _PCI_H
 #define _PCI_H
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 #define PCI_CONFIG_PORT 0x0CF8
 

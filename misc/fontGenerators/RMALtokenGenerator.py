@@ -35,9 +35,9 @@ maxInstructionNameLength = len(max(instructions, key=len))
 
 maxRegisterNameLength = len(max(registers, key=len))
 
-instructionsName = f"UGSMGlyphCode instructionsName[{len(instructions)}][{maxInstructionNameLength}] = {{"
+instructionsName = f"UGSM_CharacterCode instructionsName[{len(instructions)}][{maxInstructionNameLength}] = {{"
 
-registersName = f"UGSMGlyphCode registersName[{len(registers)}][{maxRegisterNameLength}] = {{"
+registersName = f"UGSM_CharacterCode registersName[{len(registers)}][{maxRegisterNameLength}] = {{"
 
 for i, instruction in enumerate(instructions):
 	instructionsName += "\n    { "

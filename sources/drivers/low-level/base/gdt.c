@@ -1,6 +1,6 @@
 #include "drivers/low-level/base/gdt.h"
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 extern void GDTFlush(uint32);
 

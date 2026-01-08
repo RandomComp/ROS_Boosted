@@ -28,7 +28,7 @@ uint32 ASCIIgetLength(CP437_CharacterCode* str) {
 	return result;
 }
 
-CP437_CharacterCode ASCIIUGSMCharToASCII(UGSMGlyphCode c) {
+CP437_CharacterCode ASCIIUGSMCharToASCII(UGSM_CharacterCode c) {
 	switch (c) {
 		case UGSM_CHAR_SPACE: 				return CP437_CHAR_SPACE;
 		case UGSM_CHAR_NEW_LINE: 			return CP437_CHAR_NEW_LINE;

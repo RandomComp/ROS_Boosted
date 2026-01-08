@@ -1,7 +1,7 @@
 #ifndef _CMOS_H
 #define _CMOS_H
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 #include "core/time.h"
 
@@ -98,19 +98,19 @@ typedef enum RegisterD_Bits {
 	REGISTER_D_IS_CMOS_BATTERY_CHARGED = 7 	// Если установлено в 1 - то заряжена, если в 0 то разряженна ( соответственно некорректная дата и время )
 } RegisterD_Bits;
 
-inline void CMOSWrite(UniversalCMOSCode code, uint8 data) {
+static inline void CMOSWrite(UniversalCMOSCode code, uint8 data) {
 	out8(CMOS_ADDRESS_PORT, code);
 
 	out8(CMOS_DATA_PORT, data);
 }
 
-inline uint8 CMOSRead(UniversalCMOSCode code) {
+static inline uint8 CMOSRead(UniversalCMOSCode code) {
 	out8(CMOS_ADDRESS_PORT, code);
 
 	return in8(CMOS_DATA_PORT);
 }
 
-inline void CMOSEnableBit(UniversalCMOSCode code, uint8 bitIndex) {
+static inline void CMOSEnableBit(UniversalCMOSCode code, uint8 bitIndex) {
 	uint8 data = CMOSRead(code);
 
 	enableBit(&data, bitIndex);
@@ -118,7 +118,7 @@ inline void CMOSEnableBit(UniversalCMOSCode code, uint8 bitIndex) {
 	CMOSWrite(code, data);
 }
 
-inline void CMOSDisableBit(UniversalCMOSCode code, uint8 bitIndex) {
+static inline void CMOSDisableBit(UniversalCMOSCode code, uint8 bitIndex) {
 	uint8 data = CMOSRead(code);
 
 	disableBit(&data, bitIndex);
@@ -126,7 +126,7 @@ inline void CMOSDisableBit(UniversalCMOSCode code, uint8 bitIndex) {
 	CMOSWrite(code, data);
 }
 
-inline bool CMOSCheckBit(UniversalCMOSCode code, uint8 bitIndex) {
+static inline bool CMOSCheckBit(UniversalCMOSCode code, uint8 bitIndex) {
 	return checkBit(CMOSRead(code), bitIndex);
 }
 

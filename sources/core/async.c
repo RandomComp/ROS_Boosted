@@ -1,6 +1,6 @@
 #include "core/async.h"
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 AsyncMethods asyncMethods = { 0 };
 

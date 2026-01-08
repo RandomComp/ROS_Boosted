@@ -3,7 +3,7 @@
 
 // Lexer of RMAL ( Random minimal assembly language )
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 #include "charset/ugsm.h"
 
@@ -16,7 +16,7 @@ typedef enum RMALTokenValueType {
 	RMAL_TOKEN_VALUE_TYPE_COLON, 			// :
 	RMAL_TOKEN_VALUE_TYPE_LEFT_BRACKET, 	// [
 	RMAL_TOKEN_VALUE_TYPE_RIGHT_BRACKET, 	// ]
-	RMAL_TOKEN_VALUE_TYPE_EOF 				// end of file
+	RMAL_TOKEN_VALUE_TYPE_EOF 				// Конец файла
 } RMALTokenValueType;
 
 typedef enum RMALInstructions {
@@ -24,9 +24,9 @@ typedef enum RMALInstructions {
 	RMAL_INSTRUCTION_MOV, // Перемещает информацию из регистра/памяти процессора в другой регистр/участок памяти процессораю
 	RMAL_INSTRUCTION_PUSH, // Добавляет в конец стэка указанную информацию из регистра/памяти
 	RMAL_INSTRUCTION_POP, // Вытаскивает из конца стэка информацию в указанный регистр/памяти.
-	RMAL_INSTRUCTION_ADD, // Складывает 
-	RMAL_INSTRUCTION_SUB,
-	RMAL_INSTRUCTION_MUL,
+	RMAL_INSTRUCTION_ADD, // Складывает два значения из регистра/значение из указанной памяти, результат помещает в первый аргумент
+	RMAL_INSTRUCTION_SUB, // Вычитает два значения из регистра/значение из указанной памяти, результат помещает в первый аргумент
+	RMAL_INSTRUCTION_MUL, // Умножает два значения из 
 	RMAL_INSTRUCTION_DIV,
 	RMAL_INSTRUCTION_INC,
 	RMAL_INSTRUCTION_DEC,
@@ -75,7 +75,7 @@ typedef union RMALValue {
 } RMALValue;
 
 typedef struct RMALLabel {
-	UGSMGlyphCode labelName[6]; // Название метки
+	UGSM_CharacterCode labelName[6]; // Название метки
 
 	uint8 labelLength; 			// Длина названия метки
 } RMALLabel;
@@ -108,15 +108,15 @@ typedef struct RMALToken { // maybe instruction, register or number
 	RMALLabel label;
 } RMALToken;
 
-void RMALTokenize(UGSMGlyphCode argCode[384]);
+void RMALTokenize(UGSM_CharacterCode argCode[384]);
 
-RMALInstructions findInstructionByName(UGSMGlyphCode name[6]);
+RMALInstructions findInstructionByName(UGSM_CharacterCode name[6]);
 
-RMALRegisters findRegisterByName(UGSMGlyphCode name[6]);
+RMALRegisters findRegisterByName(UGSM_CharacterCode name[6]);
 
-bool nameIsInstructionName(UGSMGlyphCode name[6]);
+bool nameIsInstructionName(UGSM_CharacterCode name[6]);
 
-bool nameIsRegisterName(UGSMGlyphCode name[6]);
+bool nameIsRegisterName(UGSM_CharacterCode name[6]);
 
 void RMALTokenizeWord();
 
@@ -126,9 +126,9 @@ void RMALTokenizeNumber();
 
 void RMALTokenizeComment();
 
-UGSMGlyphCode RMALNext();
+UGSM_CharacterCode RMALNext();
 
-UGSMGlyphCode RMALPeek(int32 relativePosition);
+UGSM_CharacterCode RMALPeek(int32 relativePosition);
 
 void RMALTokensView(void);
 

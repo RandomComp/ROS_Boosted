@@ -2,7 +2,7 @@
 
 #include "core/char.h"
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 #include "core/warning.h"
 

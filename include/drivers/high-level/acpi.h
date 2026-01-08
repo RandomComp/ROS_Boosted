@@ -1,7 +1,7 @@
 #ifndef _ACPI_H
 #define _ACPI_H
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 typedef struct RSDPtr {
 	int8 Signature[8];

@@ -1,20 +1,39 @@
-#ifndef _ABC_H
-#define _ABC_H
+#ifndef _RANDOM_OS_CHARSET_H
+#define _RANDOM_OS_CHARSET_H
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
-#include "charset/ugsm.h"
+#include "charset/types/ugsm_types.h"
 
-bool UGSMGlyphIsControlCharacter(UGSMGlyphCode glyphCode);
+#include "charset/types/ascii_types.h"
 
-bool UGSMGlyphIsLetter(UGSMGlyphCode glyphCode);
+typedef enum Charset {
+	CHARSET_UGSM,
+	CHARSET_ASCII,
+} Charset;
 
-bool UGSMGlyphIsDigit(UGSMGlyphCode glyphCode);
+typedef union CharUnion {
+	UGSM_CharacterCode	UGSMChar;
+	
+	ASCII_CharacterCode	ASCIIChar;
+} CharUnion;
 
-bool UGSMGlyphIsLetterOrDigit(UGSMGlyphCode glyphCode);
+typedef struct CharacterCode {
+	Charset charset;
 
-UGSMGlyphCode UGSMGlyphToUpperCase(UGSMGlyphCode glyphCode);
+	CharUnion ch;
+} CharacterCode;
 
-UGSMGlyphCode UGSMGlyphToLowerCase(UGSMGlyphCode glyphCode);
+bool Charset_UGSMGlyphIsControlCharacter(UGSM_CharacterCode glyphCode);
+
+bool Charset_UGSMGlyphIsLetter(UGSM_CharacterCode glyphCode);
+
+bool Charset_UGSMGlyphIsDigit(UGSM_CharacterCode glyphCode);
+
+bool Charset_UGSMGlyphIsLetterOrDigit(UGSM_CharacterCode glyphCode);
+
+UGSM_CharacterCode Charset_UGSMGlyphToUpperCase(UGSM_CharacterCode glyphCode);
+
+UGSM_CharacterCode Charset_UGSMGlyphToLowerCase(UGSM_CharacterCode glyphCode);
 
 #endif

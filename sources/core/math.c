@@ -1,6 +1,6 @@
 #include "core/math.h"
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 #include "core/exception.h"
 
@@ -106,77 +106,7 @@ uint8 getNumberOfDigitsUInt(uint x) {
     
 }
 
-uint32 ifloorU32(uint32 x, uint32 align) {
-    assert(align != 0, Exception_fromError(DIVISION_BY_ZERO_FATAL_ERROR, Exception_newMessage(__FILE__, __LINE__, "Cannot floor align x with 0.")));
-
-    if (x % align == 0) return x;
-
-    return ((x / align) - 1) * align;
-}
-
-uint32 iceilU32(uint32 x, uint32 align) {
-    assert(align != 0, Exception_fromError(DIVISION_BY_ZERO_FATAL_ERROR, Exception_newMessage(__FILE__, __LINE__, "Cannot ceil align x with 0.")));
-
-    if (x % align == 0) return x;
-
-    return ((x / align) + 1) * align;
-}
-
-uint32 iroundU32(uint32 x, uint32 align) {
-    
-}
-
-double floor(double x) {
-    double result = trunc(x);
-
-    if (x < 0 && (frac(x) != 0))
-        result -= 1;
-
-    return result;
-}
-
-double ceil(double x) {
-    double result = trunc(x);
-
-    if (x > 0 && (frac(x) != 0))
-        result += 1;
-
-    return result;
-}
-
-double round(double x) {
-    if (x < 0)
-        return  frac(x) >= 0.5 ? floor(x) : ceil(x);
-
-    return      frac(x) >= 0.5 ? ceil(x) : floor(x);
-}
-
-float ffloor(float x) {
-    float result = ftrunc(x);
-
-    if (x < 0 && (ffrac(x) != 0))
-        result -= 1;
-
-    return result;
-}
-
-float fceil(float x) {
-    float result = ftrunc(x);
-
-    if (x > 0 && (ffrac(x) != 0))
-        result += 1;
-
-    return result;
-}
-
-float fround(float x) {
-    if (x < 0)
-        return  ffrac(x) >= 0.5f ? ffloor(x) : fceil(x);
-
-    return      ffrac(x) >= 0.5f ? fceil(x) : ffloor(x);
-}
-
-int32 pow32(int16 a, int16 b) {
+int32 pow32(int32 a, int32 b) {
     if (isPowerOfTwoU32(a)) {
 
     }
@@ -196,7 +126,7 @@ int32 pow32(int16 a, int16 b) {
     return result;
 }
 
-int64 pow64(int16 a, int16 b) {
+int64 pow64(int64 a, int64 b) {
     int64 result = 1;
 
     b = iabs64(b);
@@ -212,7 +142,7 @@ int64 pow64(int16 a, int16 b) {
     return result;
 }
 
-uint32 powU32(uint16 a, uint16 b) {
+uint32 powU32(uint32 a, uint32 b) {
     uint32 result = 1;
 
     while (b--) {
@@ -226,7 +156,7 @@ uint32 powU32(uint16 a, uint16 b) {
     return result;
 }
 
-uint64 powU64(uint16 a, uint16 b) {
+uint64 powU64(uint64 a, uint64 b) {
     uint64 result = 1;
 
     while (b--) {

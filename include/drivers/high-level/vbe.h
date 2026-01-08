@@ -1,7 +1,7 @@
 #ifndef _RANDOM_OS_VBE_H
 #define _RANDOM_OS_VBE_H
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 #include "drivers/high-level/vbe_types.h"
 

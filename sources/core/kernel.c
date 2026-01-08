@@ -32,42 +32,42 @@ extern AbsoluteSize AbsoluteRAMSizeInBytes;
 
 static multibootInfo* bootInfo;
 
-void main(uint32 magic, struct multibootInfo* bootInfoArg) {
+void main(uint32 magic, multibootInfo* bootInfoArg) {
 	bootInfo = bootInfoArg;
 
 	STDInit();
 
 	ASCIIInit();
 
-	printf("STD is initialized!\n");
+	kprintf("STD is initialized!\n");
 
-	printf("ASCII is initialized!\n");
+	kprintf("ASCII is initialized!\n");
 
 	TimeInit();
 
-	printf("Time is initialized!\n");
+	kprintf("Time is initialized!\n");
 
 	MEMInit(2 * 1024 * 1024); // 4 MB
 
-	printf("RAM is initialized!\n");
+	kprintf("RAM is initialized!\n");
 
-	printf("RAM Size is:\n");
+	kprintf("RAM Size is:\n");
 
 	showSize(RAMSize);
 
 	RUSInit();
 
-	printf("Russian is initialized!\n");
+	kprintf("Russian is initialized!\n");
 
 	KeyboardPS2Init();
 
-	printf("Interrupt for PS/2 keyboard is ready to use!\n");
+	kprintf("Interrupt for PS/2 keyboard is ready to use!\n");
 
 	ACPIInit();
 
-	printf("ACPI is initialized!\n");
+	kprintf("ACPI is initialized!\n");
 
-	printf("OS is booted succesfully!\n");
+	kprintf("OS is booted succesfully!\n");
 
 	clear(0);
 

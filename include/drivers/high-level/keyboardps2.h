@@ -115,6 +115,6 @@ void KeyboardPS2Init(void);
 
 void KeyboardPS2Event(struct Registers* regs);
 
-UGSMGlyphCode scancodeToUGSM(Scancode key);
+UGSM_CharacterCode scancodeToUGSM(Scancode key);
 
 #endif

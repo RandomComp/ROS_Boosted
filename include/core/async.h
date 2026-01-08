@@ -1,7 +1,7 @@
 #ifndef _ASYNC_H
 #define _ASYNC_H
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 #define MAX_QUEUE_SIZE 100
 

@@ -1,6 +1,6 @@
 #include "RMAL/lexer.h"
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 #include "core/std.h"
 
@@ -12,7 +12,7 @@
 
 #include "core/error.h"
 
-UGSMGlyphCode RMALCode[384];
+UGSM_CharacterCode RMALCode[384];
 
 RMALToken RMALTokens[128];
 
@@ -20,7 +20,7 @@ uint16 tokenPos = 0;
 
 int16 RMALPos = 0, RMALPosx = 1, RMALPosy = 1, RMALLength = 0;
 
-UGSMGlyphCode instructionsName[17][6] = {
+UGSM_CharacterCode instructionsName[17][6] = {
     { UGSM_CHAR_N, UGSM_CHAR_O, UGSM_CHAR_P, 0, 0, 0 },
 
     { UGSM_CHAR_M, UGSM_CHAR_O, UGSM_CHAR_V, 0, 0, 0 },
@@ -57,7 +57,7 @@ UGSMGlyphCode instructionsName[17][6] = {
 };
 
 
-UGSMGlyphCode registersName[][3] = {
+UGSM_CharacterCode registersName[][3] = {
     { UGSM_CHAR_E, UGSM_CHAR_A, UGSM_CHAR_X },
 
     { UGSM_CHAR_E, UGSM_CHAR_B, UGSM_CHAR_X },
@@ -75,7 +75,7 @@ UGSMGlyphCode registersName[][3] = {
     { UGSM_CHAR_E, UGSM_CHAR_D, UGSM_CHAR_I }
 };
 
-void RMALTokenize(UGSMGlyphCode argRMALCode[384]) {
+void RMALTokenize(UGSM_CharacterCode argRMALCode[384]) {
 	tokenPos = 0;
 
 	RMALPos = 0;
@@ -96,7 +96,7 @@ void RMALTokenize(UGSMGlyphCode argRMALCode[384]) {
 	}
 
 	while (RMALPos < RMALLength) {
-		UGSMGlyphCode current = RMALPeek(0);
+		UGSM_CharacterCode current = RMALPeek(0);
 
 		if (UGSMGlyphIsLetter(current)) RMALTokenizeWord();
 
@@ -148,7 +148,7 @@ void RMALTokenize(UGSMGlyphCode argRMALCode[384]) {
 	tokenPos++;
 }
 
-enum RMALInstructions findInstructionByName(UGSMGlyphCode name[6]) {
+enum RMALInstructions findInstructionByName(UGSM_CharacterCode name[6]) {
 	uint16 i = 0, length = 0, checkLength = 0;
 
 	for (; i < 18; i++) {
@@ -168,7 +168,7 @@ enum RMALInstructions findInstructionByName(UGSMGlyphCode name[6]) {
 	return (checkLength == length) ? i : UNKNOWN_INSTRUCTION;
 }
 
-enum RMALRegisters findRegisterByName(UGSMGlyphCode name[6]) {
+enum RMALRegisters findRegisterByName(UGSM_CharacterCode name[6]) {
 	uint16 i = 0, checkLength = 0;
 
 	for (; i < 8; i++) {
@@ -184,7 +184,7 @@ enum RMALRegisters findRegisterByName(UGSMGlyphCode name[6]) {
 	return (checkLength == 3) ? i : UNKNOWN_REGISTER;
 }
 
-bool nameIsInstructionName(UGSMGlyphCode name[6]) {
+bool nameIsInstructionName(UGSM_CharacterCode name[6]) {
 	uint16 i = 0, length = 0, checkLength = 0;
 
 	for (; i < 18; i++) {
@@ -204,7 +204,7 @@ bool nameIsInstructionName(UGSMGlyphCode name[6]) {
 	return checkLength == length;
 }
 
-bool nameIsRegisterName(UGSMGlyphCode name[6]) {
+bool nameIsRegisterName(UGSM_CharacterCode name[6]) {
 	uint16 i = 0, checkLength = 0;
 
 	for (; i < 8; i++) {
@@ -221,11 +221,11 @@ bool nameIsRegisterName(UGSMGlyphCode name[6]) {
 }
 
 void RMALTokenizeWord(void) {
-	UGSMGlyphCode name[6] = { 0 };
+	UGSM_CharacterCode name[6] = { 0 };
 
 	uint16 tempPos = 0;
 
-	UGSMGlyphCode current = UGSMGlyphToLowerCase(RMALPeek(0));
+	UGSM_CharacterCode current = UGSMGlyphToLowerCase(RMALPeek(0));
 
 	while (UGSMGlyphIsLetterOrDigit(current) && tempPos < 6 && RMALPos < RMALLength) {
 		name[tempPos] = current;
@@ -263,7 +263,7 @@ void RMALTokenizeNumber(void) {
 
 	bool bMinus = RMALPeek(0) == UGSM_CHAR_MINUS_SIGN;
 
-	UGSMGlyphCode current = RMALNext();
+	UGSM_CharacterCode current = RMALNext();
 
 	while (UGSMGlyphIsDigit(current)) {
 		number *= 10;
@@ -283,7 +283,7 @@ void RMALTokenizeNumber(void) {
 }
 
 void RMALTokenizeComment(void) {
-	UGSMGlyphCode current = RMALNext();
+	UGSM_CharacterCode current = RMALNext();
 
 	while (current != 30) {
 		current = RMALNext();
@@ -292,10 +292,10 @@ void RMALTokenizeComment(void) {
 	RMALNext();
 }
 
-UGSMGlyphCode RMALNext(void) {
+UGSM_CharacterCode RMALNext(void) {
 	RMALPos++;
 
-	UGSMGlyphCode result = RMALPeek(0);
+	UGSM_CharacterCode result = RMALPeek(0);
 
 	if (result == 1) {
 		RMALPosy++;
@@ -308,7 +308,7 @@ UGSMGlyphCode RMALNext(void) {
 	return result;
 }
 
-UGSMGlyphCode RMALPeek(int32 relativePosition) {
+UGSM_CharacterCode RMALPeek(int32 relativePosition) {
 	int32 position = RMALPos + relativePosition;
 
 	if (position >= RMALLength) return 0;

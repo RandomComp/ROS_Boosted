@@ -1,14 +1,14 @@
 #include "core/std.h"
 
-#include "charset/ugsm.h"
+#include "core/types/string_types.h"
 
-#include "core/console.h"
+#include "core/types/char_types.h"
 
-#include "core/char.h"
+#include "core/ascii_types.h"
 
 static bool bSTDInitialized = false;
 
-void STDInit() {
+void STD_Init() {
 	if (bSTDInitialized) return;
 
 	
@@ -20,6 +20,14 @@ void printf(String str, ...) {
 	
 }
 
+void kprintf(const ASCII_CharacterCode* str, ...) {
+	
+}
+
 Char getch() {
+    
+}
+
+ASCII_CharacterCode kgetch() {
     
 }

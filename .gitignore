@@ -1,4 +1,5 @@
 /.vscode
 *.o
-/.vscode
 *.VSCODE-DB
+^\.
+*.exe

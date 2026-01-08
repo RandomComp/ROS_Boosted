@@ -1,6 +1,6 @@
 #include "core/decimal.h"
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 double doubleFromDecimal(Decimal decimal) {
 	return (double)decimal.numerator / (double)decimal.denominator;

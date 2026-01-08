@@ -1,12 +1,12 @@
 #include "core/time.h"
 
-#include "core/std.h"
+#include "core/async.h"
 
-#include "core/format.h"
+#include "core/modules/high-level/std.h"
 
 #include "drivers/high-level/pit.h"
 
-#include "drivers/low-level/base/mem.h"
+#include "drivers/low-level/base/ram.h"
 
 #include "drivers/low-level/io/io.h"
 
@@ -266,4 +266,18 @@ void setTime(Time time) {
 
 Time getTime() {
 	return now;
+}
+
+Time start, msWaiting;
+
+bool sleepAwaiter() {
+	return now - start >= msWaiting;
+}
+
+void sleep(Time time) {
+	start = now;
+
+	msWaiting = time;
+
+	await(&sleepAwaiter);
 }

@@ -1,6 +1,6 @@
 #include "core/isr_error.h"
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 #include "core/console.h"
 
@@ -8,7 +8,7 @@
 
 #include "charset/cp437_types.h"
 
-static CP437_CharacterCode* getFatalErrorName(ISR_ErrorTypes errorType) {
+static CP437_CharacterCode* getFatalErrorName(ISR_Error errorType) {
 	CP437_CharacterCode* errorMessages[] = {
 		[DIVISION_BY_ZERO_FATAL_ERROR] = 				"DIVISION_BY_ZERO_FATAL_ERROR",
 		[NON_MASKABLE_INTERRUPT_FATAL_ERROR] = 			"NON_MASKABLE_INTERRUPT_FATAL_ERROR",
@@ -37,7 +37,7 @@ static CP437_CharacterCode* getFatalErrorName(ISR_ErrorTypes errorType) {
 	return "UNKNOWN_FATAL_ERROR";
 }
 
-static CP437_CharacterCode* getIronicFatalErrorDescription(ISR_ErrorTypes errorType) {
+static CP437_CharacterCode* getIronicFatalErrorDescription(ISR_Error errorType) {
 	CP437_CharacterCode* errorMessages[] = {
 		[DIVISION_BY_ZERO_FATAL_ERROR] = 				"You has divided any number by zero, you get infinity and error to gift :).",
 		[NON_MASKABLE_INTERRUPT_FATAL_ERROR] = 			"Hello non maskable interrupt, i've been looking for you!",
@@ -66,7 +66,7 @@ static CP437_CharacterCode* getIronicFatalErrorDescription(ISR_ErrorTypes errorT
 	return "There are no words.";
 }
 
-static CP437_CharacterCode* getFormalFatalErrorDescription(ISR_ErrorTypes errorType) {
+static CP437_CharacterCode* getFormalFatalErrorDescription(ISR_Error errorType) {
 	CP437_CharacterCode* errorMessages[] = {
 		[DIVISION_BY_ZERO_FATAL_ERROR] = 				"You has divided any number by zero, you get infinity and error to gift :).",
 		[NON_MASKABLE_INTERRUPT_FATAL_ERROR] = 			"Hello non maskable interrupt, i've been looking for you!",
@@ -95,7 +95,7 @@ static CP437_CharacterCode* getFormalFatalErrorDescription(ISR_ErrorTypes errorT
 	return "There are no words.";
 }
 
-void FATAL_ERROR_throw(ISR_ErrorTypes errorType, CP437_CharacterCode* why) {
+void FATAL_ERROR_throw(ISR_Error errorType, CP437_CharacterCode* why) {
 	ASCII_putString("[red]Ironic fatal error description:\n");
 
 	ASCII_putString(getIronicFatalErrorDescription(errorType));

@@ -1,7 +1,7 @@
 #ifndef _RL_LEXER_H
 #define _RL_LEXER_H
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 #include "charset/ugsm.h"
 
@@ -32,10 +32,10 @@ enum RLTokenType {
 struct RLToken {
 	enum RLTokenType type;
 
-	UGSMGlyphCode word[12];
+	UGSM_CharacterCode word[12];
 };
 
-void RLTokenize(UGSMGlyphCode code[384]);
+void RLTokenize(UGSM_CharacterCode code[384]);
 
 void RLTokensView(void);
 

@@ -12,13 +12,13 @@
 
 #include "../../headers/RMAL/parser.h"
 
-UGSMGlyphCode RLcode[384];
+UGSM_CharacterCode RLcode[384];
 
 struct RLToken RLTokens[128];
 
 uint16 RLTokenPos = 0;
 
-void RLTokenize(UGSMGlyphCode code[384]) {
+void RLTokenize(UGSM_CharacterCode code[384]) {
 	
 }
 

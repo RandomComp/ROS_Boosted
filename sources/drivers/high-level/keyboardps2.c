@@ -4,19 +4,15 @@
 
 #include "charset/ugsm.h"
 
-#include "core/std.h"
+#include "core/modules/high-level/std.h"
 
 #include "drivers/low-level/io/io.h"
 
-extern uint32 foregroundColor;
+static bool 	isKeyboardPS2Initialized = false,
+				isKeyboardPS2Available = false,
+				isKeyboardPS2UpdatedKey = false;
 
-bool 	bKeyboardPS2Initialized = false,
-		bKeyboardPS2Available = false,
-		bKeyboardPS2Updated = false,
-		bKeyboardPS2CapsLock = false,
-		bKeyboardPS2Shift = false;
-
-const UGSMGlyphCode QWERTY[] = {
+const static UGSM_CharacterCode QWERTY[] = {
 	[SCANCODE_1]						= UGSM_CHAR_1,
 	[SCANCODE_2]						= UGSM_CHAR_2,
 	[SCANCODE_3]						= UGSM_CHAR_3,
@@ -84,7 +80,7 @@ const UGSMGlyphCode QWERTY[] = {
 	[SCANCODE_NUMBER_PAD_DOT]			= UGSM_CHAR_DOT
 };
 
-UGSMGlyphCode QWERTYToShiftQWERTY[] = {
+const static UGSM_CharacterCode QWERTYToShiftQWERTY[] = {
 	[UGSM_CHAR_1] = 			UGSM_CHAR_EXCLAMATION_MARK,
 	[UGSM_CHAR_2] = 			UGSM_CHAR_AT_SIGN,
 	[UGSM_CHAR_3] = 			UGSM_CHAR_NUMBER_SIGN,
@@ -108,33 +104,29 @@ UGSMGlyphCode QWERTYToShiftQWERTY[] = {
 	[UGSM_CHAR_SLASH] = 		UGSM_CHAR_QUESTION_MARK
 };
 
-KeyState keyStates[128] = 		{ KEY_FREE };
+static KeyState keyStates[128] = 		{ KEY_FREE };
 
-KeyState oldKeyStates[128] = 	{ KEY_FREE };
+static KeyState oldKeyStates[128] = 	{ KEY_FREE };
 
-Scancode updatedKey = SCANCODE_NULL;
+static Scancode updatedKeys[256] = { SCANCODE_NULL };
+
+static uint32 updatedKeysIndex = 0;
 
 void KeyboardPS2Init(void) {
-	if (bKeyboardPS2Initialized) return;
+	if (isKeyboardPS2Initialized) return;
 
 	IDTIRQInstallHandler(1, &KeyboardPS2Event);
 
-	bKeyboardPS2Initialized = true;
+	isKeyboardPS2Initialized = true;
 }
 
 void KeyboardPS2Event(struct Registers* regs) {
-	if (!bKeyboardPS2Available) {
-		uint32 tempForegroundColor = foregroundColor;
-
-		foregroundColor = 0x00ff00;
-
-		UGSMASCIIputString("PS/2 keyboard is detected!\n");
-
-		foregroundColor = tempForegroundColor;
+	if (!isKeyboardPS2Available) {
+		kprintf("[fg: green]PS/2 keyboard is detected!\n");
 
 		swap();
 
-		bKeyboardPS2Available = true;
+		isKeyboardPS2Available = true;
 	}
 
 	bool bIsActive = in8(KEYBOARD_PS2_COMMAND_PORT) & 1;
@@ -159,34 +151,36 @@ void KeyboardPS2Event(struct Registers* regs) {
 		else if (oldKeyStates[scancode] == KEY_PRESSED)
 			keyStates[scancode] = KEY_HOLDED; // holded
 
-		if (scancode == SCANCODE_CAPSLOCK && keyStates[scancode] == KEY_PRESSED) {
-			bKeyboardPS2CapsLock = !bKeyboardPS2CapsLock;
-		}
-
-		if (scancode == SCANCODE_LEFT_SHIFT && (keyStates[scancode] == KEY_PRESSED || keyStates[scancode] == KEY_RELEASED)) {
-			bKeyboardPS2Shift = !bKeyboardPS2Shift;
-		}
-
 		oldKeyStates[scancode] = keyStates[scancode];
 
-		updatedKey = scancode;
+		updatedKeys[updatedKeysIndex] = scancode;
 
-		bKeyboardPS2Updated = true;
+		updatedKeysIndex++;
+
+		isKeyboardPS2UpdatedKey = true;
 	}
 }
 
-UGSMGlyphCode scancodeToUGSM(Scancode key) {
-	UGSMGlyphCode result = QWERTY[key];
+KeyState getKeyState(Scancode scancode) {
+	return keyStates[scancode];
+}
 
-	if (bKeyboardPS2Shift) {
+Scancode getScancode() {
+	
+}
+
+UGSM_CharacterCode scancodeToUGSM(Scancode key) {
+	UGSM_CharacterCode result = QWERTY[key];
+
+	if (bShift) {
 		if (UGSMGlyphIsLetter(result)) {
-			if (!bKeyboardPS2CapsLock)
+			if (!bCapsLock)
 				result = UGSMGlyphToUpperCase(result);
 		}
 		else result = QWERTYToShiftQWERTY[result];
 	}
 
-	else if (bKeyboardPS2CapsLock)
+	else if (bShift)
 		result = UGSMGlyphToUpperCase(result);
 
 	return result;

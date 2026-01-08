@@ -1,6 +1,6 @@
 #include "drivers/low-level/base/quad.h"
 
-#include "core/fatal_error.h"
+#include "core/isr_error.h"
 
 #define	B ((int32)1 << HALF_BITS)
 

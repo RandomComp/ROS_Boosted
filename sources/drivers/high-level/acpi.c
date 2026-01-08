@@ -1,6 +1,6 @@
 #include "drivers/high-level/acpi.h"
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 #include "core/std.h"
 

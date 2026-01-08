@@ -1,12 +1,12 @@
 #include "drivers/low-level/base/ram.h"
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 #include "core/multiboot.h"
 
 #include "core/std.h"
 
-#include "core/format.h"
+#include "core/bcd.h"
 
 #include "core/error.h"
 

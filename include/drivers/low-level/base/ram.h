@@ -1,11 +1,11 @@
 #ifndef _MEM_H
 #define _MEM_H
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 #define USE_BUILTIN_STRING
 
-static inline void* memset_slow(void* addr, int32 val, int32 len) {
+static static inline void* memset_slow(void* addr, int32 val, int32 len) {
 	int8* p;
 
 	p = addr;
@@ -16,7 +16,7 @@ static inline void* memset_slow(void* addr, int32 val, int32 len) {
 	return addr;
 }
 
-static inline void* memcpy_slow(void* dest, void* src, int32 len) {
+static static inline void* memcpy_slow(void* dest, void* src, int32 len) {
 	int8* p;
 
 	int8* q;
@@ -31,7 +31,7 @@ static inline void* memcpy_slow(void* dest, void* src, int32 len) {
 	return dest;
 }
 
-static inline int32 strcmp_slow(int8* s1, int8* s2) {
+static static inline int32 strcmp_slow(int8* s1, int8* s2) {
 	int32 r, c1, c2;
 
 	do {
@@ -45,7 +45,7 @@ static inline int32 strcmp_slow(int8* s1, int8* s2) {
 	return r;
 }
 
-static inline int32 memcmp_slow(void* p1, void* p2, int32 len) {
+static static inline int32 memcmp_slow(void* p1, void* p2, int32 len) {
 	int32 r, i;
 
 	int8* q1;
@@ -62,7 +62,7 @@ static inline int32 memcmp_slow(void* p1, void* p2, int32 len) {
 	return r;
 }
 
-static inline int32 strlen_slow(int8* p) {
+static static inline int32 strlen_slow(int8* p) {
 	int32 len = 0;
 
 	while (*p++)
@@ -71,7 +71,7 @@ static inline int32 strlen_slow(int8* p) {
 	return len;
 }
 
-static inline int32 strncmp_slow(int8* s1, int8* s2, int32 len) {
+static static inline int32 strncmp_slow(int8* s1, int8* s2, int32 len) {
 	int32 r, c1, c2;
 
 	if (len <= 0)
@@ -106,19 +106,19 @@ static inline int32 strncmp_slow(int8* s1, int8* s2, int32 len) {
 
 #ifdef USE_BUILTIN_STRING
 
-static inline void* memset_builtin(void* addr, int32 val, int32 len) {
+static static inline void* memset_builtin(void* addr, int32 val, int32 len) {
 	return __builtin_memset(addr, val, len);
 }
 
-static inline void* memcpy_builtin(void* dest, void* src, int32 len) {
+static static inline void* memcpy_builtin(void* dest, void* src, int32 len) {
 	return __builtin_memcpy(dest, src, len);
 }
 
-static inline int32 strcmp_builtin(int8* s1, int8* s2) {
+static static inline int32 strcmp_builtin(int8* s1, int8* s2) {
 	return __builtin_strcmp(s1, s2);
 }
 
-static inline int32 memcmp_builtin(void* p1, void* p2, int32 len) {
+static static inline int32 memcmp_builtin(void* p1, void* p2, int32 len) {
 	if (__builtin_constant_p(len) && len == 2) {
 		uint16* q1 = p1,* q2 = p2;
 
@@ -134,42 +134,17 @@ static inline int32 memcmp_builtin(void* p1, void* p2, int32 len) {
 	return __builtin_memcmp(p1, p2, len);
 }
 
-static inline int32 strlen_builtin(byte* p) {
+static static inline int32 strlen_builtin(byte* p) {
 	return __builtin_strlen(p);
 }
 
-static inline int32 strncmp_builtin(byte* s1, byte* s2, int32 len) {
+static static inline int32 strncmp_builtin(byte* s1, byte* s2, int32 len) {
 	return __builtin_strncmp(s1, s2, len);
 }
 
 #endif
 
-typedef uint32 AbsoluteSize;
-
-typedef enum MemoryRegionStatus {
-	MEMORY_STATUS_FREE = 		0b00000001,
-	MEMORY_STATUS_ACTIVE = 		0b00000010,
-	MEMORY_STATUS_READABLE = 	0b00000100,
-	MEMORY_STATUS_WRITABLE = 	0b00001000,
-	MEMORY_STATUS_EXECUTABLE = 	0b00010000,
-	MEMORY_STATUS_ENCRYPTED = 	0b00100000
-} MemoryRegionStatus;
-
-typedef struct Size {
-	uint32 GB, MB, KB, bytes;
-} Size;
-
-typedef struct MemoryRegionHeader {
-	AbsoluteSize regionSize;
-
-	MemoryRegionStatus regionStatus;
-} MemoryRegionHeader;
-
-typedef struct MemoryRegion {
-	MemoryRegionHeader header;
-
-	void* memory;
-} MemoryRegion;
+#include "drivers/low-level/base/mem_types.h"
 
 void MEMInit(AbsoluteSize size);
 
@@ -177,7 +152,7 @@ MemoryRegion* malloc(AbsoluteSize size, MemoryRegionStatus status);
 
 void free(MemoryRegion* region);
 
-bool isValidAndActiveMemoryRegion(MemoryRegion* region);
+bool isValidMemoryRegion(MemoryRegion* region);
 
 AbsoluteSize sizeToAbsoluteSize(Size size);
 

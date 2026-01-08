@@ -1,6 +1,6 @@
 #include "core/int.h"
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 #include "core/math.h"
 

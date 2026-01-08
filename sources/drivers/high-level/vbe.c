@@ -15,7 +15,7 @@ uint32 vidmode = 0;
 uint8 vidchannels = 0;
 
 VbeInfoBlock* VBEGetGeneralInfo(void) {
-	BIOSInit();
+	BIOSCaller_Init();
 
 	BIOS_REGS regs;
 
@@ -29,7 +29,7 @@ VbeInfoBlock* VBEGetGeneralInfo(void) {
 
 	regs.EDI = 0;
 
-	BIOSInterrupt(&regs, 0x10);
+	BIOSCaller_CallInterrupt(&regs, 0x10);
 
 	if (regs.EAX != 0x4f)
 		return 0;
@@ -38,7 +38,7 @@ VbeInfoBlock* VBEGetGeneralInfo(void) {
 }
 
 ModeInfoBlock* VBEGetModeInfo(uint32 mode) {
-	BIOSInit();
+	BIOSCaller_Init();
 
 	BIOS_REGS regs;
 
@@ -52,7 +52,7 @@ ModeInfoBlock* VBEGetModeInfo(uint32 mode) {
 
 	regs.EDI = 0;
 
-	BIOSInterrupt(&regs, 0x10);
+	BIOSCaller_CallInterrupt(&regs, 0x10);
 
 	if (regs.EAX != 0x4f)
 		return 0;
@@ -61,7 +61,7 @@ ModeInfoBlock* VBEGetModeInfo(uint32 mode) {
 }
 
 bool VBESetMode(uint32 mode) {
-	BIOSInit();
+	BIOSCaller_Init();
 
 	BIOS_REGS regs;
 
@@ -75,13 +75,13 @@ bool VBESetMode(uint32 mode) {
 	
 	else regs.EAX = mode;
 
-	BIOSInterrupt(&regs, 0x10);
+	BIOSCaller_CallInterrupt(&regs, 0x10);
 
 	return regs.EAX == 0x4f;
 }
 
 bool VBESetup(uint16 w, uint16 h) {
-	BIOSInit();
+	BIOSCaller_Init();
 
 	memset((uint8*)VBE_BIOS_INFO_OFFSET, 0, sizeof(VbeInfoBlock));
 	

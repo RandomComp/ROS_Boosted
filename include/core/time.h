@@ -1,7 +1,7 @@
 #ifndef _TIME_H
 #define _TIME_H
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 #define startOnVirtualMachine true
 

@@ -1,12 +1,14 @@
-#include "core/screen.h"
+#include "core/modules/screen.h"
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 #include "drivers/high-level/vbe.h"
 
-#include "drivers/low-level/base/mem.h"
+#include "drivers/high-level/virtual_ram.h"
 
-#include "charset/ugsm.h"
+#include "drivers/low-level/base/ram.h"
+
+#include "charset/types/ugsm_types.h"
 
 // VBE variables
 

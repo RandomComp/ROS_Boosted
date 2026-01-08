@@ -2,11 +2,11 @@
 
 #include "drivers/low-level/base/gdt.h"
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 #include "core/std.h"
 
-#include "core/fatal_error.h"
+#include "core/isr_error.h"
 
 #include "drivers/low-level/base/mem.h"
 

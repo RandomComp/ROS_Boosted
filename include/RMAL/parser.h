@@ -1,7 +1,7 @@
 #ifndef _RMAL_PARSER_H
 #define _RMAL_PARSER_H
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 #include "RMAL/lexer.h"
 
@@ -126,8 +126,8 @@ typedef enum RMALInstructionsBase {
 	RETBASE = 0xc3
 } RMALInstructionsBase;
 
-void RMALParse(void); // Parse
+void RMALParse(); // Parse
 
-void RMALCompile(void); // Compile
+void RMALCompile(); // Compile
 
 #endif

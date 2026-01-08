@@ -1,10 +1,12 @@
 #include "core/error.h"
 
-#include "core/error_types.h"
+#include "core/types/low-level/error_types.h"
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
-#include "core/std.h"
+#include "charset/types/ascii_types.h"
+
+#include "core/modules/std.h"
 
 #include "core/time.h"
 
@@ -12,46 +14,48 @@
 
 extern uint32 foregroundColor;
 
-static CP437_CharacterCode* getErrorName(Error errorType) {
-	CP437_CharacterCode* errorNames[] = {
-		[VBE_NOT_SUPPORTED_ERROR] = 				"VBE_NOT_SUPPORTED_ERROR",
-		[VBE_SETUP_ERROR] = 						"VBE_SETUP_ERROR",
-		[USB_TD_BITSTUFF_ERROR] = 					"USB_TD_BITSTUFF_ERROR",
-		[USB_TD_TIMEOUT_ERROR] = 					"USB_TD_TIMEOUT_ERROR",
-		[USB_TD_BABBLE_ERROR] = 					"USB_TD_BABBLE_ERROR",
-		[USB_TD_DATA_BUFFER_ERROR] = 				"USB_TD_DATA_BUFFER_ERROR",
-		[USB_TD_STALLED_ERROR] = 					"USB_TD_STALLED_ERROR",
-		[USB_TD_NAK_ERROR] = 						"USB_TD_NAK_ERROR",
-		[USB_ALLOC_QH_ERROR] = 						"USB_ALLOC_QH_ERROR",
-		[USB_ALLOC_TD_ERROR] = 						"USB_ALLOC_TD_ERROR",
-		[USB_MISSED_MICRO_FRAME_ERROR] = 			"USB_MISSED_MICRO_FRAME_ERROR",
-		[USB_TRANSACTION_ERROR] = 					"USB_TRANSACTION_ERROR",
-		[USB_UNEXPECTED_EHCI_QH_SIZE] = 			"USB_UNEXPECTED_EHCI_QH_SIZE",
-		[GLYPH_CODE_NOT_RESERVED_ERROR] = 			"GLYPH_CODE_NOT_RESERVED_ERROR",
-		[GLYPH_CODE_RESERVED_ERROR] = 				"GLYPH_CODE_RESERVED_ERROR",
-		[UGSM_INCORRECT_GLYPH_SET_SIZE_ERROR] = 	"UGSM_INCORRECT_GLYPH_SET_SIZE_ERROR",
-		[UGSM_GLYPH_NOT_RESERVED_BUT_WE_TRY_USE] = 	"UGSM_GLYPH_NOT_RESERVED_BUT_WE_TRY_USE",
-		[ACPI_S5_PARSE_ERROR] = 					"ACPI_S5_PARSE_ERROR",
-		[ACPI_S5_NOT_PRESENT_ERROR] = 				"ACPI_S5_NOT_PRESENT_ERROR",
-		[ACPI_DSDT_ERROR] = 						"ACPI_DSDT_ERROR",
-		[ACPI_NO_VALID_FACP_PRESENT_ERROR] = 		"ACPI_NO_VALID_FACP_PRESENT_ERROR",
-		[ACPI_NO_ACPI_ERROR] = 						"ACPI_NO_ACPI_ERROR",
-		[ACPI_CANNOT_BE_ENABLED_ERROR] = 			"ACPI_CANNOT_BE_ENABLED_ERROR",
-		[ACPI_NO_KNOWN_WAY_TO_ENABLE_ACPI_ERROR] =	"ACPI_NO_KNOWN_WAY_TO_ENABLE_ACPI_ERROR",
-		[ACPI_SHUTDOWN_ERROR] = 					"ACPI_SHUTDOWN_ERROR",
-		[ACPI_UNABLE_TO_SHUTDOWN_ERROR] = 			"ACPI_UNABLE_TO_SHUTDOWN_ERROR",
-		[X16_BIT_EMULATOR_ERROR] = 					"X16_BIT_EMULATOR_ERROR",
-		[MEMORY_LACK_ERROR] = 						"MEMORY_LACK_ERROR"
+static ASCII_CharacterCode* getErrorName(Error errorType) {
+	ASCII_CharacterCode* errorNames[] = {
+		[ERROR_VBE_NOT_SUPPORTED] = 						"ERROR_VBE_NOT_SUPPORTED",
+		[ERROR_VBE_SETUP] = 								"ERROR_VBE_SETUP",
+		[ERROR_USB_TD_BITSTUFF] = 							"ERROR_USB_TD_BITSTUFF",
+		[ERROR_USB_TD_TIMEOUT] = 							"ERROR_USB_TD_TIMEOUT",
+		[ERROR_USB_TD_BABBLE] = 							"ERROR_USB_TD_BABBLE",
+		[ERROR_USB_TD_DATA_BUFFER] = 						"ERROR_USB_TD_DATA_BUFFER",
+		[ERROR_USB_TD_STALLED] = 							"ERROR_USB_TD_STALLED",
+		[ERROR_USB_TD_NAK] = 								"ERROR_USB_TD_NAK",
+		[ERROR_USB_ALLOC_QH] = 								"ERROR_USB_ALLOC_QH",
+		[ERROR_USB_ALLOC_TD] = 								"ERROR_USB_ALLOC_TD",
+		[ERROR_USB_MISSED_MICRO_FRAME] = 					"ERROR_USB_MISSED_MICRO_FRAME",
+		[ERROR_USB_TRANSACTION] = 							"ERROR_USB_TRANSACTION",
+		[ERROR_USB_UNEXPECTED_EHCI_QH_SIZE] = 				"ERROR_USB_UNEXPECTED_EHCI_QH_SIZE",
+		[ERROR_GLYPH_CODE_NOT_RESERVED] = 					"ERROR_GLYPH_CODE_NOT_RESERVED",
+		[ERROR_GLYPH_CODE_RESERVED] = 						"ERROR_GLYPH_CODE_RESERVED",
+		[ERROR_UGSM_INCORRECT_GLYPH_SET_SIZE] = 			"ERROR_UGSM_INCORRECT_GLYPH_SET_SIZE",
+		[ERROR_UGSM_GLYPH_NOT_RESERVED_BUT_WE_TRY_USE] = 	"ERROR_UGSM_GLYPH_NOT_RESERVED_BUT_WE_TRY_USE",
+		[ERROR_ACPI_S5_PARSE] = 							"ERROR_ACPI_S5_PARSE",
+		[ERROR_ACPI_S5_NOT_PRESENT] = 						"ERROR_ACPI_S5_NOT_PRESENT",
+		[ERROR_ACPI_DSDT] = 								"ERROR_ACPI_DSDT",
+		[ERROR_ACPI_NO_VALID_FACP_PRESENT] = 				"ERROR_ACPI_NO_VALID_FACP_PRESENT",
+		[ERROR_ACPI_NO_ACPI] = 								"ERROR_ACPI_NO_ACPI",
+		[ERROR_ACPI_CANNOT_BE_ENABLED] = 					"ERROR_ACPI_CANNOT_BE_ENABLED",
+		[ERROR_ACPI_NO_KNOWN_WAY_TO_ENABLE_ACPI] =			"ERROR_ACPI_NO_KNOWN_WAY_TO_ENABLE_ACPI",
+		[ERROR_ACPI_SHUTDOWN] = 							"ERROR_ACPI_SHUTDOWN",
+		[ERROR_ACPI_UNABLE_TO_SHUTDOWN] = 					"ERROR_ACPI_UNABLE_TO_SHUTDOWN",
+		[ERROR_X86EMU_EMULATOR] = 							"ERROR_X86EMU_EMULATOR",
+		[ERROR_MEMORY_LACK] = 								"ERROR_MEMORY_LACK"
+		[ERROR_UNKNOWN] = 									"ERROR_UNKNOWN"
 	};
 
-	if (errorType <= sizeof(errorNames) / sizeof(CP437_CharacterCode*))
-		return errorNames[errorType];
+	size_t 
 
-	return "UNKNOWN_ERROR";
+	Error error = iminU32(errorType <= sizeof(errorNames) / sizeof(errorNames[0]));
+
+	return errorNames[error];
 }
 
-static CP437_CharacterCode* getFormalErrorDescription(Error errorType) {
-	CP437_CharacterCode* errorMessages[] = {
+static ASCII_CharacterCode* getFormalErrorDescription(Error errorType) {
+	ASCII_CharacterCode* errorMessages[] = {
 		[VBE_NOT_SUPPORTED_ERROR] = 				"Your video card does not support VBE 2.0 ( go fuck yourself, it's not our fault here :) )",
 		[VBE_SETUP_ERROR] = 						"And now we've fucked up, I'm sorry, but you know, fuck you!",
 		[USB_TD_BITSTUFF_ERROR] = 					"You broke the USB again, HOW MUCH CAN you DO? I'VE ALREADY STARTED PAYING FOR IT.",
@@ -78,19 +82,19 @@ static CP437_CharacterCode* getFormalErrorDescription(Error errorType) {
 		[ACPI_NO_KNOWN_WAY_TO_ENABLE_ACPI_ERROR] =	"What, how the fuck do I turn this on?",
 		[ACPI_SHUTDOWN_ERROR] = 					"Oh, come on, I glued the fucking off button!",
 		[ACPI_UNABLE_TO_SHUTDOWN_ERROR] = 			"Fuck, what the hell is wrong with the power button?",
-		[X16_BIT_EMULATOR_ERROR] = 					"Is memory a woman?!\n\nWhy does memory need nail polish, and where is her husband, for that matter?",
+		[ERROR_X86EMU_EMULATOR] = 					"Is memory a woman?!\n\nWhy does memory need nail polish, and where is her husband, for that matter?",
 		[MEMORY_LACK_ERROR] = 						"Is memory a woman?!\n\nWhy does memory need nail polish, and where is her husband, for that matter?",
 		[INCORRECT_ARGUMENT_ERROR] = 				"The function received an invalid argument. Please check the spelling of variable names, number formats, or strings. Variables of type Buffer or T may also be initialized incorrectly."
 	};
 
-	if (errorType <= sizeof(errorMessages) / sizeof(CP437_CharacterCode*))
+	if (errorType <= sizeof(errorMessages) / sizeof(ASCII_CharacterCode*))
 		return errorMessages[errorType];
 
 	return "There are no words.";
 }
 
-static CP437_CharacterCode* getIronicErrorDescription(Error errorType) {
-	CP437_CharacterCode* errorMessages[] = {
+static ASCII_CharacterCode* getIronicErrorDescription(Error errorType) {
+	ASCII_CharacterCode* errorMessages[] = {
 		[VBE_NOT_SUPPORTED_ERROR] = 				"Your video card does not support VBE 2.0 ( go fuck yourself, it's not our fault here :) )",
 		[VBE_SETUP_ERROR] = 						"And now we've fucked up, I'm sorry, but you know, fuck you!",
 		[USB_TD_BITSTUFF_ERROR] = 					"You broke the USB again, HOW MUCH CAN you DO? I'VE ALREADY STARTED PAYING FOR IT.",
@@ -117,12 +121,12 @@ static CP437_CharacterCode* getIronicErrorDescription(Error errorType) {
 		[ACPI_NO_KNOWN_WAY_TO_ENABLE_ACPI_ERROR] =	"What, how the fuck do I turn this on?",
 		[ACPI_SHUTDOWN_ERROR] = 					"Oh, come on, I glued the fucking off button!",
 		[ACPI_UNABLE_TO_SHUTDOWN_ERROR] = 			"Fuck, what the hell is wrong with the power button?",
-		[X16_BIT_EMULATOR_ERROR] = 					"Is memory a woman?!\n\nWhy does memory need nail polish, and where is her husband, for that matter?",
+		[ERROR_X86EMU_EMULATOR] = 					"Is memory a woman?!\n\nWhy does memory need nail polish, and where is her husband, for that matter?",
 		[MEMORY_LACK_ERROR] = 						"Is memory a woman?!\n\nWhy does memory need nail polish, and where is her husband, for that matter?",
 		[INCORRECT_ARGUMENT_ERROR] = 				"You idiot, do you even know how to write in English, or are you a 5-year-old kid whose daddy let him use the computer?"
 	};
 
-	if (errorType <= sizeof(errorMessages) / sizeof(CP437_CharacterCode*))
+	if (errorType <= sizeof(errorMessages) / sizeof(ASCII_CharacterCode*))
 		return errorMessages[errorType];
 
 	return "Wait... Oh shit!";

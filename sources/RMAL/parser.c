@@ -1,6 +1,6 @@
 #include "RMAL/parser.h"
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 #include "core/std.h"
 
@@ -28,7 +28,7 @@ Opcode opcodes[512] = { 0 };
 
 OpcodesLength opcodesLength = 0;
 
-UGSMGlyphCode labelsName[32][6];
+UGSM_CharacterCode labelsName[32][6];
 
 Opcode labelsOpcodes[32];
 
@@ -96,7 +96,9 @@ void RMALParse(void) {
 
 				// EXPERIMENTAL!!! MAY BE NOT WORK
 
-				memcpy(instruction->arguments[instruction->argumentsNumber].labelName, RMALTokens[i].labelName, 6);
+				memcpy(instruction->arguments[instruction->argumentsNumber].label.labelName, RMALTokens[i].labelName, 6);
+
+				String_copy(instruction->arguments[instruction->argumentsNumber].label);
 			}
 
 			else if (RMALTokens[i].type == RMALLBRACKET) {

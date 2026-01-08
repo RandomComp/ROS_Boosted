@@ -6,7 +6,7 @@
 
 #include "core/screen.h"
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 // Calculating columns and rows for width and height
 

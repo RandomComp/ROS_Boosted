@@ -1,7 +1,7 @@
 #ifndef _GDT_H
 #define _GDT_H
 
-#include "core/types.h"
+#include "core/types/basic_types.h"
 
 struct gdt_entry_struct {
 	uint16 limit;
