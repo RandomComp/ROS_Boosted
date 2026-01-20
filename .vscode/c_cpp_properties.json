@@ -1,19 +1,25 @@
 {
-    "configurations": [
-        {
-            "name": "Random OS",
-            "includePath": [
-                "${workspaceFolder}/include/**"
-            ],
-            "cStandard": "c17",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "gcc-x86",
-            "compilerPath": "",
-            "browse": {
-                "limitSymbolsToIncludedHeaders": true,
-                "databaseFilename": "${workspaceFolder}/.vscode/browse.vscode-db"
-            }
-        }
-    ],
-    "version": 4
+	"configurations": [
+		{
+			"name": "Random OS",
+			"includePath": [
+				"${workspaceFolder}/include",
+				"${workspaceFolder}/include/core/modules"
+			],
+			"cStandard": "c17",
+			"cppStandard": "c++17",
+			"intelliSenseMode": "gcc-x86",
+			"compilerPath": "",
+			"compilerArgs": [
+				"-m32",
+				"-ffreestanding",
+				"-Wimplicit-function-declaration"
+			],
+			"browse": {
+				"limitSymbolsToIncludedHeaders": true,
+				"databaseFilename": "${workspaceFolder}/.vscode/browse.vscode-db"
+			}
+		}
+	],
+	"version": 4
 }

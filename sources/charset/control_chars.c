@@ -1,9 +1,7 @@
 #include "charset/control_chars.h"
 
-#include "charset/ugsm.h"
+#include "charset/font.h"
 
-void ControlCharsInit() {
-    UGSMloadGlyphSet((UGSM_Font){ 0 }, 4);
-
-    
+void ControlCharsLoad() {
+    UGSMloadGlyphSet((Font){ 0 }, 4);
 }

@@ -1,11 +1,11 @@
 #ifndef _RANDOM_OS_CHARSET_H
 #define _RANDOM_OS_CHARSET_H
 
-#include "core/types/basic_types.h"
+#include "core/basic_types.h"
 
-#include "charset/types/ugsm_types.h"
+#include "charset/ugsm/ugsm_types.h"
 
-#include "charset/types/ascii_types.h"
+#include "charset/cp437/cp437_types.h"
 
 typedef enum Charset {
 	CHARSET_UGSM,
@@ -13,9 +13,9 @@ typedef enum Charset {
 } Charset;
 
 typedef union CharUnion {
-	UGSM_CharacterCode	UGSMChar;
+	UGSM_Code	UGSMChar;
 	
-	ASCII_CharacterCode	ASCIIChar;
+	CP437_Code	ASCIIChar;
 } CharUnion;
 
 typedef struct CharacterCode {
@@ -24,16 +24,16 @@ typedef struct CharacterCode {
 	CharUnion ch;
 } CharacterCode;
 
-bool Charset_UGSMGlyphIsControlCharacter(UGSM_CharacterCode glyphCode);
+bool Charset_UGSMGlyphIsControlCharacter(UGSM_Code glyphCode);
 
-bool Charset_UGSMGlyphIsLetter(UGSM_CharacterCode glyphCode);
+bool Charset_UGSMGlyphIsLetter(UGSM_Code glyphCode);
 
-bool Charset_UGSMGlyphIsDigit(UGSM_CharacterCode glyphCode);
+bool Charset_UGSMGlyphIsDigit(UGSM_Code glyphCode);
 
-bool Charset_UGSMGlyphIsLetterOrDigit(UGSM_CharacterCode glyphCode);
+bool Charset_UGSMGlyphIsLetterOrDigit(UGSM_Code glyphCode);
 
-UGSM_CharacterCode Charset_UGSMGlyphToUpperCase(UGSM_CharacterCode glyphCode);
+UGSM_Code Charset_UGSMGlyphToUpperCase(UGSM_Code glyphCode);
 
-UGSM_CharacterCode Charset_UGSMGlyphToLowerCase(UGSM_CharacterCode glyphCode);
+UGSM_Code Charset_UGSMGlyphToLowerCase(UGSM_Code glyphCode);
 
 #endif
