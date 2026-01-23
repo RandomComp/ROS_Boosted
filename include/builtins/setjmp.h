@@ -1,5 +1,5 @@
-#ifndef _SETJMP_H_
-#define _SETJMP_H_
+#ifndef _RANDOM_OS_BUILTINS_SETJMP_H
+#define _RANDOM_OS_BUILTINS_SETJMP_H
 
 #define	_JBLEN 10
 

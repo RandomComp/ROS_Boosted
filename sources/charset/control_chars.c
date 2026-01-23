@@ -1,6 +1,6 @@
 #include "charset/control_chars.h"
 
-#include "charset/font.h"
+#include "graphics/font/font.h"
 
 void ControlCharsLoad() {
     UGSMloadGlyphSet((Font){ 0 }, 4);

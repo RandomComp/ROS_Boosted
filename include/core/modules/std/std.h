@@ -9,13 +9,13 @@
 
 void STD_Init();
 
-void print(String str);
+void print_str(String str);
 
-void print_c_str(c_str str);
+void print(c_str str);
 
-void printf(String str, ...);
+void printf_str(String str, ...);
 
-void printf_c_str(c_str str, ...);
+void printf(c_str str, ...);
 
 Char getch();
 

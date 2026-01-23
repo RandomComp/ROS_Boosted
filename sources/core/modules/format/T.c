@@ -8,7 +8,7 @@
 
 #include "core/string.h"
 
-T addIntWithChar(sint a, Char b) {
+T addIntWithChar(uinta, Char b) {
 	CharUnion result = b.ch;
 
 	if (b.charset == CHARSET_ASCII)
@@ -20,7 +20,7 @@ T addIntWithChar(sint a, Char b) {
 	return T_charToT(newChar(b.charset, result));
 }
 
-T addIntWithString(sint a, String b) {
+T addIntWithString(uinta, String b) {
 	return T_stringToT(stringConcatenate(sintToString(a), b));
 }
 
@@ -40,7 +40,7 @@ T addUIntWithString(uint a, String b) {
 	return T_stringToT(stringConcatenate(uint32ToString(a), b));
 }
 
-T addIntWithT(sint a, T b) {
+T addIntWithT(uinta, T b) {
 	switch (b.type) {
 		case T_TYPE_SINT: return T_sintToT(a + b.value.signedNum);
 		case T_TYPE_UINT: return T_sintToT(a + b.value.unsignedNum);

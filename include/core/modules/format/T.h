@@ -115,13 +115,13 @@ static inline T T_new() {
 	return T_uintToT(INT_newUInt(32));
 }
 
-T addIntWithChar(sint a, Char b);
-T addIntWithString(sint a, String b);
+T addIntWithChar(uinta, Char b);
+T addIntWithString(uinta, String b);
 
 T addUIntWithChar(uint a, Char b);
 T addUIntWithString(uint a, String b);
 
-T addIntWithT(sint a, T b);
+T addIntWithT(uinta, T b);
 T addUInt32WithT(uint a, T b);
 
 T addCharWithT(Char a, T b);

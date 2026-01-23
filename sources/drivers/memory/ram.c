@@ -14,10 +14,10 @@
 
 static size_t absoluteSizeInBytes = 0;
 
-static bool bRAM_initialized = false;
+static bool initialized = false;
 
 void RAM_Init(size_t size) {
-	if (bRAM_initialized) return;
+	if (initialized) return;
 
 	absoluteSizeInBytes = 0;
 
@@ -29,7 +29,7 @@ void RAM_Init(size_t size) {
 		absoluteSizeInBytes += mapEntry->len_low;
 	}
 
-	bRAM_initialized = true;
+	initialized = true;
 }
 
 void* malloc(size_t size, MemoryRegionStatus status) {
@@ -48,19 +48,19 @@ size_t getAbsoluteRAMSize() {
 
 void MEM_showSize(Size size) {
 	if (size.GB != 0) {
-		printf_c_str("[fg: green][value: u32] gigabytes\n", size.GB);
+		printf("[fg: green][value: u32] gigabytes\n", size.GB);
 	}
 
 	if (size.MB != 0) {
-		printf_c_str("[fg: green][value: u32] megabytes\n", size.MB);
+		printf("[fg: green][value: u32] megabytes\n", size.MB);
 	}
 
 	if (size.KB != 0) {
-		printf_c_str("[fg: green][value: u32] kilobytes\n", size.KB);
+		printf("[fg: green][value: u32] kilobytes\n", size.KB);
 	}
 
 	if (size.bytes != 0) {
-		printf_c_str("[fg: green][value: u32] bytes\n", size.bytes);
+		printf("[fg: green][value: u32] bytes\n", size.bytes);
 	}
 }
 
@@ -68,8 +68,10 @@ void free(void* region) {
 	
 }
 
-bool RAM_isValidAndActiveMemoryRegion(MemoryRegion* region) {
-	if (region == 0) return false;
+bool RAM_isValidAndActiveMemoryRegion(void* addr) {
+	if (addr <= sizeof(MemoryRegion)) return false;
+
+	MemoryRegion* region = addr - sizeof(MemoryRegion);
 
 	MemoryRegionHeader header = region->header;
 

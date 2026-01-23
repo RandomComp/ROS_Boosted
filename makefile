@@ -1,4 +1,4 @@
-CFLAGS  = -m32 -ffreestanding
+CFLAGS  = -Iinclude -Iinclude/core/modules -m32 -ffreestanding
 
 GASFLAGS = --32
 
@@ -14,7 +14,7 @@ OBJECT_GAS_FILES := 	${GAS_FILES:.s=.o}
 
 OBJECT_NASM_FILES := 	${NASM_FILES:.n=.o}
 
-all: backup clean $(OBJECT_C_FILES) $(OBJECT_GAS_FILES) $(OBJECT_NASM_FILES) kernel.bin image vmwareDisk
+all: clean $(OBJECT_C_FILES) $(OBJECT_GAS_FILES) $(OBJECT_NASM_FILES) kernel.bin image vmwareDisk
 
 restore:
 	@echo "Restore in progress..."
@@ -59,7 +59,7 @@ flash:
 	@as $(GASFLAGS) -o $@ $<
 
 %.o: %.c
-	@gcc -Iinclude $(CFLAGS) -o $@ -c $<
+	@gcc $(CFLAGS) -o $@ -c $<
 
 kernel.bin:
 	@ld -m elf_i386 -T linker.ld -o $@ $^

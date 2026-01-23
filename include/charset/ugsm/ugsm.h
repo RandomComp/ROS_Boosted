@@ -5,24 +5,28 @@
 
 #include "charset/ugsm/ugsm_types.h"
 
-uint32 UGSMgetLength(UGSM_Code* str);
+uint32 UGSM_getLength(UGSM_Code* str);
 
-UGSM_Code UGSMloadGlyphSet(UGSM_Code glyphSet, size_t length);
+UGSM_Code UGSM_loadGlyphSet(UGSM_Code glyphSet, size_t length);
 
-UGSM_Code UGSMloadGlyph(UGSMGlyph glyph);
+UGSM_Code UGSM_loadGlyph(UGSM_Glyph glyph);
 
-UGSMGlyph* UGSMgetGlyph(UGSM_Code glyphCode);
+UGSMGlyph* UGSM_getGlyph(UGSM_Code glyphCode);
 
-void UGSMASCIIputString(int8* str);
+UGSM_Code UGSM_ASCIICharToUGSM(c_char c);
 
-void UGSMASCIIputChar(int8 c);
+UGSM_Code UGSM_digitToUGSM(uint8 digit);
 
-UGSM_Code UGSMASCIICharToUGSM(int8 c);
+bool UGSM_GlyphIsControlCharacter(UGSM_Code glyphCode);
 
-UGSM_Code UGSMdigitToUGSM(uint8 digit);
+bool UGSM_GlyphIsLetter(UGSM_Code glyphCode);
 
-void UGSMASCIIsetString(uint16 x, uint16 y, int8* str);
+bool UGSM_GlyphIsDigit(UGSM_Code glyphCode);
 
-void UGSMASCIIsetChar(uint16 x, uint16 y, int8 c);
+bool UGSM_GlyphIsLetterOrDigit(UGSM_Code glyphCode);
+
+UGSM_Code UGSM_GlyphToUpperCase(UGSM_Code glyphCode);
+
+UGSM_Code UGSM_GlyphToLowerCase(UGSM_Code glyphCode);
 
 #endif

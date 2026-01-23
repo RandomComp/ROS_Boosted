@@ -138,11 +138,27 @@ static inline double clamp(double x, double min, double max) {
 	return CLAMP(x, min, max);
 }
 
+static inline bool inRangeU8(uint8 x, uint8 min, uint8 max) {
+	return INRANGE(x, min, max);
+}
+
+static inline bool inRangeU16(uint16 x, uint16 min, uint16 max) {
+	return INRANGE(x, min, max);
+}
+
 static inline bool inRangeU32(uint32 x, uint32 min, uint32 max) {
 	return INRANGE(x, min, max);
 }
 
 static inline bool inRangeU64(uint64 x, uint64 min, uint64 max) {
+	return INRANGE(x, min, max);
+}
+
+static inline bool inRange8(int8 x, int8 min, int8 max) {
+	return INRANGE(x, min, max);
+}
+
+static inline bool inRange16(int16 x, int16 min, int16 max) {
 	return INRANGE(x, min, max);
 }
 
@@ -184,6 +200,22 @@ static inline uint8 getDigitU32(uint32 x, uint8 digitIndex) {
 
 static inline uint8 getDigitU64(uint64 x, uint8 digitIndex) {
 	return GET_FIRST_DIGIT(x / powU64(10, digitIndex));
+}
+
+static inline double trunc(double x) {
+	return TRUNC(x);
+}
+
+static inline float ftrunc(float x) {
+	return TRUNC(x);
+}
+
+static inline double frac(double x) {
+	return x - TRUNC(x);
+}
+
+static inline float ffrac(float x) {
+	return x - TRUNC(x);
 }
 
 static inline uint8 fgetFirstNumberAfterDecimalPoint(float x) {
@@ -307,22 +339,6 @@ static inline uint32 roundU32(uint32 x, uint32 align) {
 	uint32 ceilDiff = ceilResult - x;
 
 	return ceilDiff < floorDiff ? ceilResult : floorResult;
-}
-
-static inline double trunc(double x) {
-	return TRUNC(x);
-}
-
-static inline float ftrunc(float x) {
-	return TRUNC(x);
-}
-
-static inline double frac(double x) {
-	return x - TRUNC(x);
-}
-
-static inline float ffrac(float x) {
-	return x - TRUNC(x);
 }
 
 static inline double floor(double x) {

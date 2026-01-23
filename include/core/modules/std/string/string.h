@@ -3,9 +3,15 @@
 
 #include "core/basic_types.h"
 
-#include "core/types/high-level/T_types.h"
+#include "std/string/char_fwd.h"
 
-#include "drivers/low-level/base/ram.h"
+#include "std/string/string_types.h"
+
+#include "format/T_types.h"
+
+#include "exceptions/exception.h"
+
+#include "drivers/memory/ram.h"
 
 static inline String charToString(Char ch) {
 	String result = newString(1);
@@ -16,31 +22,51 @@ static inline String charToString(Char ch) {
 }
 
 static inline void setCharToString(String* str, uint32 index, Char ch) {
-	assert(!isValidStr(str), Exception_fromError(INVALID_ARGUMENT_ERROR, Exception_fromString("Cannot set a character in an invalid string (for example, the string length is <= 0, or the pointer to the memory under the string is null)")));
+	if (!isValidStr(str)) {
+		throw(
+			Exception_errorInvalidArgument(
+				"Cannot set a character in an invalid string "
+				"(for example, the string length is <= 0, or the pointer "
+				"to the memory under the string is null)"
+			)
+		);
 
-	Char* charArray = getCharArrayFromString(*str);
+		return;
+	}
+
+	Char* charArray = str->data;
 
 	charArray[index] = ch;
 }
 
-static inline Char getCharFromString(String* str, uint32 index) {
-	assert(!isValidStr(str), Exception_fromError(INVALID_ARGUMENT_ERROR, Exception_fromString("It is not possible to get a character from an invalid string (for example, the string's length is <= 0 or the pointer to the memory location to which the string refers is null)")));
+static inline Char* getCharFromString(String* str, size_t index) {
+	if (!isValidStr(str)) {
+		throw(
+			Exception_errorInvalidArgument(
+				"It is not possible to get a character from an invalid string "
+				"(for example, the string's length is <= 0 or the pointer "
+				"to the memory location to which the string refers is null)"
+			)
+		);
 
-	Char* charArray = getCharArrayFromString(*str);
+		return ;
+	}
 
-	return charArray[index];
+	Char* charArray = str->data;
+
+	return &charArray[index];
 }
 
 static inline bool isValidStr(String* str) {
-	return isValidMemoryRegion(str->region) && str->length > 0;
+	return RAM_isValidAndActiveMemoryRegion(str->data) && str->length > 0;
 }
 
 static inline void freeString(String* str) {
 	assert(!isValidStr(str), Exception_fromError(INVALID_ARGUMENT_ERROR, Exception_fromString("")));
 
-	free(str->region);
+	free(str->data);
 
-	str->region = null;
+	str->data = null;
 }
 
 static inline String newString(uint32 length) {
@@ -48,7 +74,7 @@ static inline String newString(uint32 length) {
 	
 	void* charMem = malloc(sizeof(Char) * length, MEMORY_STATUS_READABLE | MEMORY_STATUS_WRITABLE);
 	
-	return (String){.length = length, .region = charMem};
+	return (String){.length = length, .data = charMem};
 }
 
 static inline String newStringFromCP437(CP437_CharacterCode* str) {
@@ -58,7 +84,7 @@ static inline String newStringFromCP437(CP437_CharacterCode* str) {
 
 	String result = newString(length);
 
-	memcpy(result.region->memory, str, length);
+	memcpy(result.data->memory, str, length);
 	
 	return result;
 }
@@ -70,13 +96,13 @@ static inline String* newStringFromUGSM(UGSM_CharacterCode* str) {
 
 	String result = newString(length);
 
-	memcpy(result.region->memory, str, length);
+	memcpy(result.data->memory, str, length);
 	
 	return &result;
 }
 
 static inline void substr(String* _result, String* x, uint32 start, uint32 end) {
-	assert(!isValidMemoryRegion(x->region), Exception_fromError(INVALID_ARGUMENT_ERROR, Exception_fromString("Cannot cut a substring from a incorrect string.")));
+	assert(!isValidMemoryRegion(x->data), Exception_fromError(INVALID_ARGUMENT_ERROR, Exception_fromString("Cannot cut a substring from a incorrect string.")));
 	
 	assert(end > x->length, Exception_fromError(INVALID_ARGUMENT_ERROR, Exception_fromString("The specified size is greater than the string size=%i to the end=%i, the code execution will continue, but it is necessary to check the correctness of the arguments.", x->length, end)));
 
@@ -84,12 +110,11 @@ static inline void substr(String* _result, String* x, uint32 start, uint32 end) 
 
 	String* result = newString(minLength);
 
-	memcpy(result->region->memory, x->region->memory + start, minLength);
+	memcpy(result->data->memory, x->data->memory + start, minLength);
 
 	_result = &result;
 }
 
-String sintToString(sint x);
 String uintToString(uint x);
 
 String int32ToString(int32 x);

@@ -1,4 +1,6 @@
-#include "drivers/low-level/base/quad.h"
+#include "core/basic_types.h"
+
+#include "builtins/quad.h"
 
 uint64 __udivdi3(uint64 a, uint64 b) {
 	return __qdivrem(a, b, (uint64*)0);

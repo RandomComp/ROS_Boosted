@@ -4,38 +4,130 @@
 
 #include "std/std.h"
 
+#include "math/math.h"
+
 #include "format/bcd.h"
 
 #include "exceptions/warnings/warning_types.h"
 
 #include "exceptions/errors/error_types.h"
 
-static uint8 FONT_reserveTable[128] = { 0 }; // bitset for check reservations font code
+#include "drivers/memory/ram.h"
 
-static size_t Font_Size = 0;
+#include "builtins/mem.h"
 
-Font_ReserveCode Font_load(Font font, size_t length) {
-	if (length == 1)
-		return UGSMloadGlyph(font[0]);
+static byte* reserveTable = nullptr;
 
-	Font_ReserveCode glyphSetCode = getFreeSpaceForGlyph();
+static Font* fonts = nullptr;
 
-	size_t glyphSetEnd = glyphSetCode + length;
+static size_t glyphCount, fontCount = 0;
 
-	if (glyphSetEnd >= FONT_MAX_CHAR_LOADABLE_COUNT)
-		ERROR_throw(ERROR_UGSM_INCORRECT_GLYPH_SET_SIZE);
+static bool bInitialized = false;
 
-	for (UGSM_Code i = 0; i < length; i++) {
-		generateGlyphCode();
+static Glyph* copyGlyph(Glyph* dest, Glyph* src) {
+	if (src == nullptr) {
+		throw(
+			Exception_errorInvalidArgument(
+				"Cannot copy from src to dest, when src = nullptr."
+			)
+		);
 
-		test();
-
-		memcpy(UGSM[i + glyphSetCode], glyphSet[i], UGSMGlyphHeight);
+		return nullptr;
 	}
 
-	UGSMSize += length;
+	if (dest == nullptr)
+		dest = malloc(sizeof(Font), MEMORY_STATUS_ACTIVE);
 
-	return glyphSetCode;
+	dest->width = src->width;
+
+	dest->height = src->height;
+
+	dest->size = src->size;
+
+	dest->data = realloc(dest->data, dest->size);
+
+	memcpy(dest->data, src->data, dest->size);
+
+	return dest;
+}
+
+static Font* copyFont(Font* dest, Font* src) {
+	if (src == nullptr) {
+		throw(
+			Exception_errorInvalidArgument(
+				"Cannot copy from src to dest, when src = nullptr."
+			)
+		);
+
+		return nullptr;
+	}
+
+	if (dest == nullptr)
+		dest = malloc(sizeof(Font), MEMORY_STATUS_ACTIVE);
+
+	if (src->glyphCount == 0) {
+		throw(
+			Exception_warningInvalidArgument(
+				"Nothing to copy ( src->glyphCount = 0 )."
+			)
+		);
+
+		return nullptr;
+	}
+
+	dest->glyphCount = src->glyphCount;
+
+	dest->glyphs = realloc(dest->glyphs, dest->glyphCount * sizeof(Glyph));
+
+	for (size_t i = 0; i < dest->glyphCount; i++) {
+		copyGlyph(&dest->glyphs[i], &src->glyphs[i]);
+	}
+
+	return dest;
+}
+
+static bool isCodeReserved(Font_ReserveCode code) {
+	// TODO: Обработать случаи когда code >= glyphCount
+
+	return checkBit(reserveTable[getByteIndex(code)], getBitIndex(code));
+}
+
+static void reserveCode(Font_ReserveCode code) {
+	if (isCodeReserved(code)) // check for reserved
+		ERROR_throw(ERROR_GLYPH_CODE_RESERVED); // if the glyph is reserved, then we issue the corresponding error
+
+	else enableBit(&reserveTable[getByteIndex(code)], getBitIndex(code));
+}
+
+static void freeGlyphCode(Font_ReserveCode code) {
+	if (isCodeReserved(code)) // check for reserved
+		disableBit(&reserveTable[getByteIndex(code)], getBitIndex(code));
+
+	else ERROR_throw(ERROR_GLYPH_CODE_NOT_RESERVED); // if the glyph is not reserved, then we issue the corresponding error
+}
+
+static Font_ReserveCode getFreeSpaceForGlyph() {
+	for (Font_ReserveCode i = 0; i < glyphCount; i++) {
+		
+	}
+
+	return 0;
+}
+
+Font_ReserveCode Font_load(Font font) {
+	Font_ReserveCode fontCode = getFreeSpaceForGlyph();
+
+	size_t fontEnd = glyphCount + font.glyphCount;
+
+	reserveTable = realloc(reserveTable, fontEnd);
+
+	fonts = realloc(fonts, fontEnd);
+
+	for (Font_ReserveCode i = 0; i < font.glyphCount; i++) {
+		copyFont(&fonts[i + fontCode], &font.glyphs[i]);
+	}
+
+	return fontCode;
 }
 
 UGSM_Code Font_loadGlyph(UGSMGlyph glyph) {
@@ -43,7 +135,7 @@ UGSM_Code Font_loadGlyph(UGSMGlyph glyph) {
 
 	memcpy(UGSM[result], glyph, UGSMGlyphHeight);
 
-	UGSMSize++;
+	Font_size++;
 
 	return result;
 }
@@ -55,42 +147,6 @@ UGSMGlyph* Font_getGlyph(UGSM_Code glyphCode) {
 	assert
 
 	return &UGSM[glyphCode];
-}
-
-bool Font_checkGlyphCodeIsReserved(UGSM_CharacterCode code) {
-	return checkBit(UGSMreserveTable[getByteIndex(code)], getBitIndex(code));
-}
-
-void reserveGlyphCode(UGSM_CharacterCode code) {
-	if (UGSMcheckGlyphCodeIsReserved(code)) // check for reserved
-		ERROR_throw(ERROR_GLYPH_CODE_RESERVED); // if the glyph is reserved, then we issue the corresponding error
-
-	else enableBit(&UGSMreserveTable[getByteIndex(code)], getBitIndex(code));
-}
-
-void freeGlyphCode(UGSM_CharacterCode code) {
-	if (UGSMcheckGlyphCodeIsReserved(code)) // check for reserved
-		disableBit(&UGSMreserveTable[getByteIndex(code)], getBitIndex(code));
-
-	else ERROR_throw(ERROR_GLYPH_CODE_NOT_RESERVED); // if the glyph is not reserved, then we issue the corresponding error
-}
-
-UGSM_CharacterCode getFreeSpaceForGlyph() {
-	uint16 i = 0;
-
-	for (; UGSMreserveTable[i] >= 255; i++);
-
-	if (i <= 128) {
-		UGSM_CharacterCode bitIndex = 0;
-
-		while (UGSMreserveTable[i] & (1 << bitIndex)) bitIndex++;
-
-		return i * 8 + bitIndex;
-	}
-
-	warn(ALL_GLYPHS_ARE_RESERVED_WARNING);
-
-	return 0;
 }
 
 Font_ReserveCode generateGlyphCode() {

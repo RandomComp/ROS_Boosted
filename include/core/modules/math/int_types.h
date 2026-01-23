@@ -3,24 +3,16 @@
 
 #include "core/basic_types.h"
 
-#include "drivers/memory/mem_types.h"
+struct uint {
+	#ifdef BITS_32
+		uint32* data;
+	#elifdef BITS_64
+		uint64* data;
+	#else BITS_16
+		uint8* data;
+	#endif
 
-#define INT_ALIGN 4
-
-#ifdef BITS_16
-#define INT_ALIGN 2
-#endif
-
-#ifdef BITS_64
-#define INT_ALIGN 8
-#endif
-
-typedef struct uint {
-	uint32* data;
-
-	uint32 byteDepth;
-} uint;
-
-typedef uint sint;
+	size_t size;
+};
 
 #endif

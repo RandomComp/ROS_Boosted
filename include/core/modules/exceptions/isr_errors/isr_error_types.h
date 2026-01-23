@@ -1,6 +1,10 @@
 #ifndef _RANDOM_OS_ISR_ERROR_TYPES_H
 #define _RANDOM_OS_ISR_ERROR_TYPES_H
 
+#define ISR_FIRST_ERROR 0
+
+#define ISR_LAST_ERROR ISR_KERNEL_USE_ERROR
+
 typedef enum ISR_Error {
 	ISR_DIVISION_BY_ZERO_ERROR = 0, 		// Ошибка деления на ноль.
 	// Reserved ISR 1, 0x1

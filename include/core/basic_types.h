@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_TYPES_H
-#define _RANDOM_OS_TYPES_H
+#ifndef _RANDOM_OS_BASIC_TYPES_H
+#define _RANDOM_OS_BASIC_TYPES_H
 
 #define true 1
 
@@ -65,13 +65,15 @@
 
 #define null 0
 
-#define nullptr 0
+#define nullptr (void*)0
 
 #define DEBUG
 
 //#define BITS_16
 
-#define BITS_32_OR_64
+#define BITS_32
+
+//#define BITS_64
 
 // BITS 16 is unsupported now.
 
@@ -81,30 +83,37 @@ typedef unsigned short uint16;
 typedef signed char int8;
 typedef signed short int16;
 
-#ifdef BITS_32_OR_64
-typedef unsigned long uint32; // Unsupported for 16 BITS, use uint with dynamical bit-depth for this.
-typedef unsigned long long uint64; // Unsupported for 16 BITS, use uint with dynamical bit-depth for this.
+// Unsupported for 16 BITS, use uint with dynamical depth for this.
+#if defined(BITS_32) || defined(BITS_64)
+	typedef unsigned long uint32;
+	typedef unsigned long long uint64;
 
-typedef signed long int32; // Unsupported for 16 BITS, use sint with dynamical bit-depth for this.
-typedef signed long long int64; // Unsupported for 16 BITS, use sint with dynamical bit-depth for this.
+	typedef signed long int32;
+	typedef signed long long int64;
+	
+	typedef uint32 uint32_t;
+	typedef uint64 uint64_t;
+	
+	typedef int32 int32_t;
+	typedef int64 int64_t;
+
+	typedef uint32 dword;
+	typedef uint64 qword;
 #endif
-
-typedef int8 sint8;
-typedef int16 sint16;
-typedef int32 sint32;
-typedef int64 sint64;
 
 typedef uint8 uint8_t;
 typedef uint16 uint16_t;
-typedef uint32 uint32_t;
-typedef uint64 uint64_t;
 
 typedef int8 int8_t;
 typedef int16 int16_t;
-typedef int32 int32_t;
-typedef int64 int64_t;
 
-typedef uint32 size_t;
+#ifdef BITS_16
+	typedef uint16 size_t;
+#elifdef BITS_32
+	typedef uint32 size_t;
+#elifdef BITS_64
+	typedef uint64 size_t;
+#endif
 
 typedef int8 c_char;
 
@@ -112,12 +121,10 @@ typedef c_char* c_str;
 
 typedef c_str* c_str_ptr;
 
-typedef uint8 bool;
+typedef _Bool bool;
 
 typedef uint8 byte;
 typedef uint16 word;
-typedef uint32 dword;
-typedef uint64 qword;
 
 #define static_assert _Static_assert
 

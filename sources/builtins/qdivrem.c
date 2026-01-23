@@ -1,6 +1,6 @@
-#include "drivers/low-level/base/quad.h"
+#include "builtins/quad.h"
 
-#include "core/isr_error.h"
+#include "core/basic_types.h"
 
 #define	B ((int32)1 << HALF_BITS)
 
@@ -35,7 +35,7 @@ uint64 __qdivrem(uint64 uq, uint64 vq, uint64 *arq) {
 	uint32 uspace[5], vspace[5], qspace[5];
 	
 	if (vq == 0) {
-		causeFatal(DIVISION_BY_ZERO_FATAL_ERROR);
+		// TODO: Handle zero division error
 
 		if (arq) *arq = uq;
 

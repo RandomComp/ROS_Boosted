@@ -1,6 +1,6 @@
 #include "core/basic_types.h"
 
-#include "../headers/quad.h"
+#include "builtins/quad.h"
 
 int64 __moddi3(int64 a, int64 b) {
 	uint64 ua, ub, ur;

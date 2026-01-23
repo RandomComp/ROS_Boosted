@@ -1,101 +1,105 @@
-#include "core/isr_error.h"
+#include "exceptions/isr_errors/isr_error.h"
+
+#include "exceptions/isr_errors/isr_error_types.h"
 
 #include "core/basic_types.h"
 
-#include "core/console.h"
+#include "math/math.h"
 
-#include "charset/ascii.h"
+#include "std/std.h"
 
-#include "charset/cp437_types.h"
-
-static CP437_CharacterCode* getFatalErrorName(ISR_Error errorType) {
-	CP437_CharacterCode* errorMessages[] = {
-		[DIVISION_BY_ZERO_FATAL_ERROR] = 				"DIVISION_BY_ZERO_FATAL_ERROR",
-		[NON_MASKABLE_INTERRUPT_FATAL_ERROR] = 			"NON_MASKABLE_INTERRUPT_FATAL_ERROR",
-		[BREAK_POINT_FATAL_ERROR] = 					"BREAK_POINT_FATAL_ERROR",
-		[STACK_OVERFLOW_FATAL_ERROR] = 					"STACK_OVERFLOW_FATAL_ERROR",
-		[INDEX_OVERPOWERED_FATAL_ERROR] = 				"INDEX_OVERPOWERED_FATAL_ERROR",
-		[INVALID_INSTRUCTION_FATAL_ERROR] = 			"INVALID_INSTRUCTION_FATAL_ERROR",
-		[NO_COPROCESSOR_FATAL_ERROR] = 					"NO_COPROCESSOR_FATAL_ERROR",
-		[DOUBLE_FATAL_ERROR] = 							"DOUBLE_FATAL_ERROR",
-		[COPROCESSOR_SEGMENT_OVERRUN_FATAL_ERROR] = 	"COPROCESSOR_SEGMENT_OVERRUN_FATAL_ERROR",
-		[INVALID_TSS_FATAL_ERROR] = 					"INVALID_TSS_FATAL_ERROR",
-		[SEGMENT_PRESENT_FATAL_ERROR] = 				"SEGMENT_PRESENT_FATAL_ERROR",
-		[STACK_SEGMENT_FATAL_ERROR] = 					"STACK_SEGMENT_FATAL_ERROR",
-		[GENERAL_PROTECTION_FATAL_ERROR] = 				"GENERAL_PROTECTION_FATAL_ERROR",
-		[PAGE_FATAL_ERROR] = 							"PAGE_FATAL_ERROR",
-		[X87_FPU_FATAL_ERROR] = 						"X87_FPU_FATAL_ERROR",
-		[ALIGNMENT_CHECK_FATAL_ERROR] = 				"ALIGNMENT_CHECK_FATAL_ERROR",
-		[MACHINE_CHECK_FATAL_ERROR] = 					"MACHINE_CHECK_FATAL_ERROR",
-		[SIMD_FLOAT_FATAL_ERROR] = 						"SIMD_FLOAT_FATAL_ERROR",
-		[IRQ_KERNEL_UNUSED_FATAL_ERROR] = 				"IRQ_KERNEL_UNUSED_FATAL_ERROR"
+static const c_str getFatalErrorName(ISR_Error errorType) {
+	const c_str errorMessages[] = {
+		[ISR_DIVISION_BY_ZERO_ERROR] = 				"ISR_DIVISION_BY_ZERO_ERROR",
+		[ISR_NON_MASKABLE_INTERRUPT_ERROR] = 		"ISR_NON_MASKABLE_INTERRUPT_ERROR",
+		[ISR_BREAK_POINT_ERROR] = 					"ISR_BREAK_POINT_ERROR",
+		[ISR_STACK_OVERFLOW_ERROR] = 				"ISR_STACK_OVERFLOW_ERROR",
+		[ISR_INDEX_OVERPOWERED_ERROR] = 			"ISR_INDEX_OVERPOWERED_ERROR",
+		[ISR_INVALID_INSTRUCTION_ERROR] = 			"ISR_INVALID_INSTRUCTION_ERROR",
+		[ISR_NO_COPROCESSOR_ERROR] = 				"ISR_NO_COPROCESSOR_ERROR",
+		[ISR_DOUBLE_ERROR] = 						"ISR_DOUBLE_ERROR",
+		[ISR_COPROCESSOR_SEGMENT_OVERRUN_ERROR] = 	"ISR_COPROCESSOR_SEGMENT_OVERRUN_ERROR",
+		[ISR_INVALID_TSS_ERROR] = 					"ISR_INVALID_TSS_ERROR",
+		[ISR_SEGMENT_PRESENT_ERROR] = 				"ISR_SEGMENT_PRESENT_ERROR",
+		[ISR_STACK_SEGMENT_ERROR] = 				"ISR_STACK_SEGMENT_ERROR",
+		[ISR_GENERAL_PROTECTION_ERROR] = 			"ISR_GENERAL_PROTECTION_ERROR",
+		[ISR_PAGE_ERROR] = 							"ISR_PAGE_ERROR",
+		[ISR_X87_FPU_ERROR] = 						"ISR_X87_FPU_ERROR",
+		[ISR_ALIGNMENT_CHECK_ERROR] = 				"ISR_ALIGNMENT_CHECK_ERROR",
+		[ISR_MACHINE_CHECK_ERROR] = 				"ISR_MACHINE_CHECK_ERROR",
+		[ISR_SIMD_FLOAT_ERROR] = 					"ISR_SIMD_FLOAT_ERROR",
+		[ISR_KERNEL_USE_ERROR] = 					"ISR_KERNEL_USE_ERROR"
 	};
 
-	if (errorType <= sizeof(errorMessages) / sizeof(CP437_CharacterCode*))
+	if (inRangeU32(errorType, ISR_FIRST_ERROR, ISR_LAST_ERROR))
 		return errorMessages[errorType];
 
 	return "UNKNOWN_FATAL_ERROR";
 }
 
-static CP437_CharacterCode* getIronicFatalErrorDescription(ISR_Error errorType) {
-	CP437_CharacterCode* errorMessages[] = {
-		[DIVISION_BY_ZERO_FATAL_ERROR] = 				"You has divided any number by zero, you get infinity and error to gift :).",
-		[NON_MASKABLE_INTERRUPT_FATAL_ERROR] = 			"Hello non maskable interrupt, i've been looking for you!",
-		[BREAK_POINT_FATAL_ERROR] = 					"Let's break everything, we're rich!",
-		[STACK_OVERFLOW_FATAL_ERROR] = 					"Look what you've done, you've poured it all over...",
-		[INDEX_OVERPOWERED_FATAL_ERROR] = 				"Where are you going?! My memory!",
-		[INVALID_INSTRUCTION_FATAL_ERROR] = 			"Why did you break my brain?",
-		[NO_COPROCESSOR_FATAL_ERROR] = 					"Only for the smart, dsjidjsdisidsudi, the dumb won't understand.",
-		[DOUBLE_FATAL_ERROR] = 							"Monsieur, it seems to me that you and I have split up!",
-		[COPROCESSOR_SEGMENT_OVERRUN_FATAL_ERROR] = 	"You write incorrectly instead of \"CoprocessorSegmentOverflowError\" write \"StackOverflow\", give birth to idiots...",
-		[INVALID_TSS_FATAL_ERROR] = 					"You write incorrectly instead of \"CoprocessorSegmentOverflowError\" write \"StackOverflow\", give birth to idiots...",
-		[SEGMENT_PRESENT_FATAL_ERROR] = 				"The same mistake, STOP WRITING WITHOUT \"OVERFLOW\"!!!",
-		[STACK_SEGMENT_FATAL_ERROR] = 					"The same mistake, STOP WRITING WITHOUT \"OVERFLOW\"!!!",
-		[GENERAL_PROTECTION_FATAL_ERROR] = 				"Stop, it's the police, why are you breaking the law?",
-		[PAGE_FATAL_ERROR] = 							"Wait, where are you flipping through, you passed by our page!",
-		[X87_FPU_FATAL_ERROR] = 						"Stop being smart, I can't do that, I'm having a glitch!",
-		[ALIGNMENT_CHECK_FATAL_ERROR] = 				"Straighten up! We have an important matter!",
-		[MACHINE_CHECK_FATAL_ERROR] = 					"Careful... AHHH, IT HURTS!",
-		[SIMD_FLOAT_FATAL_ERROR] = 						"Careful... AHHH, IT HURTS!",
-		[IRQ_KERNEL_UNUSED_FATAL_ERROR] = 				"Go away, IRQ/ISR is reserved!"
+static const c_str getIronicFatalErrorDescription(ISR_Error errorType) {
+	const c_str errorMessages[] = {
+		[ISR_DIVISION_BY_ZERO_ERROR] = 				"You has divided any number by zero, you get infinity and error to gift :).",
+		[ISR_NON_MASKABLE_INTERRUPT_ERROR] = 		"Hello non maskable interrupt, i've been looking for you!",
+		[ISR_BREAK_POINT_ERROR] = 					"Let's break everything, we're rich!",
+		[ISR_STACK_OVERFLOW_ERROR] = 				"Look what you've done, you've poured it all over...",
+		[ISR_INDEX_OVERPOWERED_ERROR] = 			"Where are you going?! My memory!",
+		[ISR_INVALID_INSTRUCTION_ERROR] = 			"Why did you break my brain?",
+		[ISR_NO_COPROCESSOR_ERROR] = 				"Only for the smart, dsjidjsdisidsudi, the dumb won't understand.",
+		[ISR_DOUBLE_ERROR] = 						"Monsieur, it seems to me that you and I have split up!",
+		[ISR_COPROCESSOR_SEGMENT_OVERRUN_ERROR] = 	"You write incorrectly instead of \"CoprocessorSegmentOverflowError\" write \"StackOverflow\", give birth to idiots...",
+		[ISR_INVALID_TSS_ERROR] = 					"You write incorrectly instead of \"CoprocessorSegmentOverflowError\" write \"StackOverflow\", give birth to idiots...",
+		[ISR_SEGMENT_PRESENT_ERROR] = 				"The same mistake, STOP WRITING WITHOUT \"OVERFLOW\"!!!",
+		[ISR_STACK_SEGMENT_ERROR] = 				"The same mistake, STOP WRITING WITHOUT \"OVERFLOW\"!!!",
+		[ISR_GENERAL_PROTECTION_ERROR] = 			"Stop, it's the police, why are you breaking the law?",
+		[ISR_PAGE_ERROR] = 							"Wait, where are you flipping through, you passed by our page!",
+		[ISR_X87_FPU_ERROR] = 						"Stop being smart, I can't do that, I'm having a glitch!",
+		[ISR_ALIGNMENT_CHECK_ERROR] = 				"Straighten up! We have an important matter!",
+		[ISR_MACHINE_CHECK_ERROR] = 				"Careful... AHHH, IT HURTS!",
+		[ISR_SIMD_FLOAT_ERROR] = 					"Careful... AHHH, IT HURTS!",
+		[ISR_KERNEL_USE_ERROR] = 					"Go away, ISR is reserved!"
 	};
 
-	if (errorType <= sizeof(errorMessages) / sizeof(CP437_CharacterCode*))
+	if (inRangeU32(errorType, ISR_FIRST_ERROR, ISR_LAST_ERROR))
 		return errorMessages[errorType];
 
 	return "There are no words.";
 }
 
-static CP437_CharacterCode* getFormalFatalErrorDescription(ISR_Error errorType) {
-	CP437_CharacterCode* errorMessages[] = {
-		[DIVISION_BY_ZERO_FATAL_ERROR] = 				"You has divided any number by zero, you get infinity and error to gift :).",
-		[NON_MASKABLE_INTERRUPT_FATAL_ERROR] = 			"Hello non maskable interrupt, i've been looking for you!",
-		[BREAK_POINT_FATAL_ERROR] = 					"The kernel was stopped because a Debug label was set at the code execution point.",
-		[STACK_OVERFLOW_FATAL_ERROR] = 					"Look what you've done, you've poured it all over...",
-		[INDEX_OVERPOWERED_FATAL_ERROR] = 				"Where are you going?! My memory!",
-		[INVALID_INSTRUCTION_FATAL_ERROR] = 			"Why did you break my brain?",
-		[NO_COPROCESSOR_FATAL_ERROR] = 					"Only for the smart, dsjidjsdisidsudi, the dumb won't understand.",
-		[DOUBLE_FATAL_ERROR] = 							"Monsieur, it seems to me that you and I have split up!",
-		[COPROCESSOR_SEGMENT_OVERRUN_FATAL_ERROR] = 	"You write incorrectly instead of \"CoprocessorSegmentOverflowError\" write \"StackOverflow\", give birth to idiots...",
-		[INVALID_TSS_FATAL_ERROR] = 					"You write incorrectly instead of \"CoprocessorSegmentOverflowError\" write \"StackOverflow\", give birth to idiots...",
-		[SEGMENT_PRESENT_FATAL_ERROR] = 				"The same mistake, STOP WRITING WITHOUT \"OVERFLOW\"!!!",
-		[STACK_SEGMENT_FATAL_ERROR] = 					"The same mistake, STOP WRITING WITHOUT \"OVERFLOW\"!!!",
-		[GENERAL_PROTECTION_FATAL_ERROR] = 				"Stop, it's the police, why are you breaking the law?",
-		[PAGE_FATAL_ERROR] = 							"Wait, where are you flipping through, you passed by our page!",
-		[X87_FPU_FATAL_ERROR] = 						"Stop being smart, I can't do that, I'm having a glitch!",
-		[ALIGNMENT_CHECK_FATAL_ERROR] = 				"Straighten up! We have an important matter!",
-		[MACHINE_CHECK_FATAL_ERROR] = 					"Careful... AHHH, IT HURTS!",
-		[SIMD_FLOAT_FATAL_ERROR] = 						"Careful... AHHH, IT HURTS!",
-		[IRQ_KERNEL_UNUSED_FATAL_ERROR] = 				"Go away, motherfucker, ISR is reserved!"
+static const c_str getFormalFatalErrorDescription(ISR_Error errorType) {
+	const c_str errorMessages[] = {
+		[ISR_DIVISION_BY_ZERO_ERROR] = 				"You has divided any number by zero, you get infinity and error to gift :).",
+		[ISR_NON_MASKABLE_INTERRUPT_ERROR] = 		"Hello non maskable interrupt, i've been looking for you!",
+		[ISR_BREAK_POINT_ERROR] = 					"The kernel was stopped because a Debug label was set at the code execution point.",
+		[ISR_STACK_OVERFLOW_ERROR] = 				"Look what you've done, you've poured it all over...",
+		[ISR_INDEX_OVERPOWERED_ERROR] = 			"Where are you going?! My memory!",
+		[ISR_INVALID_INSTRUCTION_ERROR] = 			"Why did you break my brain?",
+		[ISR_NO_COPROCESSOR_ERROR] = 				"Only for the smart, dsjidjsdisidsudi, the dumb won't understand.",
+		[ISR_DOUBLE_ERROR] = 						"Monsieur, it seems to me that you and I have split up!",
+		[ISR_COPROCESSOR_SEGMENT_OVERRUN_ERROR] = 	"You write incorrectly instead of \"CoprocessorSegmentOverflowError\" write \"StackOverflow\", give birth to idiots...",
+		[ISR_INVALID_TSS_ERROR] = 					"You write incorrectly instead of \"CoprocessorSegmentOverflowError\" write \"StackOverflow\", give birth to idiots...",
+		[ISR_SEGMENT_PRESENT_ERROR] = 				"The same mistake, STOP WRITING WITHOUT \"OVERFLOW\"!!!",
+		[ISR_STACK_SEGMENT_ERROR] = 				"The same mistake, STOP WRITING WITHOUT \"OVERFLOW\"!!!",
+		[ISR_GENERAL_PROTECTION_ERROR] = 			"Stop, it's the police, why are you breaking the law?",
+		[ISR_PAGE_ERROR] = 							"Wait, where are you flipping through, you passed by our page!",
+		[ISR_X87_FPU_ERROR] = 						"Stop being smart, I can't do that, I'm having a glitch!",
+		[ISR_ALIGNMENT_CHECK_ERROR] = 				"Straighten up! We have an important matter!",
+		[ISR_MACHINE_CHECK_ERROR] = 				"Careful... AHHH, IT HURTS!",
+		[ISR_SIMD_FLOAT_ERROR] = 					"Careful... AHHH, IT HURTS!",
+		[ISR_KERNEL_USE_ERROR] = 					"Go away, motherfucker, ISR is reserved!"
 	};
 
-	if (errorType <= sizeof(errorMessages) / sizeof(CP437_CharacterCode*))
+	if (inRangeU32(errorType, ISR_FIRST_ERROR, ISR_LAST_ERROR))
 		return errorMessages[errorType];
 
 	return "There are no words.";
 }
 
-void FATAL_ERROR_throw(ISR_Error errorType, CP437_CharacterCode* why) {
+void ISR_throw(ISR_Error errorType, const c_str why) {
+	printf("[fg: red]Ironic fatal error description:\n[value: c_str]", getIronicFatalErrorDescription(errorType));
+
+	printf();
+
 	ASCII_putString("[red]Ironic fatal error description:\n");
 
 	ASCII_putString(getIronicFatalErrorDescription(errorType));

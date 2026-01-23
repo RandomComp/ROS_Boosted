@@ -28,7 +28,7 @@ void printf(String str, ...) {
 	
 }
 
-void printf_c_str(const c_str str, ...) {
+void printf(const c_str str, ...) {
 	
 }
 

@@ -24,16 +24,4 @@ typedef struct CharacterCode {
 	CharUnion ch;
 } CharacterCode;
 
-bool Charset_UGSMGlyphIsControlCharacter(UGSM_Code glyphCode);
-
-bool Charset_UGSMGlyphIsLetter(UGSM_Code glyphCode);
-
-bool Charset_UGSMGlyphIsDigit(UGSM_Code glyphCode);
-
-bool Charset_UGSMGlyphIsLetterOrDigit(UGSM_Code glyphCode);
-
-UGSM_Code Charset_UGSMGlyphToUpperCase(UGSM_Code glyphCode);
-
-UGSM_Code Charset_UGSMGlyphToLowerCase(UGSM_Code glyphCode);
-
 #endif
