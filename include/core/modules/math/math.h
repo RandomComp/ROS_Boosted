@@ -45,7 +45,7 @@
 
 typedef struct ProcessorMathState {
 	bool bOverflow; // Флаг переполнения типа
-	uint32 divRem; // Остаток от деления, вычисленный при вычислении деления
+	size_t divRem; // Остаток от деления, вычисленный при вычислении деления
 } ProcessorMathState;
 
 bool getOverflowFlag();
@@ -66,7 +66,7 @@ static inline double abs(double x) {
 	return ABS(x);
 }
 
-static inline uint32 minU32(uint32 a, uint32 b) {
+static inline size_t minU32(size_t a, size_t b) {
 	return MIN(a, b);
 }
 
@@ -90,7 +90,7 @@ static inline double min(double a, double b) {
 	return MIN(a, b);
 }
 
-static inline uint32 maxU32(uint32 a, uint32 b) {
+static inline size_t maxU32(size_t a, size_t b) {
 	return MAX(a, b);
 }
 
@@ -114,7 +114,7 @@ static inline double max(double a, double b) {
 	return MAX(a, b);
 }
 
-static inline uint32 clampU32(uint32 x, uint32 min, uint32 max) {
+static inline size_t clampU32(size_t x, size_t min, size_t max) {
 	return CLAMP(x, min, max);
 }
 
@@ -146,7 +146,7 @@ static inline bool inRangeU16(uint16 x, uint16 min, uint16 max) {
 	return INRANGE(x, min, max);
 }
 
-static inline bool inRangeU32(uint32 x, uint32 min, uint32 max) {
+static inline bool inRangeU32(size_t x, size_t min, size_t max) {
 	return INRANGE(x, min, max);
 }
 
@@ -186,7 +186,7 @@ static inline uint8 getFirstDigit64(int64 x) {
 	return GET_FIRST_DIGIT(x);
 }
 
-static inline uint8 getFirstDigitU32(uint32 x) {
+static inline uint8 getFirstDigitU32(size_t x) {
 	return GET_FIRST_DIGIT(x);
 }
 
@@ -194,7 +194,7 @@ static inline uint8 getFirstDigitU64(uint64 x) {
 	return GET_FIRST_DIGIT(x);
 }
 
-static inline uint8 getDigitU32(uint32 x, uint8 digitIndex) {
+static inline uint8 getDigitU32(size_t x, uint8 digitIndex) {
 	return GET_FIRST_DIGIT(x / powU32(10, digitIndex));
 }
 
@@ -268,7 +268,7 @@ static inline int64 scaleToInteger(double x) {
 	return x * pow64(10, getCountDecimalPlaces(x));
 }
 
-static inline bool isPowerOfTwoU32(uint32 x) {
+static inline bool isPowerOfTwoU32(size_t x) {
 	return x > 0 && (x & (x - 1) == 0);
 }
 
@@ -280,11 +280,11 @@ uint8 getNumberOfDigits32(int32 x);
 
 uint8 getNumberOfDigits64(int64 x);
 
-uint8 getNumberOfDigitsU32(uint32 x);
+uint8 getNumberOfDigitsU32(size_t x);
 
 uint8 getNumberOfDigitsU64(uint64 x);
 
-static inline uint32 floorU32(uint32 x, uint32 align) {
+static inline size_t floorU32(size_t x, size_t align) {
 	if (align == 0) {
 		throw(
 			Exception_fromError(
@@ -301,7 +301,7 @@ static inline uint32 floorU32(uint32 x, uint32 align) {
 	return (x / align) * align;
 }
 
-static inline uint32 ceilU32(uint32 x, uint32 align) {
+static inline size_t ceilU32(size_t x, size_t align) {
 	if (align == 0) {
 		throw(
 			Exception_fromError(
@@ -318,7 +318,7 @@ static inline uint32 ceilU32(uint32 x, uint32 align) {
 	return ((x / align) + 1) * align;
 }
 
-static inline uint32 roundU32(uint32 x, uint32 align) {
+static inline size_t roundU32(size_t x, size_t align) {
 	if (align == 0) {
 		throw(
 			Exception_fromError(
@@ -330,13 +330,13 @@ static inline uint32 roundU32(uint32 x, uint32 align) {
 		return x;
 	}
 
-	uint32 floorResult = floorU32(x, align);
+	size_t floorResult = floorU32(x, align);
 
-	uint32 ceilResult = ceilU32(x, align);
+	size_t ceilResult = ceilU32(x, align);
 
-	uint32 floorDiff = x - floorResult;
+	size_t floorDiff = x - floorResult;
 
-	uint32 ceilDiff = ceilResult - x;
+	size_t ceilDiff = ceilResult - x;
 
 	return ceilDiff < floorDiff ? ceilResult : floorResult;
 }
@@ -394,7 +394,7 @@ static inline float fround(float x) {
 int32 pow32(int32 a, int32 b);
 int64 pow64(int64 a, int64 b);
 
-uint32 powU32(uint32 a, uint32 b);
+size_t powU32(size_t a, size_t b);
 uint64 powU64(uint64 a, uint64 b);
 
 #endif

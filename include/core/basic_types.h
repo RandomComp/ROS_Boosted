@@ -21,7 +21,7 @@
 
 #define UINT16_MIN (uint16)(0)
 
-#define UINT32_MIN (uint32)(0)
+#define UINT32_MIN (size_t)(0)
 
 #define UINT64_MIN (uint64)(0)
 
@@ -37,7 +37,7 @@
 
 #define UINT16_MAX (uint16)(0xFFFF)
 
-#define UINT32_MAX (uint32)(0xFFFFFFFF)
+#define UINT32_MAX (size_t)(0xFFFFFFFF)
 
 #define UINT64_MAX (uint64)(0xFFFFFFFFFFFFFFFF)
 
@@ -63,6 +63,11 @@
 
 #define MAX_DOUBLE_STEPS 17
 
+typedef enum ErrorCode {
+	CODE_OK = 0,
+	CODE_FAIL = -1
+} ErrorCode;
+
 #define null 0
 
 #define nullptr (void*)0
@@ -85,14 +90,13 @@ typedef signed short int16;
 
 // Unsupported for 16 BITS, use uint with dynamical depth for this.
 #if defined(BITS_32) || defined(BITS_64)
-	typedef unsigned long uint32;
+	typedef unsigned long long uint64;
+	
+	typedef unsigned int uint32;
 	typedef unsigned long long uint64;
 
 	typedef signed long int32;
 	typedef signed long long int64;
-	
-	typedef uint32 uint32_t;
-	typedef uint64 uint64_t;
 	
 	typedef int32 int32_t;
 	typedef int64 int64_t;
@@ -101,19 +105,35 @@ typedef signed short int16;
 	typedef uint64 qword;
 #endif
 
+#ifdef BITS_16
+
+typedef uint16 word;
+
+typedef uint16 size_t;
+
+#endif
+
+#ifdef BITS_32
+
+typedef uint32 word;
+
+typedef uint32 size_t;
+
+#endif
+
+#ifdef BITS_64
+
+typedef uint64 word;
+
+typedef uint64 size_t;
+
+#endif
+
 typedef uint8 uint8_t;
 typedef uint16 uint16_t;
 
 typedef int8 int8_t;
 typedef int16 int16_t;
-
-#ifdef BITS_16
-	typedef uint16 size_t;
-#elifdef BITS_32
-	typedef uint32 size_t;
-#elifdef BITS_64
-	typedef uint64 size_t;
-#endif
 
 typedef int8 c_char;
 
@@ -124,7 +144,6 @@ typedef c_str* c_str_ptr;
 typedef _Bool bool;
 
 typedef uint8 byte;
-typedef uint16 word;
 
 #define static_assert _Static_assert
 

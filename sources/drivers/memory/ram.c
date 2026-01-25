@@ -32,7 +32,9 @@ void RAM_Init(size_t size) {
 	initialized = true;
 }
 
-void* malloc(size_t size, MemoryRegionStatus status) {
+void* malloc(size_t size) {
+	MemoryRegionStatus status = 0;
+
 	if (status == 0) return 0;
 
 	status |= MEMORY_STATUS_ACTIVE;

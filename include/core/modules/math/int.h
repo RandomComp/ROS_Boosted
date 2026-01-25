@@ -3,104 +3,48 @@
 
 #include "core/basic_types.h"
 
-#include "math/int_fwd.h"
+ErrorCode Int_new(size_t size);
 
-#include "math/math.h"
+ErrorCode Int_copy(uint** dest_ptr, const uint* src);
 
-#include "exceptions/exception.h"
+void Int_normalizeSize(uint *a, uint *b);
 
-#include "drivers/memory/ram.h"
+void Int_setUInt32NumberToUInt(uint* a, size_t b);
 
-#include "builtins/mem.h"
+uint Int_UIntFromUInt32(size_t x);
 
-uint Int_new(uint32 byteDepth);
+void Int_convertToWithSize(uint* x, size_t new_size);
 
-uint INT_copyUInt(uint x);
+ErrorCode Int_add(uint* a, uint* b);		// +
+ErrorCode Int_sub(uint* a, uint* b);		// -
+ErrorCode Int_mul(uint* a, uint* b);		// *
+ErrorCode Int_div(uint* a, uint* b);		// /
 
-uint32 INT_getMaxBitDepthFromUInts(uint a, uint b);
+ErrorCode Int_lsh(uint* x, size_t shift); // <<
+ErrorCode Int_rsh(uint* x, size_t shift); // >>
 
-uint32 INT_getMaxByteDepthFromUInts(uint a, uint b);
+void Int_free(uint* x);
 
-void INT_normalizeBitDepth(uint *a, uint *b);
+void Int_bitAndUInt(uint* a, uint* b);
 
-void INT_setUInt32NumberToUInt(uint* a, uint32 b);
+uint Int_bitOrUInt(uint* a, uint* b);
 
-uint INT_UIntFromUInt32(uint32 x);
+uint Int_bitNotUInt(uint* x);
 
-void INT_convertUIntBitDepthTo(uint* x, uint32 destBitDepth);
+bool Int_bigThanUInt(uint* a, uint* b);
 
-uint INT_addUInt(uint* a, uint b);		// +
-uint INT_subUInt(uint* a, uint b);		// -
-uint INT_mulUInt(uint* a, uint b);		// *
-uint INT_divUInt(uint* a, uint b);		// /
+bool Int_lessThanUInt(uint* a, uint* b);
 
-uint INT_lshUInt(uint* x, uint8 shift); // <<
-uint INT_rshUInt(uint* x, uint8 shift); // >>
-
-static inline void Int_free(uint* x) {
-	free(x->data);
-
-	x->data = nullptr;
-
-	x->bitDepth = 0;
+bool Int_bigOrEqualThanUInt(uint* a, uint* b) {
+	return Int_bigThanUInt(a, b) || Int_equalUInt(a, b);
 }
 
-static inline void INT_bitAndUInt(uint* a, uint* b) {
-	INT_normalizeBitDepth(a, b);
-
-	for (uint32 i = 0; i < INT_getMaxByteDepthFromUInts(a, b); i++) {
-
-	}
+bool Int_lessOrEqualThanUInt(uint* a, uint* b) {
+	return Int_lessThanUInt(a, b) || Int_equalUInt(a, b);
 }
 
-static inline uint INT_bitOrUInt(uint* a, uint* b) {
-	INT_normalizeBitDepth(a, b);
+bool Int_equalUInt(uint* a, uint* b);
 
-	for (uint32 i = 0; i < INT_getMaxByteDepthFromUInts(a, b); i++) {
-
-	}
-}
-
-static inline uint INT_bitNotUInt(uint* x) {
-	for (uint32 i = 0; i < x->bitDepth / INT_ALIGN; i++) {
-		
-	}
-}
-
-static inline bool INT_bigThanUInt(uint* a, uint* b) {
-	INT_normalizeBitDepth(a, b);
-
-	for (uint32 i = 0; i < INT_getMaxByteDepthFromUInts(a, b); i++) {
-
-	}
-}
-
-static inline bool INT_lessThanUInt(uint* a, uint* b) {
-	INT_normalizeBitDepth(a, b);
-
-	for (uint32 i = 0; i < INT_getMaxByteDepthFromUInts(a, b); i++) {
-
-	}
-}
-
-static inline bool INT_bigOrEqualThanUInt(uint* a, uint* b) {
-	return INT_bigThanUInt(a, b) || INT_equalUInt(a, b);
-}
-
-static inline bool INT_lessOrEqualThanUInt(uint* a, uint* b) {
-	return INT_lessThanUInt(a, b) || INT_equalUInt(a, b);
-}
-
-static inline bool INT_equalUInt(uint* a, uint* b) {
-	INT_normalizeBitDepth(a, b);
-
-	for (uint32 i = 0; i < INT_getMaxByteDepthFromUInts(a, b); i++) {
-
-	}
-}
-
-static inline bool INT_notEqualUInt(uint* a, uint* b) {
-	return !INT_equalUInt(a, b);
-}
+bool Int_notEqualUInt(uint* a, uint* b);
 
 #endif

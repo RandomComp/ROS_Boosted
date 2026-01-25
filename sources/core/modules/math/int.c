@@ -6,117 +6,228 @@
 
 #include "math/math.h"
 
+#include "drivers/memory/ram.h"
+
+#include "builtins/mem.h"
+
+#include "std/string/format.h"
+
 #include "core/basic_types.h"
 
-uint Int_new(uint32 byteDepth) {
-	if (byteDepth % INT_ALIGN != 0) {
+uint* Int_new(size_t size) {
+	uint* result = malloc(sizeof(uint));
+
+	if (result == nullptr) {
 		throw(
-			Exception_warningInvalidArgument(
-				Format_c_str(
-					"Byte depth [value: u32] in argument is not "
-					"multiple of INT_ALIGN=[value: u32].", byteDepth, INT_ALIGN
-				)
+			Exception_fromError(
+				ERROR_MEMORY_LACK,
+				"Failed to create new uint because malloc "
+				"returned nullptr, so memory lack"
 			)
 		);
+
+		return nullptr;
 	}
 
-	uint result = { 0 };
+	result->size = size;
 
-	result.size = ceilU32(byteDepth, INT_ALIGN);
+	result->data = malloc(result->size * sizeof(word));
 
-	result.data = malloc(result.size, MEMORY_STATUS_ACTIVE);
+	if (result->data == nullptr) {
+		throw(
+			Exception_fromError(
+				ERROR_MEMORY_LACK,
+				"Failed to create new uint because malloc "
+				"returned nullptr, so memory lack"
+			)
+		);
 
-	memset(result.data, 0, result.byteDepth);
+		return result;
+	}
+
+	memset(result->data, 0, result->size * sizeof(word));
 
 	return result;
 }
 
-void Int_free(uint* x) {
+ErrorCode Int_free(uint* x) {
+	if (x == nullptr) {
+		throw(
+			Exception_errorInvalidArgument(
+				"Failed to free uint because uint* x is nullptr"
+			)
+		);
+
+		return CODE_FAIL;
+	}
+
 	free(x->data);
 
 	x->data = nullptr;
 
-	x->bitDepth = 0;
+	x->size = 0;
+
+	free(x);
+
+	return CODE_OK;
 }
 
-uint INT_copyUInt(uint x) {
-	uint result = INT_newUInt(x.bitDepth);
+ErrorCode Int_copy(uint** dest_ptr, const uint* src) {
+	if (src == nullptr) {
+		throw(
+			Exception_errorInvalidArgument(
+				"Failed to copy uint because uint* src is nullptr"
+			)
+		);
 
-	memcpy(getUInt32ArrayFromUInt(result), getUInt32ArrayFromUInt(x), x.bitDepth);
+		return CODE_FAIL;
+	}
 
-	return result;
+	if (dest_ptr == nullptr) {
+		throw(
+			Exception_errorInvalidArgument(
+				"Failed to copy uint because uint** dest_ptr is nullptr"
+			)
+		);
+
+		return CODE_FAIL;
+	}
+
+	if (*dest_ptr == nullptr) {
+		*dest_ptr = malloc(sizeof(uint));
+	}
+
+	uint* dest = *dest_ptr;
+
+	memcpy(dest->data, src->data, src->size);
+
+	return CODE_OK;
 }
 
-uint32 INT_getMaxBitDepthFromUInts(uint a, uint b) {
-	return imaxU32(a.bitDepth, b.bitDepth);
+ErrorCode Int_normalizeSize(uint* a, uint* b) {
+	if (a == nullptr) {
+		throw(
+			Exception_errorInvalidArgument(
+				"uint* a is nullptr"
+			)
+		);
+
+		return CODE_FAIL;
+	}
+
+	if (b == nullptr) {
+		throw(
+			Exception_errorInvalidArgument(
+				"uint* b is nullptr"
+			)
+		);
+
+		return CODE_FAIL;
+	}
+
+	if (a->size == b->size) return;
+
+	if (a->size < b->size)
+		Int_convertToWithSize(a, b->size);
+	else if (a->size > b->size)
+		Int_convertToWithSize(b, a->size);
+
+	return CODE_OK;
 }
 
-uint32 INT_getMaxByteDepthFromUInts(uint a, uint b) {
-	return BitsToBytes(getMaxBitDepthFromUInts(a, b));
-}
-
-Suint32 INT_newSuint32(uint32 x) {
-	return (Suint32){ .hi = (x >> 16) & 0xFFFF, .lo = x & 0xFFFF };
-}
-
-void INT_normalizeBitDepth(uint *a, uint *b) {
-	assert(a == nullptr, Exception_fromError(INVALID_ARGUMENT_ERROR, Exception_fromString("Error while executing function void INT_normalizeBitDepth(uint *a, uint *b) from ")));
-
-	if (a->bitDepth == b->bitDepth) return;
-
-	if (a->bitDepth < b->bitDepth)
-		INT_convertUIntBitDepthTo(a, b->bitDepth);
-	else if (a->bitDepth > b->bitDepth)
-		INT_convertUIntBitDepthTo(b, a->bitDepth);
-}
-
-void INT_setUInt32NumberToUInt(uint* a, uint32 b) {
+void Int_setUInt32NumberToUInt(uint* a, size_t b) {
 	assert(!isValidMemoryRegion(a), Exception_fromError(INVALID_ARGUMENT_ERROR, ""));
 
 	assert(a->bitDepth < 32, Exception_fromWarning(INVALID_ARGUMENT_WARNING, ""));
 }
 
-uint INT_UIntFromUInt32(uint32 x) {
-	uint result = INT_newUInt(32);
+uint Int_UIntFromUInt32(size_t x) {
+	uint result = Int_newUInt(32);
 
 	
 }
 
-uint INT_getUIntZero() {
-	return INT_UIntFromUInt32(0);
+uint Int_getUIntZero() {
+	return Int_UIntFromUInt32(0);
 }
 
-uint INT_getUIntOne() {
-	return INT_UIntFromUInt32(1);
+uint Int_getUIntOne() {
+	return Int_UIntFromUInt32(1);
 }
 
-void INT_convertUIntBitDepthTo(uint* x, uint32 destBitDepth) {
-	assert(destBitDepth % INT_ALIGN != 0, Exception_fromWarning(INVALID_ARGUMENT_WARNING, Exception_fromString("Bit depth in argument is not multiple of INT_ALIGN.")));
+ErrorCode Int_convertWithSize(uint* x, size_t new_size) {
+	if (x == nullptr) {
+		throw(
+			Exception_errorInvalidArgument(
+				"uint* x is null ptr"
+			)
+		);
 
-	assert(!isValidMemoryRegion(x->data), Exception_fromError(INVALID_ARGUMENT_ERROR, Exception_fromString("")));
+		return CODE_FAIL;
+	}
 
-	uint result = INT_newUInt(destBitDepth);
+	if (x->data == nullptr) {
+		throw(
+			Exception_errorInvalidArgument(
+				"word* uint::data x is null ptr"
+			)
+		);
 
-	memcpy(result, x, BitsToBytes(iminU32(x->bitDepth, destBitDepth)));
+		return CODE_FAIL;
+	}
+	
+	word* new_data = realloc(x->data, new_size * sizeof(word));
 
-	Int_free(x);
+	x->size = new_size;
 
-	return result;
+	return CODE_OK;
 }
 
-void Int_addUInt(uint* a, uint* b) {
-	// result.lo += b.lo;
+static ErrorCode expand(uint* x, size_t amount) {
+	if (x == nullptr) {
+		throw(
+			Exception_errorInvalidArgument(
+				"uint* x is nullptr"
+			)
+		);
 
-	// result.hi += b.hi + (result.lo < b.lo); // hi = 1011, lo = 0001 1001, 1100 1001
+		return CODE_FAIL;
+	}
 
-	Int_normalizeBitDepth(a, b);
+	if (amount == 0) return CODE_OK;
+
+	word* new_data = realloc(x->data, (x->size + amount) * sizeof(word));
+
+	if (new_data == nullptr) {
+		throw(
+			Exception_fromError(
+				ERROR_MEMORY_LACK,
+				Format_c_str(
+					"Failed to expand [value: size] because realloc "
+					"returned nullptr, so memory lack", amount
+				)
+			)
+		);
+
+		return CODE_FAIL;
+	}
+
+	x->size += amount;
+
+	x->data = new_data;
+
+	return CODE_OK;
+}
+
+ErrorCode Int_add(uint* a, uint* b) {
+	Int_normalizeSize(a, b); // if a->size = 1 and b->size = 2 then a->size = 2
 
 	bool bOverflow = false;
 
-	for (uint32 i = 0; i < a->byteDepth / 4; i++) {
-		uint32* aPart = &a->data[i];
+	for (size_t i = 0; i < a->size; i++) {
+		word* aPart = &a->data[i];
 
-		uint32* bPart = &b->data[i];
+		word* bPart = &b->data[i];
 
 		*aPart += *bPart;
 
@@ -124,23 +235,26 @@ void Int_addUInt(uint* a, uint* b) {
 
 		bOverflow = (*aPart < *bPart);
 	}
+
+	if (bOverflow) {
+		if (expand(a, 1) == CODE_FAIL)
+			return CODE_FAIL;
+
+		a->data[a->size - 1]++;
+	}
+
+	return CODE_OK;
 }
 
-void INT_subUInt(uint* a, uint* b) {
-	// uint result = a;
-
-	// result.lo -= b.lo;
-
-	// result.hi -= b.hi - (result.lo > b.lo);
-
-	Int_normalizeBitDepth(a, b);
+void Int_sub(uint* a, uint* b) {
+	Int_normalizeSize(a, b); // if a->size = 1 and b->size = 2 then a->size = 2
 
 	bool bOverflow = false;
 
-	for (uint32 i = 0; i < a->byteDepth / 4; i++) {
-		uint32* aPart = &a->data[i];
+	for (size_t i = 0; i < a->size; i++) {
+		word* aPart = &a->data[i];
 
-		uint32* bPart = &b->data[i];
+		word* bPart = &b->data[i];
 
 		*aPart -= *bPart;
 
@@ -148,11 +262,20 @@ void INT_subUInt(uint* a, uint* b) {
 
 		bOverflow = (*aPart > *bPart);
 	}
+
+	if (bOverflow) {
+		if (expand(a, 1) == CODE_FAIL)
+			return CODE_FAIL;
+
+		a->data[a->size - 1]--;
+	}
+
+	return CODE_OK;
 }
 
 
-uint INT_mulUInt(uint a, uint b) {
-	uint result = INT_getUIntZero();
+uint* Int_mul(uint a, uint b) {
+	uint result = Int_new();
 
 	// for (uint8 i = 0; i < 128; i++) {
 	// 	if (checkBitU128(b, i)) {
@@ -163,15 +286,15 @@ uint INT_mulUInt(uint a, uint b) {
 	return result;
 }
 
-uint INT_divUInt(uint a, uint b) {
+uint* Int_div(uint* a, uint* b) {
 	// uint8 bLoDigitCount = getNumberOfDigitsU64(b.lo);
 
-	// uint result = INT_rshUInt(INT_mulUInt(a, INT_UIntFromUInt32(0, 0x1000 / b.lo)), 12);
+	// uint result = Int_rshUInt(Int_mulUInt(a, Int_UIntFromUInt32(0, 0x1000 / b.lo)), 12);
 
 	// return result;
 }
 
-void INT_lshUInt(uint* x, uint32 shift) {
+void Int_lshUInt(uint* x, size_t shift) {
 	for (size_t i = shift; i < x->byteDepth; i += sizeof(x->data)) {
 
 	}
@@ -187,9 +310,9 @@ void INT_lshUInt(uint* x, uint32 shift) {
 	return x;
 }
 
-void INT_rshUInt(uint* x, uint32 shift) {
+void Int_rshUInt(uint* x, size_t shift) {
 	if (shift >= x->bitDepth)
-		return INT_convertUIntBitDepthTo(x, iceilU32(shift, 32));
+		return Int_convertToWithSize(x, iceilU32(shift, 32));
 
 	if (shift <= 64) {
 		x.lo >>= shift; // Сдвиг ненулевых битов для получения свободного пространства для сдвига из lo (shift - 1)...0
@@ -200,68 +323,60 @@ void INT_rshUInt(uint* x, uint32 shift) {
 	}
 
 	else if (shift < 128) {
-		INT_rshUInt(x, 64);
+		Int_rshUInt(x, 64);
 
-		INT_rshUInt(x, shift - 64);
+		Int_rshUInt(x, shift - 64);
 	}
 	
 	return x;
 }
 
-void INT_bitAndUInt(uint* a, uint* b) {
-	INT_normalizeBitDepth(a, b);
+void Int_bitAndUInt(uint* a, uint* b) {
+	Int_normalizeSize(a, b);
 
-	for (uint32 i = 0; i < INT_getMaxByteDepthFromUInts(a, b); i++) {
-
-	}
-}
-
-uint INT_bitOrUInt(uint* a, uint* b) {
-	INT_normalizeBitDepth(a, b);
-
-	for (uint32 i = 0; i < INT_getMaxByteDepthFromUInts(a, b); i++) {
+	for (size_t i = 0; i < Int_getMaxByteDepthFromUInts(a, b); i++) {
 
 	}
 }
 
-uint INT_bitNotUInt(uint* x) {
-	for (uint32 i = 0; i < x->bitDepth / INT_ALIGN; i++) {
+uint Int_bitOrUInt(uint* a, uint* b) {
+	Int_normalizeSize(a, b);
+
+	for (size_t i = 0; i < Int_getMaxByteDepthFromUInts(a, b); i++) {
+
+	}
+}
+
+uint Int_bitNotUInt(uint* x) {
+	for (size_t i = 0; i < x->bitDepth / Int_ALIGN; i++) {
 		
 	}
 }
 
-bool INT_bigThanUInt(uint* a, uint* b) {
-	INT_normalizeBitDepth(a, b);
+bool Int_bigThanUInt(uint* a, uint* b) {
+	Int_normalizeSize(a, b);
 
-	for (uint32 i = 0; i < INT_getMaxByteDepthFromUInts(a, b); i++) {
-
-	}
-}
-
-bool INT_lessThanUInt(uint* a, uint* b) {
-	INT_normalizeBitDepth(a, b);
-
-	for (uint32 i = 0; i < INT_getMaxByteDepthFromUInts(a, b); i++) {
+	for (size_t i = 0; i < Int_getMaxByteDepthFromUInts(a, b); i++) {
 
 	}
 }
 
-bool INT_bigOrEqualThanUInt(uint* a, uint* b) {
-	return INT_bigThanUInt(a, b) || INT_equalUInt(a, b);
-}
+bool Int_lessThanUInt(uint* a, uint* b) {
+	Int_normalizeSize(a, b);
 
-bool INT_lessOrEqualThanUInt(uint* a, uint* b) {
-	return INT_lessThanUInt(a, b) || INT_equalUInt(a, b);
-}
-
-bool INT_equalUInt(uint* a, uint* b) {
-	INT_normalizeBitDepth(a, b);
-
-	for (uint32 i = 0; i < INT_getMaxByteDepthFromUInts(a, b); i++) {
+	for (size_t i = 0; i < Int_getMaxByteDepthFromUInts(a, b); i++) {
 
 	}
 }
 
-bool INT_notEqualUInt(uint* a, uint* b) {
-	return !INT_equalUInt(a, b);
+bool Int_equalUInt(uint* a, uint* b) {
+	Int_normalizeSize(a, b);
+
+	for (size_t i = 0; i < Int_getMaxByteDepthFromUInts(a, b); i++) {
+
+	}
+}
+
+bool Int_notEqualUInt(uint* a, uint* b) {
+	return !Int_equalUInt(a, b);
 }

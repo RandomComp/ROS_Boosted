@@ -74,7 +74,7 @@ uint8 getNumberOfDigits64(int64 x) {
 	return result;
 }
 
-uint8 getNumberOfDigitsU32(uint32 x) {
+uint8 getNumberOfDigitsU32(size_t x) {
 	if (x == 0) return 1;
 
 	uint8 result = 0;
@@ -122,15 +122,15 @@ int32 pow32(int32 a, int32 b) {
 	return result;
 }
 
-uint32 powU32(uint32 a, uint32 b) {
+size_t powU32(size_t a, size_t b) {
 	if (b == 0) return 1;
 
 	if (b == 1) return a;
 
-	uint32 result = 1;
+	size_t result = 1;
 
 	while (b--) {
-		uint32 oldResult = result;
+		size_t oldResult = result;
 
 		result *= a;
 

@@ -5,7 +5,7 @@
 
 void RAM_Init(size_t size);
 
-void* malloc(size_t size, MemoryRegionStatus status);
+void* malloc(size_t size);
 
 void* realloc(void* addr, size_t size);
 
