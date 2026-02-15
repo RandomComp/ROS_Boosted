@@ -3,27 +3,22 @@
 
 #include "core/basic_types.h"
 
-typedef enum MemoryRegionStatus {
+typedef enum MemoryStatus {
+	MEMORY_STATUS_UNUSED = 		0b00000000,
 	MEMORY_STATUS_FREE = 		0b00000001,
 	MEMORY_STATUS_ACTIVE = 		0b00000010,
 	MEMORY_STATUS_EXECUTABLE = 	0b00000100,
 	MEMORY_STATUS_ENCRYPTED = 	0b00001000
-} MemoryRegionStatus;
+} MemoryStatus;
 
 typedef struct Size {
-	uint32 GB, MB, KB, bytes;
+	size_t GB, MB, KB, B;
 } Size;
 
-typedef struct MemoryRegionHeader {
-	size_t regionSize;
+typedef struct MemoryHeader {
+	size_t size;
 
-	MemoryRegionStatus regionStatus;
-} MemoryRegionHeader;
-
-typedef struct MemoryRegion {
-	MemoryRegionHeader header;
-
-	void* memory;
-} MemoryRegion;
+	MemoryStatus status;
+} MemoryHeader;
 
 #endif

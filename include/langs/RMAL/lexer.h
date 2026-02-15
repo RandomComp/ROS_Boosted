@@ -39,8 +39,6 @@ typedef enum RMAL_InstructionType {
 #define COUNT_RMAL_REGISTER (LAST_RMAL_REGISTER - FIRST_RMAL_REGISTER)
 
 typedef enum RMAL_Register {
-	RMAL_REGISTER_UNKNOWN, 	// Unrecognized register
-
 	RMAL_REGISTER_EAX, 		// Accumulator
 	RMAL_REGISTER_ECX, 		// Counter
 	RMAL_REGISTER_EDX, 		// Data
@@ -49,6 +47,8 @@ typedef enum RMAL_Register {
 	RMAL_REGISTER_EBP, 		// Base pointer
 	RMAL_REGISTER_ESI, 		// Source index
 	RMAL_REGISTER_EDI, 		// Destination index
+	
+	RMAL_REGISTER_UNKNOWN, 	// Unrecognized register
 } RMAL_Register;
 
 typedef enum RMAL_InstructionArgumentType {

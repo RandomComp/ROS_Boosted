@@ -9,10 +9,20 @@
 
 #include "exceptions/errors/error_types.h"
 
+#define Exception_fromInfo(infoType, infoMsg) ((Exception) { \
+	.type = EXCEPTION_TYPE_INFO, \
+	.value.info = (infoType), \
+	.message.file_name = (__FILE__), \
+	.message.func_name = (__func__), \
+	.message.line = (__LINE__), \
+	.message.why = (infoMsg) } \
+)
+
 #define Exception_fromWarning(warn, whyMsg) ((Exception) { \
 	.type = EXCEPTION_TYPE_WARNING, \
 	.value.warning = (warn), \
-	.message.moduleName = (__FILE__), \
+	.message.file_name = (__FILE__), \
+	.message.func_name = (__func__), \
 	.message.line = (__LINE__), \
 	.message.why = (whyMsg) } \
 )
@@ -20,7 +30,8 @@
 #define Exception_fromError(err, whyMsg) ((Exception) { \
 	.type = EXCEPTION_TYPE_ERROR, \
 	.value.error = (err), \
-	.message.moduleName = (__FILE__), \
+	.message.file_name = (__FILE__), \
+	.message.func_name = (__func__), \
 	.message.line = (__LINE__), \
 	.message.why = (whyMsg) } \
 )
@@ -31,6 +42,6 @@
 
 void throw(Exception exception);
 
-void assert(bool expr, Exception exception);
+void assert(bool expr);
 
 #endif

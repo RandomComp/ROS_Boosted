@@ -1,16 +1,14 @@
-#include "drivers/high-level/acpi.h"
+#include "drivers/acpi/acpi.h"
 
 #include "core/basic_types.h"
 
-#include "core/std.h"
+#include "std/std.h"
 
-#include "drivers/low-level/io/io.h"
+#include "drivers/io/io.h"
 
-#include "drivers/low-level/base/mem.h"
+#include "drivers/time/pit.h"
 
-#include "drivers/high-level/pit.h"
-
-#include "core/error.h"
+#include "builtins/mem.h"
 
 bool bACPIInitialized = false;
 

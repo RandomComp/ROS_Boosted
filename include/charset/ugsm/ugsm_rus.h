@@ -1,8 +1,6 @@
-#ifndef _RUS_H
-#define _RUS_H
+#ifndef _RANDOM_OS_UGSM_RUS_H
+#define _RANDOM_OS_UGSM_RUS_H
 
-#include "charset/ugsm.h"
-
-void RUSInit(void);
+void RUSInit();
 
 #endif

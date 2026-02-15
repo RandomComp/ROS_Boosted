@@ -1,39 +1,25 @@
-#include "core/types/low-level/multiboot_types.h"
+#include "drivers/multiboot/multiboot_types.h"
 
-#include "core/modules/high-level/std.h"
+#include "std/std.h"
 
-#include "core/time.h"
+#include "drivers/hid/keyboardps2.h"
 
-#include "drivers/low-level/base/ram.h"
+#include "drivers/acpi/acpi.h"
 
-extern struct Size RAMSize;
+#include "drivers/memory/ram.h"
 
-static multibootInfo* bootInfo;
+void main(uint32 magic, multibootInfo* info) {
+	RAM_init(info);
 
-void main(uint32 magic, multibootInfo* bootInfoArg) {
-	bootInfo = bootInfoArg;
+	printf("RAM Size is: [value: size]", RAM_getSize());
 
-	MEMInit(2 * 1024 * 1024); // 4 MB
+	KeyboardPS2_Init();
 
-	STDInit();
+	ACPI_Init();
 
-	ASCIIInit();
+	printf("OS is booted succesfully!\n");
 
-	TimeInit();
-
-	kprintf("RAM Size is:\n");
-
-	showSize(RAMSize);
-
-	RUSInit();
-
-	KeyboardPS2Init();
-
-	ACPIInit();
-
-	kprintf("OS is booted succesfully!\n");
-
-	clear(0);
+	printf("Поклоняюсь Нейромонаху Феофану, Земфире, IOWA, ABBA, Adele, Alan Walker, AronChupa! Вдохновляясь их песнями, это ядро был создано!");
 
 	for (;;);
 }

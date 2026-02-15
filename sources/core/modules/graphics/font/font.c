@@ -10,7 +10,7 @@
 
 #include "exceptions/warnings/warning_types.h"
 
-#include "exceptions/errors/error_types.h"
+#include "exceptions/errors/error.h"
 
 #include "drivers/memory/ram.h"
 
@@ -24,11 +24,11 @@ static size_t glyphCount, fontCount = 0;
 
 static bool bInitialized = false;
 
-static Glyph* copyGlyph(Glyph* dest, Glyph* src) {
+static Glyph* copyGlyph(Glyph* dest, const Glyph* src) {
 	if (src == nullptr) {
 		throw(
 			Exception_errorInvalidArgument(
-				"Cannot copy from src to dest, when src = nullptr."
+				"Unable copy from src to dest, when src is nullptr."
 			)
 		);
 
@@ -36,7 +36,7 @@ static Glyph* copyGlyph(Glyph* dest, Glyph* src) {
 	}
 
 	if (dest == nullptr)
-		dest = malloc(sizeof(Font), MEMORY_STATUS_ACTIVE);
+		dest = malloc(sizeof(Font));
 
 	dest->width = src->width;
 
@@ -51,39 +51,64 @@ static Glyph* copyGlyph(Glyph* dest, Glyph* src) {
 	return dest;
 }
 
-static Font* copyFont(Font* dest, Font* src) {
+ErrorCode Font_copy(Font** dest_ptr, const Font* src) {
 	if (src == nullptr) {
 		throw(
 			Exception_errorInvalidArgument(
-				"Cannot copy from src to dest, when src = nullptr."
+				"Unable font copy: src is nullptr."
 			)
 		);
 
-		return nullptr;
+		return CODE_FAIL;
 	}
 
-	if (dest == nullptr)
-		dest = malloc(sizeof(Font), MEMORY_STATUS_ACTIVE);
+	if (dest_ptr == nullptr) {
+		throw(
+			Exception_errorInvalidArgument(
+				"Font copy failed: dest_ptr is nullptr."
+			)
+		);
+
+		return CODE_FAIL;
+	}
+
+	if (*dest_ptr == nullptr)
+		*dest_ptr = malloc(sizeof(Font));
+
+	Font* dest = *dest_ptr;
+
+	dest->glyphCount = src->glyphCount;
 
 	if (src->glyphCount == 0) {
 		throw(
 			Exception_warningInvalidArgument(
-				"Nothing to copy ( src->glyphCount = 0 )."
+				"Font copy failed: nothing to copy (src->glyphCount is 0)."
 			)
 		);
 
-		return nullptr;
+		return CODE_FAIL;
 	}
 
-	dest->glyphCount = src->glyphCount;
+	Glyph* new_glyphs = realloc(dest->glyphs, src->glyphCount * sizeof(Glyph));
 
-	dest->glyphs = realloc(dest->glyphs, dest->glyphCount * sizeof(Glyph));
+	if (new_glyphs == nullptr) {
+		throw(
+			Exception_fromError(
+				ERROR_MEMORY_LACK,
+				"Font copy failed "
+			)
+		);
+
+		return CODE_FAIL;
+	}
+
+	dest->glyphs = realloc(dest->glyphs, src->glyphCount * sizeof(Glyph));
 
 	for (size_t i = 0; i < dest->glyphCount; i++) {
 		copyGlyph(&dest->glyphs[i], &src->glyphs[i]);
 	}
 
-	return dest;
+	return CODE_OK;
 }
 
 static bool isCodeReserved(Font_ReserveCode code) {
@@ -114,18 +139,16 @@ static Font_ReserveCode getFreeSpaceForGlyph() {
 	return 0;
 }
 
-Font_ReserveCode Font_load(Font font) {
+Font_ReserveCode Font_load(Font* font) {
 	Font_ReserveCode fontCode = getFreeSpaceForGlyph();
 
-	size_t fontEnd = glyphCount + font.glyphCount;
+	size_t fontEnd = glyphCount + font->glyphCount;
 
 	reserveTable = realloc(reserveTable, fontEnd);
 
 	fonts = realloc(fonts, fontEnd);
 
-	for (Font_ReserveCode i = 0; i < font.glyphCount; i++) {
-		copyFont(&fonts[i + fontCode], &font.glyphs[i]);
-	}
+	Font_copy(&fonts[fontCode], font);
 
 	return fontCode;
 }

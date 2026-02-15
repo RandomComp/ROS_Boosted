@@ -5,17 +5,9 @@
 
 #include "charset/ugsm/ugsm_types.h"
 
-uint32 UGSM_getLength(UGSM_Code* str);
+UGSM_Code UGSM_ASCIICharToUGSM(uint8 c);
 
-UGSM_Code UGSM_loadGlyphSet(UGSM_Code glyphSet, size_t length);
-
-UGSM_Code UGSM_loadGlyph(UGSM_Glyph glyph);
-
-UGSMGlyph* UGSM_getGlyph(UGSM_Code glyphCode);
-
-UGSM_Code UGSM_ASCIICharToUGSM(c_char c);
-
-UGSM_Code UGSM_digitToUGSM(uint8 digit);
+UGSM_Code UGSM_fromDigit(uint8 digit);
 
 bool UGSM_GlyphIsControlCharacter(UGSM_Code glyphCode);
 

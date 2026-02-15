@@ -43,16 +43,16 @@ struct FACP {
 	int8 PM1_CNT_LEN;
 };
 
-void ACPIInit(void);
+void ACPI_Init(void);
 
-int32 ACPIEnable(void);
+int32 ACPI_Enable(void);
 
-uint32* ACPICheckRSDPtr(uint32* ptr);
+uint32* ACPI_CheckRSDPtr(uint32* ptr);
 
-uint32* ACPIGetRSDPtr(void);
+uint32* ACPI_GetRSDPtr(void);
 
-int32 ACPICheckHeader(uint32* ptr, int8* sig);
+int32 ACPI_CheckHeader(uint32* ptr, int8* sig);
 
-void ACPIPowerOff(void);
+void ACPI_PowerOff(void);
 
 #endif

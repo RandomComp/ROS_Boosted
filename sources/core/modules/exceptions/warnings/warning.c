@@ -51,7 +51,7 @@ static c_str getIronicWarningDescription(Warning warningType) {
 static const c_str getFormalWarningDescription(Warning warningType) {
 	const c_str formalWarningMessages[] = {
 		[WARNING_USB_BABBLE_DETECTED] = 						"An unwanted USB device mumbling has been detected.",
-		[WARNING_ALL_GLYPHS_ARE_RESERVED] = 					"The UGSM encoding is full, so it cannot add the requested glyph.",
+		[WARNING_ALL_GLYPHS_ARE_RESERVED] = 					"The UGSM encoding is full, so it unable add the requested glyph.",
 		[WARNING_REQUIRED_NUMBER_OF_ARGUMENTS_NOT_REACHED] = 	"The required number of arguments in the function was not reached.",
 		[WARNING_UNKNOWN_T_TYPE] = 								"Unknown type T, code execution will continue, but pay attention to this. Data corruption is possible.",
 		[WARNING_FUNCTION_NOT_IMPLEMENTED] = 					"The function you are trying to call is not implemented."

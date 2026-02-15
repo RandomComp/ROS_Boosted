@@ -3,20 +3,32 @@
 
 #include "core/basic_types.h"
 
-#include "core/modules/std/string/char_types.h"
+#include "std/string/string_fwd.h"
 
-#include "core/modules/std/string/string_types.h"
+#include "drivers/memory/ram.h"
+#include "builtins/mem.h"
+
+typedef enum LogSeverity {
+	LOG_INFO,
+	LOG_WARNING,
+	LOG_ERROR,
+	LOG_CRITICAL
+} LogSeverity;
 
 void STD_Init();
 
-void print_str(String str);
+void print_str(const String* str);
 
-void print(c_str str);
+void printf_str(const String* str, ...);
 
-void printf_str(String str, ...);
+void print(const c_str str);
 
-void printf(c_str str, ...);
+void printf(const c_str str, ...);
 
-Char getch();
+void kmsg(const c_str str, ...); // Выводит текст напрямую в лог ядра
+
+void klog(LogSeverity severity, const c_str str, ...); // Выводит текст напрямую в лог ядра
+
+c_char getch();
 
 #endif

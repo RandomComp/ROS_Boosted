@@ -1,23 +1,19 @@
-#include "core/modules/types/error.h"
-
-#include "core/types/low-level/error_types.h"
+#include "exceptions/errors/error.h"
 
 #include "core/basic_types.h"
 
-#include "charset/types/ascii_types.h"
+#include "std/std.h"
 
-#include "core/modules/high-level/std.h"
+#include "exceptions/exception_types.h"
 
-#include "core/types/high-level/exception_types.h"
+#include "time/time.h"
 
-#include "core/time.h"
+#include "math/math.h"
 
-#include "core/modules/low-level/math.h"
+#include "charset/ugsm/ugsm_types.h"
 
-#include "charset/types/ugsm_types.h"
-
-static ASCII_CharacterCode* getErrorName(Error errorType) {
-	ASCII_CharacterCode* errorNames[] = {
+static const c_str getErrorName(Error errorType) {
+	const c_str errorNames[] = {
 		[ERROR_VBE_NOT_SUPPORTED] = 						"ERROR_VBE_NOT_SUPPORTED",
 		[ERROR_VBE_SETUP] = 								"ERROR_VBE_SETUP",
 		[ERROR_USB_TD_BITSTUFF] = 							"ERROR_USB_TD_BITSTUFF",
@@ -54,8 +50,8 @@ static ASCII_CharacterCode* getErrorName(Error errorType) {
 	return errorNames[error];
 }
 
-static ASCII_CharacterCode* getFormalErrorDescription(Error errorType) {
-	ASCII_CharacterCode* errorMessages[] = {
+static const c_str getFormalErrorDescription(Error errorType) {
+	const c_str errorMessages[] = {
 		[ERROR_VBE_NOT_SUPPORTED] = 						"Your video card does not support VBE 2.0 ( go fuck yourself, it's not our fault here :) )",
 		[ERROR_VBE_SETUP] = 								"And now we've fucked up, I'm sorry, but you know, fuck you!",
 		[ERROR_USB_TD_BITSTUFF] = 							"You broke the USB again, HOW MUCH CAN you DO? I'VE ALREADY STARTED PAYING FOR IT.",
@@ -92,8 +88,8 @@ static ASCII_CharacterCode* getFormalErrorDescription(Error errorType) {
 	return errorMessages[error];
 }
 
-static ASCII_CharacterCode* getIronicErrorDescription(Error errorType) {
-	const ASCII_CharacterCode* errorMessages[] = {
+static const c_str getIronicErrorDescription(Error errorType) {
+	const c_str errorMessages[] = {
 		[ERROR_VBE_NOT_SUPPORTED] = 						"Your video card does not support VBE 2.0 ( go fuck yourself, it's not our fault here :) )",
 		[ERROR_VBE_SETUP] = 								"And now we've fucked up, I'm sorry, but you know, fuck you!",
 		[ERROR_USB_TD_BITSTUFF] = 							"You broke the USB again, HOW MUCH CAN you DO? I'VE ALREADY STARTED PAYING FOR IT.",

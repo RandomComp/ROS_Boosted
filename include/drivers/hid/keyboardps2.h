@@ -9,6 +9,10 @@
 
 #define KEYBOARD_PS2_COMMAND_PORT 0x64
 
+#define SCANCODE_FIRST SCANCODE_ESCAPE
+
+#define SCANCODE_LAST SCANCODE_F12
+
 typedef enum KeyState {
 	KEY_FREE,
 	KEY_PRESSED,
@@ -109,10 +113,14 @@ typedef enum Scancode {
 	SCANCODE_CONTROL_SEQUENCE = 0xE0
 } Scancode;
 
-void KeyboardPS2Init(void);
+typedef struct Keyboard_EventInfo {
+	KeyState keyState;
 
-void KeyboardPS2Event(struct Registers* regs);
+	Scancode scancode;
+} Keyboard_EventInfo;
 
-UGSM_Code scancodeToUGSM(Scancode key);
+void KeyboardPS2_Init(void);
+
+void KeyboardPS2_ISR(struct Registers* regs);
 
 #endif

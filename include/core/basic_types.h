@@ -65,7 +65,7 @@
 
 typedef enum ErrorCode {
 	CODE_OK = 0,
-	CODE_FAIL = -1
+	CODE_FAIL = 1
 } ErrorCode;
 
 #define null 0
@@ -111,6 +111,8 @@ typedef uint16 word;
 
 typedef uint16 size_t;
 
+typedef int16 ssize_t;
+
 #endif
 
 #ifdef BITS_32
@@ -119,6 +121,8 @@ typedef uint32 word;
 
 typedef uint32 size_t;
 
+typedef int32 ssize_t;
+
 #endif
 
 #ifdef BITS_64
@@ -126,6 +130,8 @@ typedef uint32 size_t;
 typedef uint64 word;
 
 typedef uint64 size_t;
+
+typedef int64 ssize_t;
 
 #endif
 

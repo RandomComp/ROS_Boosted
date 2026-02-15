@@ -16,15 +16,15 @@ void STD_Init() {
 	bSTDInitialized = true;
 }
 
-void print(String str) {
+void print_str(const String* str) {
 	
 }
 
-void print_c_str(const c_str str) {
+void printf_str(const String* str, ...) {
 	
 }
 
-void printf(String str, ...) {
+void print(const c_str str) {
 	
 }
 
@@ -32,10 +32,25 @@ void printf(const c_str str, ...) {
 	
 }
 
-Char getch() {
+void kmsg(const c_str str) {
 	
 }
 
-c_char getch_c() {
+void klog(LogSeverity severity, const c_str str, ...) {
+	if (severity == LOG_SEVERITY_INFO)
+		kmsg("[INFO] ");
+	else if (severity == LOG_SEVERITY_WARNING)
+		kmsg("[WARN] ");
+	else if (severity == LOG_SEVERITY_ERROR)
+		kmsg("[ERROR] ");
+	else if (severity == LOG_SEVERITY_CRITICAL)
+		kmsg("[FATAL] ");
+	
+	if (str) kmsg(str);
+	
+	else kmsg("message not provided.");
+}
+
+c_char getch() {
 	
 }

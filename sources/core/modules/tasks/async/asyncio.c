@@ -1,114 +1,236 @@
 #include "tasks/async/asyncio.h"
 
+#include "core/basic_types.h"
+
 #include "tasks/async/asyncio_types.h"
 
 #include "tasks/async/asyncio_fwd.h"
 
-#include "exceptions/exception.h"
+#include "std/std.h"
 
-#include "core/basic_types.h"
+#include "drivers/memory/ram.h"
 
-static Awaiter awaiters[MAX_QUEUE_SIZE] = { 0 };
+static Awaiter* awaiters[MAX_QUEUE_SIZE] = { nullptr };
 
 static int32 callingPos = 0;
 
-static inline bool isMethodValid(Awaiter* awaiter) {
-	return 	awaiter && 
-			awaiter->method && 
+bool AsyncIO_isAwaiterValid(Awaiter* awaiter) {
+	return 	awaiter &&
+			awaiter->method &&
 			awaiter->bActive;
 }
 
-static inline bool isActiveMethod(Awaiter* awaiter) {
-	return 	isMethodValid(awaiter) && 
+bool AsyncIO_isAwaiterActive(Awaiter* awaiter) {
+	return 	AsyncIO_isAwaiterValid(awaiter) && 
+			awaiter->id != 0 && 
 			!awaiter->bFinished;
 }
 
-static inline Awaiter* getMethodByID(int32 id) {
-	if (id <= -1) return 0;
+static inline Awaiter* getMethodByID(size_t id) {
+	if (id >= MAX_QUEUE_SIZE) return nullptr;
 
-	return &awaiters[id];
+	return awaiters[id];
 }
 
 static void freeInactiveMethods() {
-	int32 id = getInactiveMethodIndexAfter(0);
+	size_t id = getInactiveMethodIndexAfter(0);
 
-	while (id != -1) {
-		awaiters[id] = (Awaiter){ 0 };
+	while (id < MAX_QUEUE_SIZE) {
+		awaiters[id] = nullptr;
 
 		id = getInactiveMethodIndexAfter(id + 1);
 	}
 }
 
-static int32 getActiveMethodIndexAfter(int32 afterPos) {
-	int32 result = afterPos;
+static size_t getActiveMethodIndexAfter(size_t pos) {
+	size_t result = pos;
 
-	while (!isActiveMethod(getMethodByID(result))) {
+	while (!AsyncIO_isAwaiterActive(getMethodByID(result))) {
 		result++;
 
-		if (result >= MAX_QUEUE_SIZE) return -1;
+		if (result >= MAX_QUEUE_SIZE)
+			return MAX_QUEUE_SIZE;
 	}
 
 	return result;
 }
 
-static int32 getInactiveMethodIndexAfter(int32 afterPos) {
-	int32 result = afterPos;
+static size_t getInactiveMethodIndexAfter(size_t afterPos) {
+	size_t result = afterPos;
 
-	while (isActiveMethod(getMethodByID(result))) {
+	while (AsyncIO_isAwaiterActive(getMethodByID(result))) {
 		result++;
 
-		if (result >= MAX_QUEUE_SIZE) return -1;
+		if (result >= MAX_QUEUE_SIZE)
+			return MAX_QUEUE_SIZE;
 	}
 
 	return result;
 }
 
-void AsyncIO_handleAwaiter() {
-	int32 methodID = getActiveMethodIndexAfter(callingPos);
+Awaiter* AsyncIO_newAwaiter(AsyncIO_Method method) {
+	if (method == nullptr) {
+		klog(LOG_SEVERITY_ERROR, "Create new awaiter failure: requested method is nullptr");
 
-	if (methodID == -1) {
+		return nullptr;
+	}
+
+	Awaiter* result = malloc(sizeof(Awaiter));
+
+	if (result == nullptr) {
+		klog(LOG_SEVERITY_CRITICAL, 
+			"Create new awaiter failure: malloc for awaiter"
+			"returned nullptr (out of memory)"
+		);
+
+		return nullptr;
+	}
+
+	result->method = method;
+
+	result->bActive = true;
+	result->bFinished = false;
+
+	result->id = 0;
+
+	return result;
+}
+
+void AsyncIO_free(Awaiter* awaiter) {
+	free(awaiter);
+}
+
+void* AsyncIO_getArgs(Awaiter* this) {
+	if (!AsyncIO_isAwaiterValid(this)) {
+		klog(LOG_SEVERITY_ERROR, "Argument getting failure: awaiter invalid");
+
+		return nullptr;
+	}
+
+	return this->args;
+}
+
+ErrorCode AsyncIO_setArgs(Awaiter* this, void* args) {
+	if (!AsyncIO_isAwaiterValid(this)) {
+		klog(LOG_SEVERITY_ERROR, "Argument setting failure: awaiter invalid");
+
+		return CODE_FAIL;
+	}
+
+	this->args = args;
+
+	return CODE_OK;
+}
+
+ErrorCode AsyncIO_return(Awaiter* this, void* result) {
+	if (!AsyncIO_isAwaiterActive(this)) {
+		klog(LOG_SEVERITY_ERROR, "AsyncIO return failure: awaiter is not active or invalid.");
+		
+		return CODE_FAIL;
+	}
+
+	this->bFinished = true;
+
+	this->result = result;
+
+	return CODE_OK;
+}
+
+ErrorCode AsyncIO_getResult(Awaiter* this, void** result) {
+	if (!AsyncIO_isAwaiterActive(this) || this->bFinished == false)
+		return CODE_FAIL;
+
+	*result = this->result;
+
+	return CODE_OK;
+}
+
+ErrorCode AsyncIO_callback(Awaiter* this) {
+	if (!AsyncIO_isAwaiterActive(this)) return CODE_FAIL;
+
+	if (this->callback == nullptr) {
+		klog(LOG_SEVERITY_ERROR, "Callback from awaiter failure: callback is nullptr");
+
+		return CODE_FAIL;
+	}
+
+	this->callback(this);
+
+	return CODE_OK;
+}
+
+ErrorCode AsyncIO_start(Awaiter* awaiter) {
+	if (!AsyncIO_isAwaiterValid(awaiter)) {
+		klog(LOG_SEVERITY_ERROR, "Awaiter start failure: awaiter is nullptr");
+
+		return CODE_FAIL;
+	}
+
+	word id = getInactiveMethodIndexAfter(0);
+
+	if (id >= MAX_QUEUE_SIZE) {
+		klog(LOG_SEVERITY_ERROR, "Awaiter start failure: no free space for awaiter");
+
+		return CODE_FAIL;
+	}
+
+	awaiters[id] = awaiter;
+
+	awaiter->id = id;
+
+	return CODE_OK;
+}
+
+ErrorCode AsyncIO_handleAwaiter() {
+	size_t id = getActiveMethodIndexAfter(callingPos);
+
+	if (id >= MAX_QUEUE_SIZE) {
+		klog(LOG_SEVERITY_INFO, "There are no asynchronous methods to handle since "
+			"everything has already been handled");
+
 		freeInactiveMethods();
 
 		callingPos = 0;
 
-		return;
+		return CODE_OK;
 	}
 
-	Awaiter* awaiter = &awaiters[methodID];
+	Awaiter* awaiter = awaiters[id];
 
 	awaiter->method(awaiter);
 
-	callingPos++;
+	if (awaiter->error == CODE_FAIL) {
+		awaiter->bFinished = true;
 
-	callingPos %= MAX_QUEUE_SIZE;
-}
-
-void AsyncIO_run(Awaiter* method) {
-	if (!isMethodValid(method)) {
-		throw(
-			Exception_errorInvalidArgument(
-				"Attempt to start an invalid awaiter ( asyncio method )."
-			)
-		);
-
-		return;
+		return CODE_FAIL;
 	}
 
-	int32 id = getInactiveMethodIndexAfter(0);
+	callingPos++;
 
-	// TODO: Добавить проверку
-
-	Awaiter* awaiter = &awaiters[id];
-
-	*awaiter = *method;
-
-	return awaiter;
+	return CODE_OK;
 }
 
-void AsyncIO_await(Awaiter* method) {
-	Awaiter* awaiter = reserveNewAwaiter(method);
+ErrorCode AsyncIO_await(Awaiter* awaiter) {
+	if (!AsyncIO_isAwaiterActive(awaiter)) {
+		klog(LOG_SEVERITY_ERROR, "AsyncIO await failure: awaiter is not active or invalid");
+			
+		return CODE_FAIL;
+	}
+
+	ErrorCode code = AsyncIO_start(awaiter);
+
+	if (code == CODE_FAIL) {
+		klog(LOG_SEVERITY_ERROR, "AsyncIO await failure: AsyncIO_start for awaiter returned CODE_FAIL");
+			
+		return CODE_FAIL;
+	}
 
 	while (!awaiter->bFinished) {
 		AsyncIO_handleAwaiter();
 	}
+
+	if (awaiter->error == CODE_FAIL)
+		AsyncIO_free(awaiter);
+
+	return awaiter->error;
 }

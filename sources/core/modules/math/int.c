@@ -6,6 +6,8 @@
 
 #include "math/math.h"
 
+#include "math/bit_math.h"
+
 #include "drivers/memory/ram.h"
 
 #include "builtins/mem.h"
@@ -22,7 +24,7 @@ uint* Int_new(size_t size) {
 			Exception_fromError(
 				ERROR_MEMORY_LACK,
 				"Failed to create new uint because malloc "
-				"returned nullptr, so memory lack"
+				"returned nullptr (out of memory)"
 			)
 		);
 
@@ -38,7 +40,7 @@ uint* Int_new(size_t size) {
 			Exception_fromError(
 				ERROR_MEMORY_LACK,
 				"Failed to create new uint because malloc "
-				"returned nullptr, so memory lack"
+				"returned nullptr (out of memory)"
 			)
 		);
 
@@ -62,10 +64,6 @@ ErrorCode Int_free(uint* x) {
 	}
 
 	free(x->data);
-
-	x->data = nullptr;
-
-	x->size = 0;
 
 	free(x);
 
@@ -94,12 +92,25 @@ ErrorCode Int_copy(uint** dest_ptr, const uint* src) {
 	}
 
 	if (*dest_ptr == nullptr) {
-		*dest_ptr = malloc(sizeof(uint));
+		*dest_ptr = Int_new(src->size);
+
+		if (*dest_ptr == nullptr) {
+			throw(
+				Exception_fromError(
+					ERROR_MEMORY_LACK,
+					"Failed to copy uint because malloc returned nullptr for dest (out of memory)"
+				)
+			);
+
+			return CODE_FAIL;
+		}
 	}
 
 	uint* dest = *dest_ptr;
 
-	memcpy(dest->data, src->data, src->size);
+	size_t size_to_copy = MIN(dest->size, src->size);
+
+	memcpy(dest->data, src->data, size_to_copy);
 
 	return CODE_OK;
 }
@@ -108,7 +119,7 @@ ErrorCode Int_normalizeSize(uint* a, uint* b) {
 	if (a == nullptr) {
 		throw(
 			Exception_errorInvalidArgument(
-				"uint* a is nullptr"
+				"Failed to normalize size for uint's because uint* a is nullptr"
 			)
 		);
 
@@ -118,48 +129,28 @@ ErrorCode Int_normalizeSize(uint* a, uint* b) {
 	if (b == nullptr) {
 		throw(
 			Exception_errorInvalidArgument(
-				"uint* b is nullptr"
+				"Failed to normalize size for uint's because uint* b is nullptr"
 			)
 		);
 
 		return CODE_FAIL;
 	}
 
-	if (a->size == b->size) return;
+	if (a->size == b->size) return CODE_OK;
 
 	if (a->size < b->size)
-		Int_convertToWithSize(a, b->size);
+		Int_convertWithSize(a, b->size);
 	else if (a->size > b->size)
-		Int_convertToWithSize(b, a->size);
+		Int_convertWithSize(b, a->size);
 
 	return CODE_OK;
-}
-
-void Int_setUInt32NumberToUInt(uint* a, size_t b) {
-	assert(!isValidMemoryRegion(a), Exception_fromError(INVALID_ARGUMENT_ERROR, ""));
-
-	assert(a->bitDepth < 32, Exception_fromWarning(INVALID_ARGUMENT_WARNING, ""));
-}
-
-uint Int_UIntFromUInt32(size_t x) {
-	uint result = Int_newUInt(32);
-
-	
-}
-
-uint Int_getUIntZero() {
-	return Int_UIntFromUInt32(0);
-}
-
-uint Int_getUIntOne() {
-	return Int_UIntFromUInt32(1);
 }
 
 ErrorCode Int_convertWithSize(uint* x, size_t new_size) {
 	if (x == nullptr) {
 		throw(
 			Exception_errorInvalidArgument(
-				"uint* x is null ptr"
+				"Failed to convert uint* x size because uint* x is nullptr"
 			)
 		);
 
@@ -169,7 +160,7 @@ ErrorCode Int_convertWithSize(uint* x, size_t new_size) {
 	if (x->data == nullptr) {
 		throw(
 			Exception_errorInvalidArgument(
-				"word* uint::data x is null ptr"
+				"Failed to convert uint* x size because x->data is nullptr"
 			)
 		);
 
@@ -178,33 +169,33 @@ ErrorCode Int_convertWithSize(uint* x, size_t new_size) {
 	
 	word* new_data = realloc(x->data, new_size * sizeof(word));
 
-	x->size = new_size;
-
-	return CODE_OK;
-}
-
-static ErrorCode expand(uint* x, size_t amount) {
-	if (x == nullptr) {
+	if (new_data == nullptr) {
 		throw(
-			Exception_errorInvalidArgument(
-				"uint* x is nullptr"
+			Exception_fromError(
+				ERROR_MEMORY_LACK,
+				"Failed to convert uint* x size because realloc returned nullptr (out of memory)"
 			)
 		);
 
 		return CODE_FAIL;
 	}
 
+	x->size = new_size;
+
+	x->data = new_data;
+
+	return CODE_OK;
+}
+
+static ErrorCode expand(uint* x, size_t amount) {
 	if (amount == 0) return CODE_OK;
 
-	word* new_data = realloc(x->data, (x->size + amount) * sizeof(word));
-
-	if (new_data == nullptr) {
+	if (x == nullptr) {
 		throw(
-			Exception_fromError(
-				ERROR_MEMORY_LACK,
+			Exception_errorInvalidArgument(
 				Format_c_str(
-					"Failed to expand [value: size] because realloc "
-					"returned nullptr, so memory lack", amount
+					"Failed to expand uint* x with [value: size] because x is nullptr",
+					amount * sizeof(word)
 				)
 			)
 		);
@@ -212,17 +203,41 @@ static ErrorCode expand(uint* x, size_t amount) {
 		return CODE_FAIL;
 	}
 
-	x->size += amount;
+	ErrorCode error = Int_convertWithSize(x, x->size + amount);
 
-	x->data = new_data;
+	if (error == CODE_FAIL) {
+		throw(
+			Exception_errorInvalidArgument(
+				Format_c_str(
+					"Failed to expand uint* x with [value: size] because "
+					"Int_convertWithSize returned CODE_FAIL",
+					amount * sizeof(word)
+				)
+			)
+		);
+
+		return CODE_FAIL;
+	}
 
 	return CODE_OK;
 }
 
 ErrorCode Int_add(uint* a, uint* b) {
-	Int_normalizeSize(a, b); // if a->size = 1 and b->size = 2 then a->size = 2
+	if (a->size == 0) {
+		throw(
+			Exception_errorInvalidArgument(
+				""
+			)
+		);
 
-	bool bOverflow = false;
+		return CODE_FAIL;
+	}
+
+	Int_normalizeSize(a, b);
+
+	size_t min_size = MIN(a->size, b->size);
+
+	bool overflow = false;
 
 	for (size_t i = 0; i < a->size; i++) {
 		word* aPart = &a->data[i];
@@ -231,14 +246,17 @@ ErrorCode Int_add(uint* a, uint* b) {
 
 		*aPart += *bPart;
 
-		*aPart += bOverflow;
+		*aPart += overflow;
 
-		bOverflow = (*aPart < *bPart);
+		overflow = (*aPart < *bPart);
 	}
 
-	if (bOverflow) {
-		if (expand(a, 1) == CODE_FAIL)
+	if (overflow) {
+		if (expand(a, 1) == CODE_FAIL) {
+
+			
 			return CODE_FAIL;
+		}
 
 		a->data[a->size - 1]++;
 	}
@@ -310,31 +328,21 @@ void Int_lshUInt(uint* x, size_t shift) {
 	return x;
 }
 
+static size_t wordSizeToBits(size_t wordSize) {
+	return wordSize * sizeof(word) * 8;
+}
+
 void Int_rshUInt(uint* x, size_t shift) {
-	if (shift >= x->bitDepth)
-		return Int_convertToWithSize(x, iceilU32(shift, 32));
+	if (shift > wordSizeToBits(x->size))
+		Int_convertWithSize(x, ceilU32(shift, sizeof(word) * 8));
 
-	if (shift <= 64) {
-		x.lo >>= shift; // Сдвиг ненулевых битов для получения свободного пространства для сдвига из lo (shift - 1)...0
-		
-		x.lo |= (x.hi & makeIdentityMaskForU64(shift)) << (63 - shift); // Установка битов (shift - 1)...0 из hi в lo часть 64...(64 - shift).
-		
-		x.hi >>= shift; // Сдвиг и удаление битов из hi (shift - 1)...0.
-	}
-
-	else if (shift < 128) {
-		Int_rshUInt(x, 64);
-
-		Int_rshUInt(x, shift - 64);
-	}
 	
-	return x;
 }
 
 void Int_bitAndUInt(uint* a, uint* b) {
 	Int_normalizeSize(a, b);
 
-	for (size_t i = 0; i < Int_getMaxByteDepthFromUInts(a, b); i++) {
+	for (size_t i = 0; i < MAX(a->size, b->size); i++) {
 
 	}
 }

@@ -9,12 +9,10 @@
 
 #define FONT_CHAR_HEIGHT 16
 
-typedef size_t Font_ReserveCode;
+typedef word Font_ReserveCode;
 
 typedef struct Glyph {
 	size_t width, height;
-
-	size_t size;
 
 	byte* data;
 

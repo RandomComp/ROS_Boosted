@@ -3,12 +3,12 @@
 
 #include "core/basic_types.h"
 
-#include "std/string/char_types.h"
+#include "std/string/string_fwd.h"
 
-typedef struct String {
+struct String {
 	size_t length;
 
 	void* data;
-} String;
+};
 
 #endif

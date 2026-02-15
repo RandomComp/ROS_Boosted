@@ -3,9 +3,13 @@
 
 #include "core/basic_types.h"
 
+#include "std/std.h"
+
 #include "math/math.h"
 
 #define ByteBase 1024
+
+#define GET_BYTE(x, index) (((x) >> (index * 8)) & 0xFF)
 
 static inline uint32 BitsToBytes(uint32 bits) {
 	return bits / 8;
@@ -57,13 +61,9 @@ static inline uint32 BytesToGB(uint32 bytes) {
 
 static inline uint64 makeIdentityMaskForU64(uint64 bitIndex) {
 	if (!inRangeU64(bitIndex, 0, 64)) {
-		throw(
-			Exception_warningInvalidArgument(
-				Format_c_str("It is not possible to create a bit mask with all bits enabled " 
-							"outside of type. Please check the validity of the input argument "
-							"bitIndex=[value: u64].", bitIndex)
-			)
-		);
+		klog(LOG_ERROR, "It is not possible to create a bit mask with all bits enabled " 
+				"outside of type. Please check the validity of the input argument "
+				"bitIndex=[value: u64]", bitIndex);
 
 		return 0;
 	}
@@ -73,12 +73,9 @@ static inline uint64 makeIdentityMaskForU64(uint64 bitIndex) {
 
 static inline uint32 bitIndexToMaskU32(uint32 bitIndex) {
 	if (!inRangeU32(bitIndex, 0, 32)) {
-		throw(
-			Exception_warningInvalidArgument(
-				Format_c_str("Cannot create a bitmask with a bit outside the specified type "
-							"u32 enabled. Please verify that the input argument "
-							"bitIndex=[value: u32] is valid.", bitIndex)
-			)
+		klog(LOG_WARNING, "Cannot create a bitmask with a bit outside the specified type "
+				"u32 enabled. Please verify that the input argument "
+				"bitIndex=[value: u32] is valid.", bitIndex
 		);
 
 		return 0;
@@ -89,12 +86,9 @@ static inline uint32 bitIndexToMaskU32(uint32 bitIndex) {
 
 static inline uint64 bitIndexToMaskU64(uint64 bitIndex) {
 	if (!inRangeU64(bitIndex, 0, 64)) {
-		throw(
-			Exception_warningInvalidArgument(
-				Format_c_str("Cannot create a bitmask with a bit outside the specified type "
-							"u64 enabled. Please verify that the input argument "
-							"bitIndex=[value: u64] is valid.", bitIndex)
-			)
+		klog(LOG_WARNING, "Cannot create a bitmask with a bit outside the specified type "
+				"u64 enabled. Please verify that the input argument "
+				"bitIndex=[value: u64] is valid.", bitIndex
 		);
 
 		return 0;
@@ -103,62 +97,40 @@ static inline uint64 bitIndexToMaskU64(uint64 bitIndex) {
 	return 1ULL << (uint64)bitIndex;
 }
 
-static inline void enableBitU8(uint8* value, uint8 bitIndex) {
+static inline ErrorCode enableBitU8(uint8* value, uint8 bitIndex) {
 	if (!inRangeU8(bitIndex, 0, 8)) {
-		throw(
-			Exception_warningInvalidArgument(
-				Format_c_str("Cannot enable a bit outside the specified u8 type. "
-							"Please ensure that the input argument "
-							"bitIndex=[value: u8] is valid.", bitIndex)
-			)
+		klog(LOG_WARNING, "Cannot enable a bit outside the specified u8 type. "
+				"Please ensure that the input argument "
+				"bitIndex=[value: u8] is valid.", bitIndex
 		);
 
-		return 0;
+		return CODE_FAIL;
 	}
 
 	*value |= bitIndexToMaskU8(bitIndex);
 }
 
-static inline void disableBitU8(uint8* value, uint8 bitIndex) {
+static inline ErrorCode disableBitU8(uint8* value, uint8 bitIndex) {
 	if (!inRangeU8(bitIndex, 0, 8)) {
-		throw(
-			Exception_warningInvalidArgument(
-				Format_c_str("Cannot disable a bit outside the specified u8 type. "
-							"Please ensure that the input argument "
-							"bitIndex=[value: u8] is valid.", bitIndex)
-			)
+		klog(LOG_WARNING, "Cannot disable a bit outside the specified u8 type. "
+				"Please ensure bitIndex=[value: u8] is valid.", bitIndex
 		);
 
-		return 0;
+		return CODE_FAIL;
 	}
 
 	*value &= ~bitIndexToMaskU8(bitIndex);
 }
 
 static inline bool checkBitU8(uint8 value, uint8 bitIndex) {
-	if (!inRangeU8(bitIndex, 0, 8)) {
-		throw(
-			Exception_warningInvalidArgument(
-				Format_c_str("Cannot check bit outside the specified u8 type. "
-							"Please ensure that the input argument "
-							"bitIndex=[value: u8] is valid.", bitIndex)
-			)
-		);
-
-		return 0;
-	}
-
 	return (value >> bitIndex) & 1;
 }
 
 static inline void enableBitU16(uint16* value, uint8 bitIndex) {
 	if (!inRangeU8(bitIndex, 0, 16)) {
-		throw(
-			Exception_warningInvalidArgument(
-				Format_c_str("Cannot enable a bit outside the specified u16 type. "
-							"Please ensure that the input argument "
-							"bitIndex=[value: u8] is valid.", bitIndex)
-			)
+		klog(LOG_WARNING,
+			"Cannot enable a bit outside the specified u16 type. "
+			"Please ensure bitIndex=[value: u8] is valid.", bitIndex
 		);
 
 		return 0;
@@ -169,12 +141,9 @@ static inline void enableBitU16(uint16* value, uint8 bitIndex) {
 
 static inline void disableBitU16(uint16* value, uint8 bitIndex) {
 	if (!inRangeU8(bitIndex, 0, 16)) {
-		throw(
-			Exception_warningInvalidArgument(
-				Format_c_str("Cannot disable a bit outside the specified u16 type. "
-							"Please ensure that the input argument "
-							"bitIndex=[value: u8] is valid.", bitIndex)
-			)
+		klog(LOG_WARNING,
+			"Cannot disable a bit outside the specified u16 type. "
+			"Please ensure bitIndex=[value: u8] is valid.", bitIndex
 		);
 
 		return 0;
@@ -184,29 +153,14 @@ static inline void disableBitU16(uint16* value, uint8 bitIndex) {
 }
 
 static inline bool checkBitU16(uint16 value, uint8 bitIndex) {
-	if (!inRangeU8(bitIndex, 0, 16)) {
-		throw(
-			Exception_warningInvalidArgument(
-				Format_c_str("Cannot check bit outside the specified u16 type. "
-							"Please ensure that the input argument "
-							"bitIndex=[value: u8] is valid.", bitIndex)
-			)
-		);
-
-		return 0;
-	}
-
 	return (value >> bitIndex) & 1;
 }
 
 static inline void enableBitU32(uint32* value, uint8 bitIndex) {
 	if (!inRangeU8(bitIndex, 0, 32)) {
-		throw(
-			Exception_warningInvalidArgument(
-				Format_c_str("Cannot enable a bit outside the specified u32 type. "
-							"Please ensure that the input argument "
-							"bitIndex=[value: u8] is valid.", bitIndex)
-			)
+		klog(LOG_WARNING,
+			"Cannot enable a bit outside the specified u32 type. "
+			"Please ensure bitIndex=[value: u8] is valid.", bitIndex
 		);
 
 		return 0;
@@ -217,12 +171,9 @@ static inline void enableBitU32(uint32* value, uint8 bitIndex) {
 
 static inline void disableBitU32(uint32* value, uint8 bitIndex) {
 	if (!inRangeU8(bitIndex, 0, 32)) {
-		throw(
-			Exception_warningInvalidArgument(
-				Format_c_str("Cannot disable a bit outside the specified u32 type. "
-							"Please ensure that the input argument "
-							"bitIndex=[value: u8] is valid.", bitIndex)
-			)
+		klog(LOG_WARNING,
+			"Cannot disable a bit outside the specified u32 type. "
+			"Please ensure bitIndex=[value: u8] is valid.", bitIndex
 		);
 
 		return 0;
@@ -232,19 +183,37 @@ static inline void disableBitU32(uint32* value, uint8 bitIndex) {
 }
 
 static inline bool checkBitU32(uint32 value, uint8 bitIndex) {
-	if (!inRangeU8(bitIndex, 0, 32)) {
-		throw(
-			Exception_warningInvalidArgument(
-				Format_c_str("Cannot check bit outside the specified u32 type. "
-							"Please ensure that the input argument "
-							"bitIndex=[value: u8] is valid.", bitIndex)
-			)
-		);
-
-		return 0;
-	}
-
 	return (value >> bitIndex) & 1;
+}
+
+static inline uint32 combineFromPtrU32(byte* ptr) {
+	return 	(ptr[0]) 		+ (ptr[1] << 8) + 
+			(ptr[2] << 16) 	+ (ptr[3] << 24);
+}
+
+static inline uint64 combineFromPtrU64(byte* ptr) {
+	return 	(ptr[0]) 		+ (ptr[1] << 8) + 
+			(ptr[2] << 16) 	+ (ptr[3] << 24) + 
+			(ptr[4] << 32) 	+ (ptr[5] << 40) + 
+			(ptr[6] << 48) 	+ (ptr[7] << 56);
+}
+
+static inline void combineToPtrU32(byte* ptr, uint32 value) {
+	ptr[0] = value & 0xFF; value <<= 8;
+	ptr[1] = value & 0xFF; value <<= 8;
+	ptr[2] = value & 0xFF; value <<= 8;
+	ptr[3] = value & 0xFF; value <<= 8;
+}
+
+static inline void combineToPtrU64(byte* ptr, uint64 value) {
+	ptr[0] = value & 0xFF; value <<= 8;
+	ptr[1] = value & 0xFF; value <<= 8;
+	ptr[2] = value & 0xFF; value <<= 8;
+	ptr[3] = value & 0xFF; value <<= 8;
+	ptr[4] = value & 0xFF; value <<= 8;
+	ptr[5] = value & 0xFF; value <<= 8;
+	ptr[6] = value & 0xFF; value <<= 8;
+	ptr[7] = value & 0xFF; value <<= 8;
 }
 
 #endif

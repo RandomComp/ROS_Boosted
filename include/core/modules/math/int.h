@@ -3,17 +3,15 @@
 
 #include "core/basic_types.h"
 
-ErrorCode Int_new(size_t size);
+#include "math/int_fwd.h"
+
+uint* Int_new(size_t size);
 
 ErrorCode Int_copy(uint** dest_ptr, const uint* src);
 
 void Int_normalizeSize(uint *a, uint *b);
 
-void Int_setUInt32NumberToUInt(uint* a, size_t b);
-
-uint Int_UIntFromUInt32(size_t x);
-
-void Int_convertToWithSize(uint* x, size_t new_size);
+void Int_convertWithSize(uint* x, size_t new_size);
 
 ErrorCode Int_add(uint* a, uint* b);		// +
 ErrorCode Int_sub(uint* a, uint* b);		// -
@@ -23,28 +21,28 @@ ErrorCode Int_div(uint* a, uint* b);		// /
 ErrorCode Int_lsh(uint* x, size_t shift); // <<
 ErrorCode Int_rsh(uint* x, size_t shift); // >>
 
-void Int_free(uint* x);
+ErrorCode Int_free(uint* x);
 
-void Int_bitAndUInt(uint* a, uint* b);
+ErrorCode Int_bitAnd(uint* a, uint* b);
 
-uint Int_bitOrUInt(uint* a, uint* b);
+ErrorCode Int_bitOr(uint* a, uint* b);
 
-uint Int_bitNotUInt(uint* x);
+ErrorCode Int_bitNot(uint* x);
 
-bool Int_bigThanUInt(uint* a, uint* b);
+bool Int_bigThan(uint* a, uint* b);
 
-bool Int_lessThanUInt(uint* a, uint* b);
+bool Int_lessThan(uint* a, uint* b);
 
-bool Int_bigOrEqualThanUInt(uint* a, uint* b) {
-	return Int_bigThanUInt(a, b) || Int_equalUInt(a, b);
+bool Int_bigOrEqualThan(uint* a, uint* b) {
+	return Int_bigThan(a, b) || Int_equal(a, b);
 }
 
-bool Int_lessOrEqualThanUInt(uint* a, uint* b) {
-	return Int_lessThanUInt(a, b) || Int_equalUInt(a, b);
+bool Int_lessOrEqualThan(uint* a, uint* b) {
+	return Int_lessThan(a, b) || Int_equal(a, b);
 }
 
-bool Int_equalUInt(uint* a, uint* b);
+bool Int_equal(uint* a, uint* b);
 
-bool Int_notEqualUInt(uint* a, uint* b);
+bool Int_notEqual(uint* a, uint* b);
 
 #endif

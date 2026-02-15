@@ -3,12 +3,6 @@
 
 #include "core/basic_types.h"
 
-#include "std/string/format.h"
-
-#include "exceptions/exception.h"
-
-#include "exceptions/errors/error_types.h"
-
 // Макросы
 
 #define EPSILON 1.192092896e-07f
@@ -49,6 +43,12 @@ typedef struct ProcessorMathState {
 } ProcessorMathState;
 
 bool getOverflowFlag();
+
+int32 pow32(int32 a, int32 b);
+int64 pow64(int64 a, int64 b);
+
+size_t powU32(size_t a, size_t b);
+uint64 powU64(uint64 a, uint64 b);
 
 static inline int32 abs32(int32 x) {
 	return IABS(x);
@@ -226,40 +226,18 @@ static inline uint8 getFirstNumberAfterDecimalPoint(double x) {
 	return (uint8)(abs(frac(x)) * 10.0) % 10;
 }
 
-static inline double mod(double a, double b) {
-	if (b == 0.0) {
-		throw(
-			Exception_fromError(
-				ERROR_DIVISION_BY_ZERO,
-				Format_c_str("Cannot mod [value: dbl] with 0.", a)
-			)
-		);
+double mod(double a, double b);
 
-		return 0.0;
-	}
+float fmod(float a, float b);
 
-	return MOD(a, b);
-}
+uint8 fgetCountDecimalPlaces(float x);
 
-static inline float fmod(float a, float b) {
-	if (b == 0.0f) {
-		throw(
-			Exception_fromError(
-				ERROR_DIVISION_BY_ZERO,
-				Format_c_str("Cannot mod [value: flt] with 0.", a)
-			)
-		);
-
-		return 0.0f;
-	}
-
-	return FMOD(a, b);
-}
+uint16 getCountDecimalPlaces(double x);
 
 static inline int32 fscaleToInteger(float x) {
 	if (x == 0.0f) return 0;
 
-	return x * pow(10, fgetCountDecimalPlaces(x));
+	return x * pow64(10, fgetCountDecimalPlaces(x));
 }
 
 static inline int64 scaleToInteger(double x) {
@@ -272,10 +250,6 @@ static inline bool isPowerOfTwoU32(size_t x) {
 	return x > 0 && (x & (x - 1) == 0);
 }
 
-uint8 fgetCountDecimalPlaces(float x);
-
-uint16 getCountDecimalPlaces(double x);
-
 uint8 getNumberOfDigits32(int32 x);
 
 uint8 getNumberOfDigits64(int64 x);
@@ -284,62 +258,11 @@ uint8 getNumberOfDigitsU32(size_t x);
 
 uint8 getNumberOfDigitsU64(uint64 x);
 
-static inline size_t floorU32(size_t x, size_t align) {
-	if (align == 0) {
-		throw(
-			Exception_fromError(
-				ERROR_DIVISION_BY_ZERO,
-				Format_c_str("Cannot floor align [value: u32] with 0.", x)
-			)
-		);
+size_t floorU32(size_t x, size_t align);
 
-		return x;
-	}
+size_t ceilU32(size_t x, size_t align);
 
-	if (x % align == 0) return x;
-
-	return (x / align) * align;
-}
-
-static inline size_t ceilU32(size_t x, size_t align) {
-	if (align == 0) {
-		throw(
-			Exception_fromError(
-				ERROR_DIVISION_BY_ZERO,
-				Format_c_str("Cannot ceil align [value: u32] with 0.", x)
-			)
-		);
-
-		return x;
-	}
-
-	if (x % align == 0) return x;
-
-	return ((x / align) + 1) * align;
-}
-
-static inline size_t roundU32(size_t x, size_t align) {
-	if (align == 0) {
-		throw(
-			Exception_fromError(
-				ERROR_DIVISION_BY_ZERO,
-				Format_c_str("Cannot round align [value: u32] with 0.", x)
-			)
-		);
-
-		return x;
-	}
-
-	size_t floorResult = floorU32(x, align);
-
-	size_t ceilResult = ceilU32(x, align);
-
-	size_t floorDiff = x - floorResult;
-
-	size_t ceilDiff = ceilResult - x;
-
-	return ceilDiff < floorDiff ? ceilResult : floorResult;
-}
+size_t roundU32(size_t x, size_t align);
 
 static inline double floor(double x) {
 	double result = trunc(x);
@@ -390,11 +313,5 @@ static inline float fround(float x) {
 
 	return      ffrac(x) >= 0.5f ? fceil(x) : ffloor(x);
 }
-
-int32 pow32(int32 a, int32 b);
-int64 pow64(int64 a, int64 b);
-
-size_t powU32(size_t a, size_t b);
-uint64 powU64(uint64 a, uint64 b);
 
 #endif

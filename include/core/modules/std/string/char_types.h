@@ -4,9 +4,11 @@
 #include "charset/charset.h"
 
 struct Char {
-	Charset charset;
+	byte* ch;
 
-	CharUnion ch;
+	size_t bytes;
+
+	Charset charset;
 };
 
 #endif

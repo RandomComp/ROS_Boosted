@@ -8,20 +8,9 @@
 #include "charset/cp437/cp437_types.h"
 
 typedef enum Charset {
-	CHARSET_UGSM,
+	CHARSET_UNKNOWN,
 	CHARSET_ASCII,
+	CHARSET_UGSM,
 } Charset;
-
-typedef union CharUnion {
-	UGSM_Code	UGSMChar;
-	
-	CP437_Code	ASCIIChar;
-} CharUnion;
-
-typedef struct CharacterCode {
-	Charset charset;
-
-	CharUnion ch;
-} CharacterCode;
 
 #endif

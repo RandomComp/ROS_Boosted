@@ -3,7 +3,7 @@
 
 #include "drivers/memory/mem_types.h"
 
-void RAM_Init(size_t size);
+void RAM_init(multibootInfo* info);
 
 void* malloc(size_t size);
 
@@ -11,10 +11,8 @@ void* realloc(void* addr, size_t size);
 
 void free(void* region);
 
-bool RAM_isValidAndActiveMemoryRegion(MemoryRegion* region);
+bool RAM_isValidMemory(void* mem);
 
-size_t getAbsoluteRAMSize();
-
-void MEM_showSize(Size size);
+size_t RAM_getSize();
 
 #endif

@@ -1,7 +1,5 @@
 #include "exceptions/isr_errors/isr_error.h"
 
-#include "exceptions/isr_errors/isr_error_types.h"
-
 #include "core/basic_types.h"
 
 #include "math/math.h"
@@ -96,27 +94,11 @@ static const c_str getFormalFatalErrorDescription(ISR_Error errorType) {
 }
 
 void ISR_throw(ISR_Error errorType, const c_str why) {
-	printf("[fg: red]Ironic fatal error description:\n[value: c_str]", getIronicFatalErrorDescription(errorType));
+	printf("[fg: red]Ironic fatal error description:\n[value: c_str]\n", getIronicFatalErrorDescription(errorType));
 
-	printf();
+	printf("[fg: red]Formal fatal error description:\n[value: c_str]\n", getFormalFatalErrorDescription(errorType));
 
-	ASCII_putString("[red]Ironic fatal error description:\n");
+	printf("Fatal error name:\n[value: c_str]\n", getFatalErrorName(errorType));
 
-	ASCII_putString(getIronicFatalErrorDescription(errorType));
-
-	ASCII_putString("\n\nFormal fatal error description:\n");
-
-	ASCII_putString(getFormalFatalErrorDescription(errorType));
-
-	ASCII_putString("\n\nFatal error name: ");
-
-	ASCII_putString(getFatalErrorName(errorType));
-
-	ASCII_putString("\n\nDetails:\n");
-
-	CP437_putString(details);
-
-	ASCII_putString("\n[white]");
-
-	swap();
+	printf("Message: [value: c_str]\n", why);
 }

@@ -3,6 +3,8 @@
 
 #define MAX_QUEUE_SIZE 128
 
+typedef ErrorCode (*AsyncIO_Method)(struct Awaiter* this);
+
 typedef struct Awaiter Awaiter;
 
 #endif
