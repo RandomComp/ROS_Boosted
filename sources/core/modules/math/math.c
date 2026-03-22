@@ -76,7 +76,7 @@ float fmod(float a, float b) {
 	return FMOD(a, b);
 }
 
-size_t floorU32(size_t x, size_t align) {
+size_t align_down(size_t x, size_t align) {
 	if (align == 0) {
 		throw(
 			Exception_fromError(
@@ -93,7 +93,7 @@ size_t floorU32(size_t x, size_t align) {
 	return (x / align) * align;
 }
 
-size_t ceilU32(size_t x, size_t align) {
+size_t align_up(size_t x, size_t align) {
 	if (align == 0) {
 		throw(
 			Exception_fromError(
@@ -108,29 +108,6 @@ size_t ceilU32(size_t x, size_t align) {
 	if (x % align == 0) return x;
 
 	return ((x / align) + 1) * align;
-}
-
-size_t roundU32(size_t x, size_t align) {
-	if (align == 0) {
-		throw(
-			Exception_fromError(
-				ERROR_DIVISION_BY_ZERO,
-				Format_c_str("Cannot round align [value: u32] with 0.", x)
-			)
-		);
-
-		return x;
-	}
-
-	size_t floorResult = floorU32(x, align);
-
-	size_t ceilResult = ceilU32(x, align);
-
-	size_t floorDiff = x - floorResult;
-
-	size_t ceilDiff = ceilResult - x;
-
-	return ceilDiff < floorDiff ? ceilResult : floorResult;
 }
 
 uint8 getNumberOfDigits32(int32 x) {

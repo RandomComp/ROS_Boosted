@@ -7,6 +7,8 @@ void RAM_init(multibootInfo* info);
 
 void* malloc(size_t size);
 
+void* сalloc(size_t cnt, size_t elem_size);
+
 void* realloc(void* addr, size_t size);
 
 void free(void* region);

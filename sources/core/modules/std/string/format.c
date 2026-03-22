@@ -15,7 +15,7 @@ String Format_str(String format, ...) {
 c_str Format_c_str(const c_str format, ...) {
 	uint32 format_str_len = strlen(format);
 
-	c_str result = malloc(sizeof(c_char) * format_str_len, MEMORY_STATUS_ACTIVE);
+	c_str result = malloc(sizeof(c_char) * format_str_len);
 
 	memcpy(result, format, format_str_len);
 

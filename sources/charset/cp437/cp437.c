@@ -8,23 +8,23 @@
 
 CP437_Code CP437_fromUGSMChar(UGSM_Code c) {
 	switch (c) {
-		case UGSM_CHAR_SPACE: 				return CP437_CHAR_SPACE;
-		case UGSM_CHAR_NEW_LINE: 			return CP437_CHAR_NEW_LINE;
-		case UGSM_CHAR_CARRIAGE_RETURN: 	return CP437_CHAR_CARRIAGE_RETURN;
-		case UGSM_CHAR_BACKSPACE: 			return CP437_CHAR_BACKSPACE;
-		case UGSM_CHAR_TAB:  				return CP437_CHAR_TAB;
+		case UGSM_CHAR_SPACE: 				return CP437_SPACE;
+		case UGSM_CHAR_NEW_LINE: 			return CP437_NEW_LINE;
+		case UGSM_CHAR_CARRIAGE_RETURN: 	return CP437_CARRIAGE_RETURN;
+		case UGSM_CHAR_BACKSPACE: 			return CP437_BACKSPACE;
+		case UGSM_CHAR_TAB:  				return CP437_TAB;
 	}
 
-	CP437_Code result = (CP437_Code)(c) - UGSM_CHAR_EXCLAMATION_MARK + CP437_CHAR_EXCLAMATION_MARK;
+	CP437_Code result = (CP437_Code)(c) - UGSM_CHAR_EXCLAMATION_MARK + CP437_EXCLAMATION_MARK;
 
 	if (c < UGSM_CHAR_SPACE || c > UGSM_CHAR_TILDE)
-		return CP437_CHAR_NULL;
+		return CP437_NULL;
 
 	return result;
 }
 
 CP437_Code CP437_fromDigit(uint8 digit) {
-	return (digit % 10) + CP437_CHAR_0;
+	return (digit % 10) + CP437_0;
 }
 
 CP437_Code CP437_toUpper(CP437_Code c) {

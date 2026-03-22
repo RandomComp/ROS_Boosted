@@ -45,7 +45,7 @@ void RMALParse(void) {
 
 	uint16 i = 0;
 
-	for (; RMALTokens[i].type != RMALEOF && i < tokenPos; i++) {
+	for (; RMALTokens[i].type != RMALEOF && i < self->tokenPos; i++) {
 		if (RMALTokens[i].type == LABELNAME && RMALTokens[i + 1].type == RMALCOLON) {
 			instructions[instructionPos].type = LABEL;
 
@@ -61,9 +61,9 @@ void RMALParse(void) {
 
 	instructionPos = 0;
 
-	for (i = 0; RMALTokens[i].type != INSTRUCTION && i < tokenPos; i++);
+	for (i = 0; RMALTokens[i].type != INSTRUCTION && i < self->tokenPos; i++);
 
-	for (; RMALTokens[i].type != RMALEOF && i < tokenPos; i++) {
+	for (; RMALTokens[i].type != RMALEOF && i < self->tokenPos; i++) {
 		if (RMALTokens[i].type == LABELNAME || RMALTokens[i].type == RMALCOLON) continue;
 
 		RMALInstruction *instruction = &instructions[instructionPos];
@@ -74,7 +74,7 @@ void RMALParse(void) {
 
 		i++;
 
-		for (; RMALTokens[i].type != INSTRUCTION && i < tokenPos; i++) {
+		for (; RMALTokens[i].type != INSTRUCTION && i < self->tokenPos; i++) {
 			if (RMALTokens[i].type == REGISTER) {
 				instruction->arguments[instruction->argumentsNumber].type = RMAL_INSTRUCTION_ARGUMENT_TYPE_REGISTER;
 

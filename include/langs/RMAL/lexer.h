@@ -89,7 +89,6 @@ typedef enum RMAL_TokenValueType {
 	RMAL_INSTRUCTION,		// Инструкция для процессора
 	RMAL_REGISTER,			// Регистр памяти процессора
 	RMAL_NUMBER,			// Число
-	RMAL_LABEL_NAME,		// Название метки
 	RMAL_COMMA, 			// ,
 	RMAL_COLON, 			// :
 	RMAL_LEFT_BRACKET, 		// [
@@ -97,9 +96,9 @@ typedef enum RMAL_TokenValueType {
 } RMAL_TokenValueType;
 
 typedef union RMAL_Value {
-	RMAL_Register 		reg;
-	uint32				number;
-	int32				signNumber;
+	RMAL_Register 			reg;
+	uint32					number;
+	int32					signNumber;
 	RMAL_InstructionType 	instruction;
 } RMAL_Value;
 
@@ -121,24 +120,24 @@ typedef struct RMAL_Lexer {
 	size_t tokenPos;
 } RMAL_Lexer;
 
-void RMALTokenize(RMAL_Lexer* self);
+void RMALTokenize(RMAL_Lexer* this);
 
 RMAL_InstructionType findInstructionByName(c_str name);
 
 RMAL_Register findRegisterByName(c_str name);
 
-void RMALTokenizeWord(RMAL_Lexer* self);
+void RMALTokenizeWord(RMAL_Lexer* this);
 
-void RMALTokenizeSignNumber(RMAL_Lexer* self);
+void RMALTokenizeSignNumber(RMAL_Lexer* this);
 
-void RMALTokenizeNumber(RMAL_Lexer* self);
+void RMALTokenizeNumber(RMAL_Lexer* this);
 
-void RMALTokenizeComment(RMAL_Lexer* self);
+void RMALTokenizeComment(RMAL_Lexer* this);
 
-c_char RMALNext(RMAL_Lexer* self);
+c_char RMALNext(RMAL_Lexer* this);
 
-c_char RMALPeek(RMAL_Lexer* self, int32 rel);
+c_char RMALPeek(RMAL_Lexer* this, int32 rel);
 
-void RMALTokensView(RMAL_Lexer* self);
+void RMALTokensView(RMAL_Lexer* this);
 
 #endif

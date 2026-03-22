@@ -43,63 +43,65 @@ const c_str registersName[] = {
 	"EDI"
 };
 
-static void addToken(RMAL_Lexer* self, RMAL_Token token) {
-	
+static void addToken(RMAL_Lexer* this, RMAL_Token token) {
+	if (this->tokenPos >= 128) return;
+
+	this->tokens[this->tokenPos] = token;
 }
 
-void RMALTokenize(RMAL_Lexer* self) {
-	while (self->pos < self->code_length) {
-		UGSM_Code current = RMALPeek(self, 0);
+void RMALTokenize(RMAL_Lexer* this) {
+	while (this->pos < this->code_length) {
+		UGSM_Code current = RMALPeek(this, 0);
 
-		if (UGSMGlyphIsLetter(current)) RMALTokenizeWord();
+		if (UGSMGlyphIsLetter(current)) RMALTokenizeWord(this);
 
-		else if (UGSMGlyphIsDigit(current)) RMALTokenizeNumber();
+		else if (UGSMGlyphIsDigit(current)) RMALTokenizeNumber(this);
 
-		else if (current == CP437_CHAR_PLUS_SIGN || current == CP437_CHAR_MINUS_SIGN)
-			RMALTokenizeSignNumber(self);
+		else if (current == CP437_PLUS_SIGN || current == CP437_MINUS_SIGN)
+			RMALTokenizeSignNumber(this);
 
 		else if (current == 15) {
-			RMALTokens[tokenPos].type = RMAL_TOKEN_VALUE_TYPE_COMMA;
+			this->tokens[this->tokenPos].type = RMAL_COMMA;
 
-			tokenPos++;
+			this->tokenPos++;
 
-			RMALNext();
+			RMALNext(this);
 		}
 
 		else if (current == 62) {
-			RMALTokens[tokenPos].type = RMALLBRACKET;
+			this->tokens[this->tokenPos].type = RMAL_LEFT_BRACKET;
 
-			tokenPos++;
+			this->tokenPos++;
 
-			RMALNext();
+			RMALNext(this);
 		}
 
 		else if (current == 64) {
-			RMALTokens[tokenPos].type = RMALRBRACKET;
+			this->tokens[this->tokenPos].type = RMAL_RIGHT_BRACKET;
 
-			tokenPos++;
+			this->tokenPos++;
 
 			RMALNext();
 		}
 
 		else if (current == 29) {
-			RMALTokens[tokenPos].type = RMALCOLON;
+			this->tokens[this->tokenPos].type = RMAL_COLON;
 
-			tokenPos++;
+			this->tokenPos++;
 
 			RMALNext();
 		}
 
 		else if (current == 30) {
-			RMALTokenizeComment();
+			RMALTokenizeComment(this);
 		}
 
-		else RMALNext(); // We just ignore spaces or other nonsense
+		else RMALNext(this); // ignore spaces
 	}
 
-	RMALTokens[tokenPos].type = RMALEOF;
+	this->tokens[this->tokenPos].type = RMAL_EOF;
 
-	tokenPos++;
+	this->tokenPos++;
 }
 
 RMAL_InstructionType findInstructionByName(UGSM_Code name[6]) {
@@ -119,66 +121,49 @@ RMAL_InstructionType findInstructionByName(UGSM_Code name[6]) {
 		if (checkLength == length) break;
 	}
 
-	return (checkLength == length) ? i : UNKNOWN_INSTRUCTION;
+	return (checkLength == length) ? i : RMAL_INSTRUCTION_UNKNOWN;
 }
 
-RMAL_Register findRegisterByName(UGSM_Code name[6]) {
-	uint16 i = 0;
-
-	for (uint16 i = 0; i < 8; i++) {
-		checkLength = 0;
-
-		for (uint16 j = 0; j < 3; j++) {
-			if (registersName[i][j] == name[j]) checkLength++;
-		}
-
-		if (checkLength == 3) break;
-
-		strncmp();
+RMAL_Register findRegisterByName(UGSM_Code* name) {
+	for (size_t i = 0; i < sizeof(registersName) / sizeof(registersName[0]); i++) {
+		if (strncmp(registersName[i], name, 3) == 0)
+			return i;
 	}
 
-	return UNKNOWN_REGISTER;
+	return RMAL_REGISTER_UNKNOWN;
 }
 
-void RMALTokenizeWord(RMAL_Lexer* self) {
-	UGSM_Code name[6] = { 0 };
+void RMALTokenizeWord(RMAL_Lexer* this) {
+	UGSM_Code* name = { 0 };
 
 	uint16 tempPos = 0;
 
 	UGSM_Code current = UGSMGlyphToLowerCase(RMALPeek(0));
 
-	while (UGSMGlyphIsLetterOrDigit(current) && tempPos < 6 && RMALPos < RMALLength) {
+	while (UGSMGlyphIsLetterOrDigit(current) && tempPos < 6 && this->pos < this->code_length) {
 		name[tempPos] = current;
 
 		tempPos++;
 
-		current = UGSMGlyphToLowerCase(RMALNext());
+		current = UGSMGlyphToLowerCase(RMALNext(this));
 	}
 
 	if (nameIsInstructionName(name)) {
-		RMALTokens[tokenPos].type = INSTRUCTION;
+		this->tokens[this->tokenPos].type = RMAL_INSTRUCTION;
 
-		RMALTokens[tokenPos].instruction = findInstructionByName(name);
+		this->tokens[this->tokenPos].value.instruction = findInstructionByName(name);
 	}
 
 	else if (nameIsRegisterName(name)) {
-		RMALTokens[tokenPos].type = REGISTER;
+		this->tokens[this->tokenPos].type = RMAL_REGISTER;
 
-		RMALTokens[tokenPos].value.reg = findRegisterByName(name);
+		this->tokens[this->tokenPos].value.reg = findRegisterByName(name);
 	}
 
-	else {
-		RMALTokens[tokenPos].type = RMALLABELNAME;
-
-		for (uint16 i = 0; i < 6; i++) {
-			RMALTokens[tokenPos].labelName[i] = name[i];
-		}
-	}
-
-	tokenPos++;
+	this->tokenPos++;
 }
 
-void RMALTokenizeNumber(RMAL_Lexer* self) {
+void RMALTokenizeNumber(RMAL_Lexer* this) {
 	int32 number = 0;
 
 	bool bMinus = RMALPeek(0) == UGSM_CHAR_MINUS_SIGN;
@@ -195,14 +180,14 @@ void RMALTokenizeNumber(RMAL_Lexer* self) {
 
 	if (bMinus) number = -number;
 
-	RMALTokens[tokenPos].type = RMAL_TOKEN_VALUE_TYPE_NUMBER;
+	this->tokens[this->tokenPos].type = RMAL_TOKEN_VALUE_TYPE_NUMBER;
 
-	RMALTokens[tokenPos].value.signNumber = number;
+	this->tokens[this->tokenPos].value.signNumber = number;
 
-	tokenPos++;
+	this->tokenPos++;
 }
 
-void RMALTokenizeComment(RMAL_Lexer* self) {
+void RMALTokenizeComment(RMAL_Lexer* this) {
 	UGSM_Code current = RMALNext();
 
 	while (current != 30) {
@@ -212,7 +197,7 @@ void RMALTokenizeComment(RMAL_Lexer* self) {
 	RMALNext();
 }
 
-UGSM_Code RMALNext(RMAL_Lexer* self) {
+UGSM_Code RMALNext(RMAL_Lexer* this) {
 	RMALPos++;
 
 	UGSM_Code result = RMALPeek(0);
@@ -228,7 +213,7 @@ UGSM_Code RMALNext(RMAL_Lexer* self) {
 	return result;
 }
 
-UGSM_Code RMALPeek(RMAL_Lexer* self, int32 relativePosition) {
+UGSM_Code RMALPeek(RMAL_Lexer* this, int32 relativePosition) {
 	int32 position = RMALPos + relativePosition;
 
 	if (position >= RMALLength) return 0;
@@ -238,44 +223,40 @@ UGSM_Code RMALPeek(RMAL_Lexer* self, int32 relativePosition) {
 	return RMALCode[position];
 }
 
-void RMALTokensView(RMAL_Lexer* self) {
-	for (uint16 i = 0; i < tokenPos; i++) {
-		RMAL_Token token = RMALTokens[i];
+void RMALTokensView(RMAL_Lexer* this) {
+	for (uint16 i = 0; i < this->tokenPos; i++) {
+		RMAL_Token token = this->tokens[i];
 
 		switch (token.type) {
-			case RMAL_TOKEN_VALUE_TYPE_INSTRUCTION:
+			case RMAL_INSTRUCTION:
 				putString(instructionsName[token.value.instruction]);
 			break;
 
-			case RMAL_TOKEN_VALUE_TYPE_REGISTER:
+			case RMAL_REGISTER:
 				putString(registersName[token.value.reg]);
 			break;
 
-			case RMAL_TOKEN_VALUE_TYPE_NUMBER:
+			case RMAL_NUMBER:
 				putString(token.value.number);
 			break;
 
-			case RMAL_TOKEN_VALUE_TYPE_SIGN_NUMBER:
+			case RMAL_SIGN_NUMBER:
 				putX32Integer(token.value.signNumber);
 			break;
 
-			case RMAL_TOKEN_VALUE_TYPE_COMMA:
+			case RMAL_COMMA:
 				putChar(UGSM_CHAR_COMMA);
 			break;
 
-			case RMAL_TOKEN_VALUE_TYPE_LABEL_NAME:
-				putString(token.label.labelName);
-			break;
-
-			case RMAL_TOKEN_VALUE_TYPE_COLON:
+			case RMAL_COLON:
 				putChar(UGSM_CHAR_COLON);
 			break;
 
-			case RMAL_TOKEN_VALUE_TYPE_LEFT_BRACKET:
+			case RMAL_LEFT_BRACKET:
 				putChar(UGSM_CHAR_LEFT_BRACKET);
 			break;
 
-			case RMAL_TOKEN_VALUE_TYPE_RIGHT_BRACKET:
+			case RMAL_RIGHT_BRACKET:
 				putChar(UGSM_CHAR_RIGHT_BRACKET);
 			break;
 		}

@@ -879,7 +879,9 @@ def main(argv: list[str]) -> None:
 
 	log(f"Current version index: {version_index}")
 
-	create_backup_zip(f"backup_ver{version_index}.zip")
+	version_index += 1
+
+	create_backup_zip(f"backup_ver{version_index}_dev.zip")
 
 	if (len(argv) <= 1):
 		raise ValueError("Required arguments not reached. Required argument is commit summary description.")

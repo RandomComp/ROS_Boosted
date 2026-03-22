@@ -10,14 +10,15 @@ struct Awaiter {
 
 	AsyncIO_Method method; // Asynchronous method itself
 	
-	bool bActive; // Flag for check if method in activity
-	bool bFinished; // Flag if task is finished
+	bool is_active; // Flag for check if method in activity
+	bool is_finished; // Flag if task is finished
 	ErrorCode error;
 	word id;
 
 	// Optional:
 
-	void* args; // args, nullptr if no args
+	void** args; size_t arg_cnt;
+
 	void* result; // Result of task, nullptr if result has void type
 
 	AsyncIO_Method callback; // Called when task is finished, nullptr if no callback

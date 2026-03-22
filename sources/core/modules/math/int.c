@@ -334,7 +334,7 @@ static size_t wordSizeToBits(size_t wordSize) {
 
 void Int_rshUInt(uint* x, size_t shift) {
 	if (shift > wordSizeToBits(x->size))
-		Int_convertWithSize(x, ceilU32(shift, sizeof(word) * 8));
+		Int_convertWithSize(x, align_up(shift, sizeof(word) * 8));
 
 	
 }

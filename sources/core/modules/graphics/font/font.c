@@ -8,45 +8,48 @@
 
 #include "format/bcd.h"
 
-#include "exceptions/warnings/warning_types.h"
-
-#include "exceptions/errors/error.h"
-
 #include "drivers/memory/ram.h"
 
 #include "builtins/mem.h"
 
-static byte* reserveTable = nullptr;
+static size_t get_glyph_size(const Glyph* glyph) {
+	if (glyph == nullptr || 
+		glyph->width == 0 ||
+		glyph->height == 0) return 0;
 
-static Font* fonts = nullptr;
+	size_t bits = glyph->width * glyph->height;
 
-static size_t glyphCount, fontCount = 0;
+	size_t bytes = bits / 8;
 
-static bool bInitialized = false;
+	if (bits % 8 == 0)
+		return bytes;
 
-static Glyph* copyGlyph(Glyph* dest, const Glyph* src) {
+	return bytes + 1;
+}
+
+Glyph* Font_copy_glyph(Glyph* dest, const Glyph* src) {
 	if (src == nullptr) {
-		throw(
-			Exception_errorInvalidArgument(
-				"Unable copy from src to dest, when src is nullptr."
-			)
-		);
+		klog(LOG_ERROR, "Font copy glyph failure: src is nullptr.");
 
 		return nullptr;
 	}
 
-	if (dest == nullptr)
+	if (dest == nullptr) {
 		dest = malloc(sizeof(Font));
 
-	dest->width = src->width;
+		if (dest == nullptr) {
+			klog(LOG_CRITICAL, "Font copy glyph failure: malloc returned nullptr (out of memory).");
+		}
+	}
 
+	dest->width = src->width;
 	dest->height = src->height;
 
-	dest->size = src->size;
+	size_t size = get_glyph_size(dest);
 
-	dest->data = realloc(dest->data, dest->size);
+	dest->data = realloc(dest->data, size);
 
-	memcpy(dest->data, src->data, dest->size);
+	memcpy(dest->data, src->data, size);
 
 	return dest;
 }
@@ -77,9 +80,9 @@ ErrorCode Font_copy(Font** dest_ptr, const Font* src) {
 
 	Font* dest = *dest_ptr;
 
-	dest->glyphCount = src->glyphCount;
+	dest->glyph_count = src->glyph_count;
 
-	if (src->glyphCount == 0) {
+	if (src->glyph_count == 0) {
 		throw(
 			Exception_warningInvalidArgument(
 				"Font copy failed: nothing to copy (src->glyphCount is 0)."
@@ -89,7 +92,7 @@ ErrorCode Font_copy(Font** dest_ptr, const Font* src) {
 		return CODE_FAIL;
 	}
 
-	Glyph* new_glyphs = realloc(dest->glyphs, src->glyphCount * sizeof(Glyph));
+	Glyph* new_glyphs = realloc(dest->glyphs, src->glyph_count * sizeof(Glyph));
 
 	if (new_glyphs == nullptr) {
 		throw(
@@ -102,10 +105,10 @@ ErrorCode Font_copy(Font** dest_ptr, const Font* src) {
 		return CODE_FAIL;
 	}
 
-	dest->glyphs = realloc(dest->glyphs, src->glyphCount * sizeof(Glyph));
+	dest->glyphs = realloc(dest->glyphs, src->glyph_count * sizeof(Glyph));
 
-	for (size_t i = 0; i < dest->glyphCount; i++) {
-		copyGlyph(&dest->glyphs[i], &src->glyphs[i]);
+	for (size_t i = 0; i < dest->glyph_count; i++) {
+		Font_copy_glyph(&dest->glyphs[i], &src->glyphs[i]);
 	}
 
 	return CODE_OK;
@@ -142,7 +145,7 @@ static Font_ReserveCode getFreeSpaceForGlyph() {
 Font_ReserveCode Font_load(Font* font) {
 	Font_ReserveCode fontCode = getFreeSpaceForGlyph();
 
-	size_t fontEnd = glyphCount + font->glyphCount;
+	size_t fontEnd = glyphCount + font->glyph_count;
 
 	reserveTable = realloc(reserveTable, fontEnd);
 
@@ -153,23 +156,12 @@ Font_ReserveCode Font_load(Font* font) {
 	return fontCode;
 }
 
-UGSM_Code Font_loadGlyph(UGSMGlyph glyph) {
-	UGSM_Code result = generateGlyphCode();
+Glyph* Font_getGlyph(Font_ReserveCode code) {
+	if (!isCodeReserved(code)) {
+		klog(LOG_WARNING, "Font get glyph warning: code not reserved");
+	}
 
-	memcpy(UGSM[result], glyph, UGSMGlyphHeight);
-
-	Font_size++;
-
-	return result;
-}
-
-UGSMGlyph* Font_getGlyph(UGSM_Code glyphCode) {
-	if (!checkGlyphCodeIsReserved(glyphCode))
-		ERROR_throw(UGSM_GLYPH_NOT_RESERVED_BUT_WE_TRY_USE);
-	
-	assert
-
-	return &UGSM[glyphCode];
+	return ;
 }
 
 Font_ReserveCode generateGlyphCode() {

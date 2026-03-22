@@ -258,11 +258,9 @@ uint8 getNumberOfDigitsU32(size_t x);
 
 uint8 getNumberOfDigitsU64(uint64 x);
 
-size_t floorU32(size_t x, size_t align);
+size_t align_down(size_t x, size_t align);
 
-size_t ceilU32(size_t x, size_t align);
-
-size_t roundU32(size_t x, size_t align);
+size_t align_up(size_t x, size_t align);
 
 static inline double floor(double x) {
 	double result = trunc(x);

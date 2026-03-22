@@ -29,7 +29,7 @@ int32 find_next_ch_after(c_str text, size_t text_len, c_char ch, uint32 after) {
 c_str sub_str(c_str text, uint32 start, uint32 end) {
 	uint32 len = end - start;
 
-	c_str result = malloc(len + 1, MEMORY_STATUS_ACTIVE);
+	c_str result = malloc(len + 1);
 
 	memcpy(result, text + start, len);
 
@@ -41,7 +41,7 @@ c_str sub_str(c_str text, uint32 start, uint32 end) {
 size_t* get_sub_strs_len_splitted_for(const char* text, size_t text_len, char sep) {
 	size_t str_sep_cnt = sep_count(text, text_len, sep);
 
-	size_t* result = (size_t*)malloc(str_sep_cnt * sizeof(size_t), MEMORY_STATUS_ACTIVE);
+	size_t* result = (size_t*)malloc(str_sep_cnt * sizeof(size_t));
 
 	int start = 0, end = 0, sub_str_num = 0;
 
@@ -62,7 +62,7 @@ size_t* get_sub_strs_len_splitted_for(const char* text, size_t text_len, char se
 c_str* wc_split_for(c_str text, size_t text_len, c_char sep) {
 	uint32 str_sep_cnt = sep_count(text, text_len, sep);
 
-	c_str* result = malloc(str_sep_cnt * sizeof(c_str), MEMORY_STATUS_ACTIVE);
+	c_str* result = malloc(str_sep_cnt * sizeof(c_str));
 
 	uint32 start = 0;
 

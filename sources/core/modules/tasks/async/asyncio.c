@@ -4,8 +4,6 @@
 
 #include "tasks/async/asyncio_types.h"
 
-#include "tasks/async/asyncio_fwd.h"
-
 #include "std/std.h"
 
 #include "drivers/memory/ram.h"
@@ -14,16 +12,16 @@ static Awaiter* awaiters[MAX_QUEUE_SIZE] = { nullptr };
 
 static int32 callingPos = 0;
 
-bool AsyncIO_isAwaiterValid(Awaiter* awaiter) {
+bool AsyncIO_is_awaiter_valid(Awaiter* awaiter) {
 	return 	awaiter &&
 			awaiter->method &&
-			awaiter->bActive;
+			awaiter->is_active;
 }
 
-bool AsyncIO_isAwaiterActive(Awaiter* awaiter) {
-	return 	AsyncIO_isAwaiterValid(awaiter) && 
+bool AsyncIO_is_awaiter_active(Awaiter* awaiter) {
+	return 	AsyncIO_is_awaiter_valid(awaiter) && 
 			awaiter->id != 0 && 
-			!awaiter->bFinished;
+			!awaiter->is_finished;
 }
 
 static inline Awaiter* getMethodByID(size_t id) {
@@ -45,7 +43,7 @@ static void freeInactiveMethods() {
 static size_t getActiveMethodIndexAfter(size_t pos) {
 	size_t result = pos;
 
-	while (!AsyncIO_isAwaiterActive(getMethodByID(result))) {
+	while (!AsyncIO_is_awaiter_active(getMethodByID(result))) {
 		result++;
 
 		if (result >= MAX_QUEUE_SIZE)
@@ -58,7 +56,7 @@ static size_t getActiveMethodIndexAfter(size_t pos) {
 static size_t getInactiveMethodIndexAfter(size_t afterPos) {
 	size_t result = afterPos;
 
-	while (AsyncIO_isAwaiterActive(getMethodByID(result))) {
+	while (AsyncIO_is_awaiter_active(getMethodByID(result))) {
 		result++;
 
 		if (result >= MAX_QUEUE_SIZE)
@@ -70,7 +68,7 @@ static size_t getInactiveMethodIndexAfter(size_t afterPos) {
 
 Awaiter* AsyncIO_newAwaiter(AsyncIO_Method method) {
 	if (method == nullptr) {
-		klog(LOG_SEVERITY_ERROR, "Create new awaiter failure: requested method is nullptr");
+		klog(LOG_ERROR, "Create new awaiter failure: requested method is nullptr");
 
 		return nullptr;
 	}
@@ -78,7 +76,7 @@ Awaiter* AsyncIO_newAwaiter(AsyncIO_Method method) {
 	Awaiter* result = malloc(sizeof(Awaiter));
 
 	if (result == nullptr) {
-		klog(LOG_SEVERITY_CRITICAL, 
+		klog(LOG_CRITICAL, 
 			"Create new awaiter failure: malloc for awaiter"
 			"returned nullptr (out of memory)"
 		);
@@ -88,8 +86,8 @@ Awaiter* AsyncIO_newAwaiter(AsyncIO_Method method) {
 
 	result->method = method;
 
-	result->bActive = true;
-	result->bFinished = false;
+	result->is_active = true;
+	result->is_finished = false;
 
 	result->id = 0;
 
@@ -100,9 +98,70 @@ void AsyncIO_free(Awaiter* awaiter) {
 	free(awaiter);
 }
 
-void* AsyncIO_getArgs(Awaiter* this) {
-	if (!AsyncIO_isAwaiterValid(this)) {
-		klog(LOG_SEVERITY_ERROR, "Argument getting failure: awaiter invalid");
+bool AsyncIO_any_arg(Awaiter* this) {
+	return this->args != nullptr && this->arg_cnt > 0;
+}
+
+size_t AsyncIO_arg_cnt(Awaiter* this) {
+	if (this == nullptr || this->args == nullptr) return 0;
+
+	return this->arg_cnt;
+}
+
+void* AsyncIO_get_arg(Awaiter* this, size_t arg_number) {
+	if (!AsyncIO_is_awaiter_valid(this)) {
+		klog(LOG_ERROR, "Argument getting failure: awaiter invalid");
+
+		return nullptr;
+	}
+
+	if (this->args == nullptr) {
+		klog(LOG_ERROR, "Argument getting failure: awaiter has not arguments");
+
+		return nullptr;
+	}
+
+	if (arg_number >= this->arg_cnt) {
+		klog(LOG_ERROR, "Argument getting failure: argument index overpowered");
+
+		return nullptr;
+	}
+
+	return this->args[arg_number];
+}
+
+ErrorCode AsyncIO_set_arg(Awaiter* this, size_t arg_number, void* arg) {
+	if (!AsyncIO_is_awaiter_valid(this)) {
+		klog(LOG_ERROR, "Argument setting failure: awaiter invalid");
+
+		return CODE_FAIL;
+	}
+
+	if (arg_number >= this->arg_cnt) {
+		size_t new_size = this->arg_cnt * sizeof(void*);
+
+		void* new_args = realloc(this->args, new_size);
+
+		if (new_args == nullptr) {
+			klog(LOG_CRITICAL, 
+				"Argument setting failure: realloc for size [value: size] for "
+				"Awaiter->args returned nullptr (out of memory)", new_size
+			);
+
+			return CODE_FAIL;
+		}
+
+		this->args = new_args;
+	}
+
+	this->args[arg_number] = arg;
+
+	return CODE_OK;
+}
+
+void* AsyncIO_get_args(Awaiter* this) {
+	if (!AsyncIO_is_awaiter_valid(this)) {
+		klog(LOG_ERROR, "Arguments getting failure: awaiter invalid");
 
 		return nullptr;
 	}
@@ -110,9 +169,9 @@ void* AsyncIO_getArgs(Awaiter* this) {
 	return this->args;
 }
 
-ErrorCode AsyncIO_setArgs(Awaiter* this, void* args) {
-	if (!AsyncIO_isAwaiterValid(this)) {
-		klog(LOG_SEVERITY_ERROR, "Argument setting failure: awaiter invalid");
+ErrorCode AsyncIO_set_args(Awaiter* this, void* args) {
+	if (!AsyncIO_is_awaiter_valid(this)) {
+		klog(LOG_ERROR, "Arguments setting failure: awaiter invalid");
 
 		return CODE_FAIL;
 	}
@@ -122,22 +181,40 @@ ErrorCode AsyncIO_setArgs(Awaiter* this, void* args) {
 	return CODE_OK;
 }
 
+ErrorCode AsyncIO_set_callback(Awaiter* this, AsyncIO_Method callback) {
+	if (this == nullptr) {
+		klog(LOG_ERROR, "AsyncIO set callback failure: awaiter is nullptr");
+
+		return CODE_FAIL;
+	}
+
+	if (callback == nullptr) {
+		klog(LOG_ERROR, "AsyncIO set callback failure: callback is nullptr");
+
+		return CODE_FAIL;
+	}
+
+	
+}
+
 ErrorCode AsyncIO_return(Awaiter* this, void* result) {
-	if (!AsyncIO_isAwaiterActive(this)) {
-		klog(LOG_SEVERITY_ERROR, "AsyncIO return failure: awaiter is not active or invalid.");
+	if (this == nullptr) {
+		klog(LOG_ERROR, "AsyncIO return failure: awaiter is not active or invalid.");
 		
 		return CODE_FAIL;
 	}
 
-	this->bFinished = true;
-
+	this->is_finished = true;
 	this->result = result;
+
+	if (this->callback)
+		this->callback(this);
 
 	return CODE_OK;
 }
 
-ErrorCode AsyncIO_getResult(Awaiter* this, void** result) {
-	if (!AsyncIO_isAwaiterActive(this) || this->bFinished == false)
+ErrorCode AsyncIO_get_result(Awaiter* this, void** result) {
+	if (this == nullptr)
 		return CODE_FAIL;
 
 	*result = this->result;
@@ -145,23 +222,9 @@ ErrorCode AsyncIO_getResult(Awaiter* this, void** result) {
 	return CODE_OK;
 }
 
-ErrorCode AsyncIO_callback(Awaiter* this) {
-	if (!AsyncIO_isAwaiterActive(this)) return CODE_FAIL;
-
-	if (this->callback == nullptr) {
-		klog(LOG_SEVERITY_ERROR, "Callback from awaiter failure: callback is nullptr");
-
-		return CODE_FAIL;
-	}
-
-	this->callback(this);
-
-	return CODE_OK;
-}
-
 ErrorCode AsyncIO_start(Awaiter* awaiter) {
-	if (!AsyncIO_isAwaiterValid(awaiter)) {
-		klog(LOG_SEVERITY_ERROR, "Awaiter start failure: awaiter is nullptr");
+	if (!AsyncIO_is_awaiter_valid(awaiter)) {
+		klog(LOG_ERROR, "Awaiter start failure: awaiter is nullptr");
 
 		return CODE_FAIL;
 	}
@@ -169,7 +232,7 @@ ErrorCode AsyncIO_start(Awaiter* awaiter) {
 	word id = getInactiveMethodIndexAfter(0);
 
 	if (id >= MAX_QUEUE_SIZE) {
-		klog(LOG_SEVERITY_ERROR, "Awaiter start failure: no free space for awaiter");
+		klog(LOG_ERROR, "Awaiter start failure: no free space for awaiter");
 
 		return CODE_FAIL;
 	}
@@ -181,12 +244,12 @@ ErrorCode AsyncIO_start(Awaiter* awaiter) {
 	return CODE_OK;
 }
 
-ErrorCode AsyncIO_handleAwaiter() {
+ErrorCode AsyncIO_loop() {
 	size_t id = getActiveMethodIndexAfter(callingPos);
 
 	if (id >= MAX_QUEUE_SIZE) {
-		klog(LOG_SEVERITY_INFO, "There are no asynchronous methods to handle since "
-			"everything has already been handled");
+		// klog(LOG_INFO, "There are no asynchronous methods to handle since "
+		// 				"everything has already been handled");
 
 		freeInactiveMethods();
 
@@ -200,7 +263,7 @@ ErrorCode AsyncIO_handleAwaiter() {
 	awaiter->method(awaiter);
 
 	if (awaiter->error == CODE_FAIL) {
-		awaiter->bFinished = true;
+		awaiter->is_finished = true;
 
 		return CODE_FAIL;
 	}
@@ -211,8 +274,8 @@ ErrorCode AsyncIO_handleAwaiter() {
 }
 
 ErrorCode AsyncIO_await(Awaiter* awaiter) {
-	if (!AsyncIO_isAwaiterActive(awaiter)) {
-		klog(LOG_SEVERITY_ERROR, "AsyncIO await failure: awaiter is not active or invalid");
+	if (!AsyncIO_is_awaiter_active(awaiter)) {
+		klog(LOG_ERROR, "AsyncIO await failure: awaiter is not active or invalid");
 			
 		return CODE_FAIL;
 	}
@@ -220,17 +283,15 @@ ErrorCode AsyncIO_await(Awaiter* awaiter) {
 	ErrorCode code = AsyncIO_start(awaiter);
 
 	if (code == CODE_FAIL) {
-		klog(LOG_SEVERITY_ERROR, "AsyncIO await failure: AsyncIO_start for awaiter returned CODE_FAIL");
+		klog(LOG_ERROR, "AsyncIO await failure: AsyncIO_start for awaiter returned CODE_FAIL");
 			
 		return CODE_FAIL;
 	}
 
-	while (!awaiter->bFinished) {
-		AsyncIO_handleAwaiter();
+	while (!awaiter->is_finished && 
+			awaiter->error == CODE_OK) {
+		AsyncIO_loop();
 	}
-
-	if (awaiter->error == CODE_FAIL)
-		AsyncIO_free(awaiter);
 
 	return awaiter->error;
 }

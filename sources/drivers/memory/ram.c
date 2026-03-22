@@ -113,6 +113,18 @@ void* malloc(size_t size) {
 	return result;
 }
 
+void* calloc(size_t cnt, size_t elem_size) {
+	size_t size = cnt * elem_size;
+
+	void* result = malloc(size);
+
+	if (result == nullptr) return nullptr;
+
+	memset(result, 0, size);
+
+	return result;
+}
+
 void* realloc(void* mem, size_t size) {
 	if (mem == nullptr) {
 		if (size == 0) {

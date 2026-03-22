@@ -1,13 +1,9 @@
 #ifndef _RANDOM_OS_FONT_TYPES_H
 #define _RANDOM_OS_FONT_TYPES_H
 
-#include "core/basic_types.h"
+// Полностью заимствованно из Random OS Boosted
 
-#define FONTS_MAX_COUNT 8
-
-#define FONT_CHAR_WIDTH 8
-
-#define FONT_CHAR_HEIGHT 16
+#include "types.h"
 
 typedef word Font_ReserveCode;
 
@@ -15,16 +11,12 @@ typedef struct Glyph {
 	size_t width, height;
 
 	byte* data;
-
-	Font_ReserveCode code;
-
-	bool is_reserved;
 } Glyph;
 
 typedef struct Font {
 	Glyph* glyphs;
 
-	size_t glyph_count;
+	size_t glyph_offset, glyph_count;
 } Font;
 
 #endif

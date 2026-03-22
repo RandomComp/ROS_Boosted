@@ -186,34 +186,4 @@ static inline bool checkBitU32(uint32 value, uint8 bitIndex) {
 	return (value >> bitIndex) & 1;
 }
 
-static inline uint32 combineFromPtrU32(byte* ptr) {
-	return 	(ptr[0]) 		+ (ptr[1] << 8) + 
-			(ptr[2] << 16) 	+ (ptr[3] << 24);
-}
-
-static inline uint64 combineFromPtrU64(byte* ptr) {
-	return 	(ptr[0]) 		+ (ptr[1] << 8) + 
-			(ptr[2] << 16) 	+ (ptr[3] << 24) + 
-			(ptr[4] << 32) 	+ (ptr[5] << 40) + 
-			(ptr[6] << 48) 	+ (ptr[7] << 56);
-}
-
-static inline void combineToPtrU32(byte* ptr, uint32 value) {
-	ptr[0] = value & 0xFF; value <<= 8;
-	ptr[1] = value & 0xFF; value <<= 8;
-	ptr[2] = value & 0xFF; value <<= 8;
-	ptr[3] = value & 0xFF; value <<= 8;
-}
-
-static inline void combineToPtrU64(byte* ptr, uint64 value) {
-	ptr[0] = value & 0xFF; value <<= 8;
-	ptr[1] = value & 0xFF; value <<= 8;
-	ptr[2] = value & 0xFF; value <<= 8;
-	ptr[3] = value & 0xFF; value <<= 8;
-	ptr[4] = value & 0xFF; value <<= 8;
-	ptr[5] = value & 0xFF; value <<= 8;
-	ptr[6] = value & 0xFF; value <<= 8;
-	ptr[7] = value & 0xFF; value <<= 8;
-}
-
 #endif

@@ -5,12 +5,10 @@
 
 #include "graphics/font/font_types.h"
 
-bool Font_checkReserveCodeIsReserved(Font_ReserveCode glyphCode);
+Glyph* Font_copy_glyph(Glyph* dest, const Glyph* src);
 
-void Font_reserveReserveCode(Font_ReserveCode glyphCode);
+ErrorCode Font_copy(Font** dest_ptr, const Font* src);
 
-void Font_freeReserveCode(Font_ReserveCode glyphCode);
-
-Font_ReserveCode Font_generateReserveCode();
+Font_ReserveCode Font_load(Font* font);
 
 #endif
