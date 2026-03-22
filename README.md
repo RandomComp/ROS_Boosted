@@ -13,6 +13,6 @@ NOT WORKING YET BECAUSE PROJECT IS PAUSED
 **Use <code>dd</code>, <code>balenaEthcer</code> or similar for run on your computer, or use vmdk in VMware Workstation, also you can use the img binary file builded from sources for run in QEMU.**
 
 Example command using dd:
-sudo dd if=/path/to/hdd.img of=/dev/sdX count=32768
+**<code>sudo dd if=/path/to/hdd.img of=/dev/sdX count=32768</code>**
 
 # USE THIS OS FOR YOU OWN RISK, BE CAREFUL!
