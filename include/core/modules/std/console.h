@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_CONSOLE_H
-#define _RANDOM_OS_CONSOLE_H
+#ifndef _R_OS_CONSOLE_H
+#define _R_OS_CONSOLE_H
 
 #define GLYPH_WIDTH 8
 

@@ -10,7 +10,7 @@
 
 static Awaiter* awaiters[MAX_QUEUE_SIZE] = { nullptr };
 
-static int32 callingPos = 0;
+static size_t callingPos = 0;
 
 bool AsyncIO_is_awaiter_valid(Awaiter* awaiter) {
 	return 	awaiter &&

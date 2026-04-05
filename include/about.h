@@ -1,11 +1,11 @@
-#ifndef _RANDOM_OS_ABOUT_H
-#define _RANDOM_OS_ABOUT_H
+#ifndef _R_OS_ABOUT_H
+#define _R_OS_ABOUT_H
 
-#define RANDOM_OS_COMMIT_INDEX 41
+#define R_OS_COMMIT_INDEX 41
 
-#define RANDOM_OS_VERSION "0.4.1"
+#define R_OS_VERSION "0.4.1"
 
-#define RANDOM_OS_COMMIT_40 \
+#define R_OS_COMMIT_40 \
 "В этом коммите, начинается реализация типа Buffer, также добавлена поддержка " \
 "info в Exception, нужно это для логирования информации которая потенциально " \
 "может быть предупреждением, также для критических секциев вместо Exception " \
@@ -25,7 +25,7 @@
 "Перед коммитом было написана реализация buffer.c на 655 строк, с поддержкой checksum и " \
 "задаткой на версионирование." \
 
-#define RANDOM_OS_COMMIT_41 \
+#define R_OS_COMMIT_41 \
 "В этом коммите, удалена полностью возможность переопределения write, read, write_byte и read_byte с Buffer\n" \
 "Реализация is_active, why_inactive, flush, fetch и fetch_count переехали в BufferDest"
 

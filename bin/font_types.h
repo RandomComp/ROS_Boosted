@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_FONT_TYPES_H
-#define _RANDOM_OS_FONT_TYPES_H
+#ifndef _R_OS_FONT_TYPES_H
+#define _R_OS_FONT_TYPES_H
 
 // Полностью заимствованно из Random OS Boosted
 

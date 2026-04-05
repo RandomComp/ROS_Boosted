@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_CONTROL_CHARS_H
-#define _RANDOM_OS_CONTROL_CHARS_H
+#ifndef _R_OS_CONTROL_CHARS_H
+#define _R_OS_CONTROL_CHARS_H
 
 void ControlCharsInit();
 

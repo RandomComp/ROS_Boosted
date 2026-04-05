@@ -3,3 +3,4 @@
 *.VSCODE-DB
 ^\.
 *.exe
+nul

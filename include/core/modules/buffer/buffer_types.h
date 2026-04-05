@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_BUFFER_TYPES_H
-#define _RANDOM_OS_BUFFER_TYPES_H
+#ifndef _R_OS_BUFFER_TYPES_H
+#define _R_OS_BUFFER_TYPES_H
 
 #include "core/basic_types.h"
 
@@ -48,7 +48,7 @@ struct Buffer {
 
 	ErrorCode (*open)(Buffer* this); // Функция для открытия буфера, 	влияет на checksum
 
-	// Функция для перехода курсора буфера (может быть недоступно в некоторых случаях)
+	// Функция для перехода курсора буфера (может быть недоступно в некоторых случаях, настраивается флагом BUFFER_CREATION_NO_SEEK при создании)
 	ErrorCode (*seek)(Buffer* this, ssize_t bytes, Buffer_FlagsSeek flag);
 
 	// Вернуть буфер в начальное состояние

@@ -1,4 +1,4 @@
-#ifndef _RANDOM_OS_STACK_H
-#define _RANDOM_OS_STACK_H
+#ifndef _R_OS_STACK_H
+#define _R_OS_STACK_H
 
 #endif

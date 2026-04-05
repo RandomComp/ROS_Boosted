@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_ASYNC_FWD_H
-#define _RANDOM_OS_ASYNC_FWD_H
+#ifndef _R_OS_ASYNC_FWD_H
+#define _R_OS_ASYNC_FWD_H
 
 #define MAX_QUEUE_SIZE 128
 

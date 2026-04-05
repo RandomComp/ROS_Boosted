@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_WARNING_H
-#define _RANDOM_OS_WARNING_H
+#ifndef _R_OS_WARNING_H
+#define _R_OS_WARNING_H
 
 
 

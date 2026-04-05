@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_INFO_H
-#define _RANDOM_OS_INFO_H
+#ifndef _R_OS_INFO_H
+#define _R_OS_INFO_H
 
 #define INFO_FIRST INFO_OK
 

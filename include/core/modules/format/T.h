@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_T_H
-#define _RANDOM_OS_T_H
+#ifndef _R_OS_T_H
+#define _R_OS_T_H
 
 #include "core/basic_types.h"
 #include "core/int_types.h"

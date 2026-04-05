@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_EXCEPTION_ERROR_H
-#define _RANDOM_OS_EXCEPTION_ERROR_H
+#ifndef _R_OS_EXCEPTION_ERROR_H
+#define _R_OS_EXCEPTION_ERROR_H
 
 #include "exceptions/errors/error_types.h"
 

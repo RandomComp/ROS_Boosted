@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_CHARSET_CP437_H
-#define _RANDOM_OS_CHARSET_CP437_H
+#ifndef _R_OS_CHARSET_CP437_H
+#define _R_OS_CHARSET_CP437_H
 
 #include "charset/ugsm/ugsm_types.h"
 

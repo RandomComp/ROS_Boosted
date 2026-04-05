@@ -28,7 +28,8 @@ def log(message: object="", end: str="\n", out: TextIO=sys.stdout) -> None:
 def system(command: str) -> str:
 	log(command)
 
-	return subprocess.getoutput(f"(chcp 65001 >nul) & {command}", encoding="utf-8")
+	#return subprocess.getoutput(f"(chcp 65001 >nul) & {command}", encoding="utf-8")
+	return subprocess.getoutput(f"{command} 0>/dev/null 2>/dev/null", encoding="utf-8")
 
 def get_commits_hash() -> list[str]:
 	this = get_commits_hash
@@ -265,35 +266,35 @@ def create_backup_zip(backup_name: str) -> None:
 
 	log(f"Successfully created backup zip file \"{backup_file}\" for folder \"{cur_dir.absolute()}\"!")
 
-	log(f"Copying backup zip file for other volumes in progress...")
+	#log(f"Copying backup zip file for other volumes in progress...")
 
-	start = time.perf_counter()
+	#start = time.perf_counter()
 
-	mounts_list = map(os.listmounts, os.listvolumes())
+	#mounts_list = map(os.listmounts(), os.listvolumes())
 
-	for volume in mounts_list:
-		for mount in volume:
-			if not mount: continue
+	#for volume in mounts_list:
+	#	for mount in volume:
+	#		if not mount: continue
 
-			start_copying_time = time.perf_counter()
+	#		start_copying_time = time.perf_counter()
 
-			backup_dir = Path(mount) / Path(backup_dir.name)
+	#		backup_dir = Path(mount) / Path(backup_dir.name)
 
-			backup_dir.mkdir(exist_ok=True)
+	#		backup_dir.mkdir(exist_ok=True)
 
-			log(f"Copying for volume {mount} to {backup_dir / backup_name} in progress...")
+	#		log(f"Copying for volume {mount} to {backup_dir / backup_name} in progress...")
 
-			backup_file.copy_into(backup_dir)
+	#		backup_file.copy_into(backup_dir)
 
-			processor_time = time.perf_counter() - start_copying_time
+	#		processor_time = time.perf_counter() - start_copying_time
 
-			log(f"Copying to {backup_dir / backup_name} processor time: {processor_time * 1000:.6f} ms")
+	#		log(f"Copying to {backup_dir / backup_name} processor time: {processor_time * 1000:.6f} ms")
 
-			log()
-	
-	processor_time = time.perf_counter() - start
+	#		log()
+	#
+	#processor_time = time.perf_counter() - start
 
-	log(f"Backup copy to other volumes processor time: {processor_time * 1000:.6f} ms")
+	#log(f"Backup copy to other volumes processor time: {processor_time * 1000:.6f} ms")
 
 	processor_time = time.perf_counter() - start_backup_operations_time
 
@@ -553,6 +554,11 @@ def CLI_dir(root: Path, _cur_dir: Path, args: list[str]) -> tuple[bool, Path]:
 
 	return False, _cur_dir
 
+def CLI_pwd(root: Path, cur_dir: Path, args: list[str]) -> tuple[bool, Path]:
+	log(cur_dir.resolve())
+
+	return False, cur_dir
+
 def CLI_cat(root: Path, _cur_dir: Path, args: list[str]) -> tuple[bool, Path]:
 	cur_dir = _cur_dir.absolute()
 
@@ -684,6 +690,7 @@ commands: dict[str, FunctionType] = {
 			"help": 	CLI_help,
 			"cd": 		CLI_cd,
 			"dir": 		CLI_dir,
+			"pwd": 		CLI_pwd,
 			"cat": 		CLI_cat,
 			"clear":	CLI_clear,
 			"alias":	CLI_alias,
@@ -692,7 +699,9 @@ commands: dict[str, FunctionType] = {
 			}
 	
 def CLI_process_command(input: str, root: Path, cur_dir: Path) -> tuple[bool, Path]:
-	inputed_command, *args = input.lstrip().lower().split(" ")
+	inputed_command, *args = input.lstrip().split(" ")
+
+	inputed_command = inputed_command.lower()
 
 	isQuit = False
 
@@ -886,7 +895,7 @@ def main(argv: list[str]) -> None:
 	if (len(argv) <= 1):
 		raise ValueError("Required arguments not reached. Required argument is commit summary description.")
 
-	system("chcp 65001")
+	#system("chcp 65001")
 
 	git_fetch_origin()
 
@@ -1022,7 +1031,5 @@ def imd_exit() -> None:
 if __name__ == "__main__":
 	try:
 		main(sys.argv)
-	except Exception as e:
-		traceback.print_exc()
-
+	finally:
 		imd_exit()

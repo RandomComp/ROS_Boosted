@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_STD_STRING_TYPES_H
-#define _RANDOM_OS_STD_STRING_TYPES_H
+#ifndef _R_OS_STD_STRING_TYPES_H
+#define _R_OS_STD_STRING_TYPES_H
 
 #include "core/basic_types.h"
 

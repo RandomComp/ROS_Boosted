@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_MATH_INT_H
-#define _RANDOM_OS_MATH_INT_H
+#ifndef _R_OS_MATH_INT_H
+#define _R_OS_MATH_INT_H
 
 #include "core/basic_types.h"
 

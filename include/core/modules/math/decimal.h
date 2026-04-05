@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_DECIMAL_H
-#define _RANDOM_OS_DECIMAL_H
+#ifndef _R_OS_DECIMAL_H
+#define _R_OS_DECIMAL_H
 
 #include "core/basic_types.h"
 

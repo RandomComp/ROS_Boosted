@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_FORMAT_BCD_H
-#define _RANDOM_OS_FORMAT_BCD_H
+#ifndef _R_OS_FORMAT_BCD_H
+#define _R_OS_FORMAT_BCD_H
 
 #include "core/basic_types.h"
 

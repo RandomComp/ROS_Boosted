@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_EVENT_FWD_H
-#define _RANDOM_OS_EVENT_FWD_H
+#ifndef _R_OS_EVENT_FWD_H
+#define _R_OS_EVENT_FWD_H
 
 typedef struct EventHandler EventHandler;
 

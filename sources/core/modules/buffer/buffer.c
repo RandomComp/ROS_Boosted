@@ -168,7 +168,7 @@ static ErrorCode awaitBytes(Buffer* this, Buffer_Port* port_ptr) {
 		AsyncIO_free(awaiter);
 
 		Buffer_log(this, LOG_ERROR, BUFFER_WAIT_BYTES_ERROR, 
-			"Buffer byte awaiter failure: AsyncIO_setArgs returned CODE_FAIL"
+			"Buffer byte awaiter failure: AsyncIO_set_arg returned CODE_FAIL"
 		);
 
 		return CODE_FAIL;
@@ -177,16 +177,14 @@ static ErrorCode awaitBytes(Buffer* this, Buffer_Port* port_ptr) {
 	code = AsyncIO_await(awaiter);
 
 	if (code != CODE_OK) {
-		AsyncIO_free(awaiter);
-
 		Buffer_log(this, LOG_ERROR, BUFFER_WAIT_BYTES_ERROR, 
 			"Buffer byte awaiter failure: AsyncIO_await returned CODE_FAIL"
 		);
-
-		return CODE_FAIL;
 	}
+	
+	AsyncIO_free(awaiter);
 
-	return CODE_OK;
+	return code;
 }
 
 static Buffer_ErrorCode waitBytes(Buffer* this, Buffer_Port* port_ptr) {
@@ -232,10 +230,10 @@ Buffer_ErrorCode Buffer_wait_for_bytes(Buffer* this, Buffer_Port _port) {
 		code = waitBytes(this, port);
 
 	if (code != CODE_OK) {
-		free(port);
-
 		klog(LOG_ERROR, "Buffer wait for bytes failure: await and wait failed");
 	}
+	
+	free(port);
 
 	return code;
 }
@@ -576,7 +574,7 @@ Buffer* Buffer_new(size_t data_size, size_t context_size, Buffer_CreationFlags f
 		buffer->data_size = data_size;
 	}
 
-	buffer->is_static = 	data_is_static;
+	buffer->is_static = 		data_is_static;
 	buffer->context_is_static = context_is_static;
 
 	buffer->updated_bytes = 0;

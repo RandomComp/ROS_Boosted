@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_BUILTINS_QUAD_H
-#define _RANDOM_OS_BUILTINS_QUAD_H
+#ifndef _R_OS_BUILTINS_QUAD_H
+#define _R_OS_BUILTINS_QUAD_H
 
 #include "core/basic_types.h"
 

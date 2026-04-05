@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_TOKENIZER_TOKENIZE_H
-#define _RANDOM_OS_TOKENIZER_TOKENIZE_H
+#ifndef _R_OS_TOKENIZER_TOKENIZE_H
+#define _R_OS_TOKENIZER_TOKENIZE_H
 
 #include "core/basic_types.h"
 

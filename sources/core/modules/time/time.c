@@ -218,13 +218,17 @@ Time Time_get() {
 	return now;
 }
 
-Time start, msWaiting;
+Time start, waiting;
 
 static AsyncResult sleepAwaiter() {
-	return (AsyncResult){ 	.bFinished = now - start >= msWaiting, 
+	return (AsyncResult){ 	.bFinished = now - start >= waiting, 
 							.result = 0 };
 }
 
 void Time_sleep(Time time) {
+	start = Time_now();
+
+	waiting = time;
+
 	await(&sleepAwaiter, now, time);
 }

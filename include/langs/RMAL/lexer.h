@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_RMAL_LEXER_H
-#define _RANDOM_OS_RMAL_LEXER_H
+#ifndef _R_OS_RMAL_LEXER_H
+#define _R_OS_RMAL_LEXER_H
 
 // Lexer of RMAL ( Random minimal assembly language )
 

@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_DRIVER_TIME_PIT_H
-#define _RANDOM_OS_DRIVER_TIME_PIT_H
+#ifndef _R_OS_DRIVER_TIME_PIT_H
+#define _R_OS_DRIVER_TIME_PIT_H
 
 #include "drivers/syscall/idt.h"
 

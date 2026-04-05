@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_MEM_TYPES
-#define _RANDOM_OS_MEM_TYPES
+#ifndef _R_OS_MEM_TYPES
+#define _R_OS_MEM_TYPES
 
 #include "core/basic_types.h"
 

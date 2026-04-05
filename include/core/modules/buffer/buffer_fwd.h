@@ -1,5 +1,5 @@
-#ifndef _RANDOM_OS_BUFFER_FWD_H
-#define _RANDOM_OS_BUFFER_FWD_H
+#ifndef _R_OS_BUFFER_FWD_H
+#define _R_OS_BUFFER_FWD_H
 
 typedef enum Buffer_CreationFlags {
 	BUFFER_CREATION_STATIC = 	0b00000001,
